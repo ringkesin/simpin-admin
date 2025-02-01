@@ -1,5 +1,12 @@
 <p align="center"><h1>Aplikasi SIMPIN</h1></p>
 
+## Requirement Aplikasi
+
+-   PHP > 8
+-   Node > 18
+-   NPM > 10
+-   Composer Latest Version / 2.8.5
+
 ## Running Dev Aplikasi
 
 1. Jalankan script terminal :
