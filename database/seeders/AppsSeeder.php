@@ -19,8 +19,13 @@ class AppsSeeder extends Seeder
         [
             'name' => 'Admin Simpan Pinjam',
             'remarks' => 'Aplikasi Admin Simpan Pinjam KKBA',
-            'valid_from' => '2023-08-30'
-        ]
+            'valid_from' => '2025-01-01'
+        ],
+        [
+            'name' => 'Mobile Simpan Pinjam',
+            'remarks' => 'Aplikasi Mobile Simpan Pinjam KKBA',
+            'valid_from' => '2025-01-01'
+        ],
     ];
 
     public function run()
@@ -29,7 +34,7 @@ class AppsSeeder extends Seeder
             if($d['name'] == 'Admin Simpan Pinjam') {
                 $kode = '20250122114501';
             } else {
-                $kode = now();
+                $kode = '20250122114502';
             }
             AppsModel::create([
                 'code' => 'AP'.$kode,

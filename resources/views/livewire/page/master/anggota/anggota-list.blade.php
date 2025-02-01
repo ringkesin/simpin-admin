@@ -18,6 +18,6 @@
         </div>
     </div>
     <div class="p-6 bg-white border rounded-sm shadow-lg dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-
+        <livewire:page.master.anggota.anggota-table />
     </div>
 </div>

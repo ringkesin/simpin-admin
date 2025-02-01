@@ -91,6 +91,11 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
     - php artisan migrate
     - php artisan db:seed
 
+    Note : Jika ingin refresh data (mereset ulang data, biasanya karena bikin tabel baru atau membuat seed baru), lakukan ini :
+
+    - php artisan migrate:fresh
+    - php artisan db:seed
+
 5. Modifikasi file package.json :
    "scripts": {
    "dev": "npm-run-all --parallel serve artisan",
