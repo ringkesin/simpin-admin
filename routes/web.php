@@ -9,7 +9,7 @@ use App\Livewire\Page\Tagihan\TagihanList;
 use App\Livewire\Page\User\UserList;
 
 Route::get('/', function () {
-    // return view('welcome');
+    return redirect()->route('dashboard');
 });
 
 Route::get('dashboard', Dashboard::class)->name('dashboard');
