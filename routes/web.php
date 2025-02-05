@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Livewire\Page\Dashboard;
 use App\Livewire\Page\Master\Anggota\AnggotaList;
+use App\Livewire\Page\Master\Anggota\AnggotaCreate;
+use App\Livewire\Page\Master\Anggota\AnggotaShow;
+use App\Livewire\Page\Master\Anggota\AnggotaEdit;
 use App\Livewire\Page\Tabungan\TabunganList;
 use App\Livewire\Page\Tagihan\TagihanList;
 use App\Livewire\Page\User\UserList;
@@ -19,6 +22,9 @@ Route::prefix('user')->group(function () {
 Route::prefix('master')->group(function () {
     Route::prefix('anggota')->group(function () {
         Route::get('list', AnggotaList::class)->name('master.anggota.list');
+        Route::get('create', AnggotaCreate::class)->name('master.anggota.create');
+        Route::get('show/{id}', AnggotaShow::class)->name('master.anggota.show');
+        Route::get('edit/{id}', AnggotaEdit::class)->name('master.anggota.edit');
     });
 });
 Route::prefix('tabungan')->group(function () {

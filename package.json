@@ -4,7 +4,8 @@
     "scripts": {
         "dev": "npm-run-all --parallel serve artisan",
         "serve": "vite",
-        "artisan": "php artisan serve"
+        "artisan": "php artisan serve",
+        "build": "vite build"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.20",

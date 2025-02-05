@@ -13,7 +13,10 @@ class AnggotaTable extends DataTableComponent
 
     public function configure(): void
     {
-        $this->setPrimaryKey('p_anggota_id');
+        $this->setPrimaryKey('p_anggota_id')
+        ->setTableRowUrl(function($row) {
+            return route('master.anggota.show', ['id' => $row->p_anggota_id]);
+        });
         $this->setComponentWrapperAttributes([
             'default' => true,
             'class' => 'rounded-none',

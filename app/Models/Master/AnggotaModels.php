@@ -13,6 +13,8 @@ class AnggotaModels extends Model
 
     protected $table = 'p_anggota';
 
+    protected $primaryKey = 'p_anggota_id';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -35,7 +37,7 @@ class AnggotaModels extends Model
     ];
 
     // protected $hidden = [
-    //     'user_id'
+    //     'p_anggota_id'
     // ];
 
     public function updatedBy() : HasOne

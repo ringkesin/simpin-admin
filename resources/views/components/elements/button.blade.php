@@ -13,7 +13,7 @@
             $class .= 'text-white dark:text-white bg-[#658cff] dark:bg-[#658cff] hover:bg-white dark:hover:bg-slate-900 border-[#658cff] hover:text-[#658cff] dark:hover:text-slate-300 '; 
         }
         if($style == 'outlined'){
-            $class .= 'text-gray-800 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-[#658cff] dark:hover:bg-[#658cff] border-[#658cff] hover:text-white dark:hover:text-white '; 
+            $class .= 'text-[#658cff] dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-[#658cff] dark:hover:bg-[#658cff] border-[#658cff] hover:text-white dark:hover:text-white '; 
         }
     }
 
@@ -31,7 +31,7 @@
             $class .= 'text-white dark:text-white bg-teal-400 dark:bg-teal-500 hover:bg-white dark:hover:bg-slate-900 border-teal-400 dark:hover:border-teal-500 hover:text-teal-400 dark:hover:text-slate-300 '; 
         }
         if($style == 'outlined'){
-            $class .= 'text-gray-800 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-teal-400 dark:hover:bg-teal-500 border-teal-400 dark:hover:border-teal-500 hover:text-white dark:hover:text-white '; 
+            $class .= 'text-teal-400 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-teal-400 dark:hover:bg-teal-500 border-teal-400 dark:hover:border-teal-500 hover:text-white dark:hover:text-white '; 
         }
     }
 
