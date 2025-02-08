@@ -1,17 +1,17 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
+import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-    darkMode: 'class',
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
-        './resources/**/*.blade.php',
-        './resources/**/*.js',
-        './resources/**/*.vue',
-        'node_modules/preline/dist/*.js',
-        './vendor/rappasoft/laravel-livewire-tables/resources/views/**/*.blade.php',
+        // 'node_modules/preline/dist/*.js',
+        './resources/views/**/*.blade.php',
+        './vendor/laravel/jetstream/**/*.blade.php',
     ],
+
     theme: {
         extend: {
             fontFamily: {
@@ -19,7 +19,10 @@ export default {
             },
         },
     },
+
     plugins: [
-        require('preline/plugin'),
+        forms,
+        // typography
+        require('preline/plugin')
     ],
 };

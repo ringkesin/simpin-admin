@@ -7,11 +7,11 @@
 
 @php
     $class = 'block px-3 py-0.5 text-sm rounded-md disabled:opacity-50 disabled:pointer-events-none ';
-    $class .= 'border border-gray-300 dark:border-slate-700 ';
-    $class .= 'text-gray-800 dark:text-slate-300 ';
-    $class .= 'focus:border-[#658cff] dark:focus:border-[#658cff] focus:ring-white dark:focus:ring-slate-900 ';
-    $class .= 'bg-white dark:bg-slate-900 ';
-    $class .= 'placeholder-gray-400 dark:placeholder-slate-500 ';
+    $class .= 'border border-gray-300 ';
+    $class .= 'text-gray-800 ';
+    $class .= 'focus:border-[#658cff] focus:ring-white ';
+    $class .= 'bg-white ';
+    $class .= 'placeholder-gray-400 ';
     if (isset($icon)) {
         $class .= 'ps-10 ';
     }

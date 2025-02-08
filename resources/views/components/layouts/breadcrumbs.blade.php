@@ -10,9 +10,9 @@
                 <a class="
                     flex items-center
                     text-gray-800
-                    dark:text-slate-300
+                   
                     hover:text-blue-600
-                    dark:hover:text-blue-600
+                   
                     focus:outline-none
                     focus:text-blue-600
                     @if($loop->last) font-semibold @endif"
