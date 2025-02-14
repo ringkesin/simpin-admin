@@ -49,7 +49,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['p_anggota_id']}}
+                            {{$loadData['nomor_anggota']}}
                         </div>
                     </div>
                     <!-- Group Input Nama -->

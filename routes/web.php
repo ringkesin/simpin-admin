@@ -26,6 +26,8 @@ Route::middleware([
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::prefix('user')->group(function () {
         Route::get('list', UserList::class)->name('user.list');
+        Route::get('show/{id}')->name('user.show');
+        Route::get('edit')->name('user.edit');
     });
     Route::prefix('master')->group(function () {
         Route::prefix('anggota')->group(function () {

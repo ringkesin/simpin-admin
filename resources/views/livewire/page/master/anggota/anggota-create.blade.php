@@ -26,6 +26,17 @@
             <div class="grid grid-cols-12 gap-10">
                 <!-- Kolom Kiri -->
                 <div class="col-span-12 md:col-span-6">
+                    <!-- Group Nomor Anggota -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="nomor_anggota">
+                                Nomor Anggota <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.input class="w-full" type="text" name="nomor_anggota" wire:model="nomor_anggota"/>
+                        </div>
+                    </div>
                     <!-- Group Input Nama -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -34,7 +45,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="" wire:model="nama"/>
+                            <x-form.input class="w-full" type="text" name="nama" wire:model="nama"/>
                         </div>
                     </div>
                     <!-- Group Input NIK -->
@@ -45,7 +56,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="" wire:model="nik"/>
+                            <x-form.input class="w-full" type="text" name="nik" wire:model="nik"/>
                         </div>
                     </div>
                     <!-- Group Input KTP -->
@@ -56,7 +67,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="" wire:model="ktp"/>
+                            <x-form.input class="w-full" type="text" name="ktp" wire:model="ktp"/>
                         </div>
                     </div>
                     <!-- Group Input Alamat -->
@@ -67,7 +78,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="" wire:model="alamat"/>
+                            <x-form.input class="w-full" type="text" name="alamat" wire:model="alamat"/>
                         </div>
                     </div>
                 </div>
@@ -100,7 +111,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="date" id="valid_to" name="valid_to" :value="''" wire:model.lazy="valid_until"/>
+                            <x-form.input class="w-full" type="date" id="valid_to" name="valid_to" :value="''" wire:model.lazy="valid_to"/>
                         </div>
                     </div>
                 </div>

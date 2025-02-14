@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('p_anggota', function (Blueprint $table) {
             $table->bigIncrements('p_anggota_id');
+            $table->string('nomor_anggota', 255)->unique();
             $table->date('valid_from'); // Tanggal mulai berlaku
             $table->date('valid_to')->nullable(); // Tanggal berakhir (opsional)
             $table->date('tanggal_masuk'); // Tanggal masuk anggota koperasi
@@ -34,7 +35,7 @@ return new class extends Migration
         });
 
         // Set nilai awal AUTO_INCREMENT ke 100001
-        DB::statement('ALTER TABLE p_anggota AUTO_INCREMENT = 100001');
+        DB::statement('ALTER TABLE p_anggota AUTO_INCREMENT = 1');
     }
 
     /**
