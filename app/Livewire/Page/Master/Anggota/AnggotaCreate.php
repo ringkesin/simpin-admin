@@ -21,6 +21,7 @@ class AnggotaCreate extends Component
     public $nik;
     public $ktp;
     public $alamat;
+    public $tgl_lahir;
     public $tanggal_masuk;
     public $valid_from;
     public $valid_to;
@@ -40,13 +41,17 @@ class AnggotaCreate extends Component
             'nomor_anggota' => 'required',
             'nama' => 'required',
             'nik' =>  'required',
-            'tanggal_masuk' => 'required',
+            'tgl_lahir' => 'required|date',
+            'tanggal_masuk' => 'required|date',
             'valid_from' => 'required|date',
         ], [
             'nomor_anggota' => 'Nomor Anggota required',
             'nama.required' => 'User required.',
             'nik.required' => 'ID Sign required.',
-            'tanggal_masuk.required' => 'PSRE Name required.',
+            'tgl_lahir.required' => 'Tanggal lahir required.',
+            'tgl_lahir.date' => 'Format Tanggal lahir must "yyyy/mm/dd".',
+            'tanggal_masuk.required' => 'Tanggal Masuk required.',
+            'tanggal_masuk.date' => 'Format Tanggal Masuk must "yyyy/mm/dd".',
             'valid_from.required' => 'Valid from required.',
             'valid_from.date' => 'Format Valid from must "yyyy/mm/dd".',
             'valid_to.date' => 'Format Valid until must "yyyy/mm/dd".',
@@ -55,14 +60,13 @@ class AnggotaCreate extends Component
             $this->valid_to = null;
         }
 
-        $redirect = route('master.anggota.list');
-
         try {
             $post = AnggotaModels::create([
                 'nomor_anggota' => $this->nomor_anggota,
                 'nama' => $this->nama,
                 'nik' => $this->nik,
                 'ktp' => $this->ktp,
+                'tgl_lahir' => $this->tgl_lahir,
                 'alamat' => $this->alamat,
                 'tanggal_masuk' => $this->tanggal_masuk,
                 'valid_from' => $this->valid_from,
@@ -70,6 +74,7 @@ class AnggotaCreate extends Component
             ]);
 
             if($post) {
+                $redirect = route('master.anggota.show', ['id' => $post]);
                 $this->sweetalert([
                     'icon' => 'success',
                     'confirmButtonText' => 'Okay',

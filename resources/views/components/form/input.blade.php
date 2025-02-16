@@ -23,12 +23,30 @@
 <div class="relative">
     {{-- Input Field --}}
     {{$slot}}
-    <input {{ $attributes->class([$class]) }}
-        @isset($name) name="{{ $name }}" @endif
-        @isset($value) value="{{ $value }}" @endif
-        @isset($placeholder) placeholder="{{ $placeholder }}" @endif
-        autocomplete="off"
-        type="text" />
+    @if($attributes['type'] == 'file')
+        @if($attributes['desc'])
+        <div class="py-2 text-sm text-gray-400">{!!$attributes['desc']!!}</div>
+        @endif
+        <input type="file" name="{{ $attributes['name'] }}" {!! $attributes->merge(['class' =>"text-sm text-grey-500
+            file:mr-5 file:py-2 file:px-6
+            file:rounded-md file:border-0
+            file:text-sm file:font-medium
+            file:bg-green-50 file:text-green-600
+            file:dark:bg-slate-700 file:dark:text-slate-300
+            hover:file:cursor-pointer hover:file:bg-green-100
+            hover:file:text-green-700
+            hover:file:dark:bg-slate-700/75
+            dark:text-white
+        "]) !!} >
+    </label>
+    @else
+        <input {{ $attributes->class([$class]) }}
+            @isset($name) name="{{ $name }}" @endif
+            @isset($value) value="{{ $value }}" @endif
+            @isset($placeholder) placeholder="{{ $placeholder }}" @endif
+            autocomplete="off"
+            type="text" />
+    @endif
 
     {{-- Tanda Seru untuk Error --}}
     @if ($errors->has($name))

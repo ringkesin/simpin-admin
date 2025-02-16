@@ -22,7 +22,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             AppsSeeder::class,
-            MasterAnggotaSeeder::class
+            AppsParamSeeder::class,
+            MasterAnggotaSeeder::class,
+            MasterStatusPengajuanSeeder::class,
+            RbacRoleSeeder::class,
+            RbacRoleUserSeeder::class
         ]);
     }
 }

@@ -58,7 +58,7 @@
                     <div class="hs-dropdown-menu transition-[opacity,margin] ease-in-out duration-[150ms] hs-dropdown-open:opacity-100 opacity-0 md:w-48 z-10 bg-white md:shadow-md rounded-lg p-1 space-y-1 md:dark:border before:absolute top-full md:border before:-top-5 before:start-0 before:w-full before:h-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="hs-navbar-example-dropdown">
                         <div class="pt-0.5 pb-2 px-3 mb-1 border-b border-slate-200 dark:border-slate-700">
                             <div class="font-medium text-slate-800 dark:text-slate-100">{{ Auth::user()->name }}</div>
-                            <div class="text-xs italic text-slate-500 dark:text-slate-400">Administrator</div>
+                            <div class="text-xs italic text-slate-500 dark:text-slate-400">{{session('role')}}</div>
                         </div>
                         <a class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100" href="{{ route('profile.show') }}">
                             <x-lucide-user class="text-cyan-500 size-5 "/>Account Setting

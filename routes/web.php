@@ -10,6 +10,9 @@ use App\Livewire\Page\Master\Anggota\AnggotaEdit;
 use App\Livewire\Page\Tabungan\TabunganList;
 use App\Livewire\Page\Tagihan\TagihanList;
 use App\Livewire\Page\User\UserList;
+use App\Livewire\Page\User\UserEdit;
+use App\Livewire\Page\User\UserCreate;
+use App\Livewire\Page\User\UserShow;
 
 // Route::get('/', function () {
 //     return redirect()->route('dashboard');
@@ -22,12 +25,14 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    'authenticate'
 ])->group(function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::prefix('user')->group(function () {
         Route::get('list', UserList::class)->name('user.list');
-        Route::get('show/{id}')->name('user.show');
-        Route::get('edit')->name('user.edit');
+        Route::get('create', UserCreate::class)->name('user.create');
+        Route::get('show/{id}', UserShow::class)->name('user.show');
+        Route::get('edit/{id}', UserEdit::class)->name('user.edit');
     });
     Route::prefix('master')->group(function () {
         Route::prefix('anggota')->group(function () {

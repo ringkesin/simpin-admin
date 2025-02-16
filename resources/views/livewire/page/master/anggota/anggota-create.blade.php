@@ -1,13 +1,10 @@
 <div>
     {{-- The Master doesn't talk, he acts. --}}
-    <div>
-        {{-- Because she competes with no one, no one can compete with her. --}}
-        <div class="grid grid-cols-2 mb-6 xs:grid-cols-1">
-            <div>
-                <h1 class="mb-1 text-2xl font-bold md:text-3xl text-slate-800">
-                    {{$titlePage}}
-                </h1>
-            </div>
+    <div class="grid grid-cols-2 mb-6 xs:grid-cols-1">
+        <div>
+            <h1 class="mb-1 text-2xl font-bold md:text-3xl text-slate-800">
+                {{$titlePage}}
+            </h1>
         </div>
     </div>
     <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200">
@@ -34,7 +31,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="nomor_anggota" wire:model="nomor_anggota"/>
+                            <x-form.input class="w-full" type="text" name="nomor_anggota" wire:model.lazy="nomor_anggota"/>
                         </div>
                     </div>
                     <!-- Group Input Nama -->
@@ -45,7 +42,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="nama" wire:model="nama"/>
+                            <x-form.input class="w-full" type="text" name="nama" wire:model.lazy="nama"/>
                         </div>
                     </div>
                     <!-- Group Input NIK -->
@@ -56,7 +53,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="nik" wire:model="nik"/>
+                            <x-form.input class="w-full" type="text" name="nik" wire:model.lazy="nik"/>
                         </div>
                     </div>
                     <!-- Group Input KTP -->
@@ -67,7 +64,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="ktp" wire:model="ktp"/>
+                            <x-form.input class="w-full" type="text" name="ktp" wire:model.lazy="ktp"/>
                         </div>
                     </div>
                     <!-- Group Input Alamat -->
@@ -78,7 +75,18 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="alamat" wire:model="alamat"/>
+                            <x-form.input class="w-full" type="text" name="alamat" wire:model.lazy="alamat"/>
+                        </div>
+                    </div>
+                    <!-- Group Input Tanggal Lahir -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="tgl_lahir">
+                                Tanggal Lahir <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.input class="w-full" type="date" id="tgl_lahir" name="tgl_lahir" :value="''" wire:model.lazy="tgl_lahir"/>
                         </div>
                     </div>
                 </div>
