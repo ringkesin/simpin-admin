@@ -38,6 +38,8 @@ class MasterAnggotaSeeder extends Seeder
                 'tanggal_masuk' => $d['tanggal_masuk'],
                 'valid_from' => $d['valid_from'],
                 'valid_to' => $d['valid_to'],
+                'valid_to' => $d['valid_to'],
+
                 'nik' => $d['nik'],
                 'alamat' => $d['alamat'],
                 'ktp' => $d['ktp'],
