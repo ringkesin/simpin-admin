@@ -6,48 +6,48 @@
 $class = 'p-4 text-sm border rounded-lg';
 if($type == 'primary'){
     $class .= '
-        bg-blue-50 dark:bg-slate-900 
-        text-[#658cff] dark:text-[#658cff] 
+        bg-blue-50 
+        text-[#658cff] 
         border-[#658cff]
     ';
 }
 
 if($type == 'secondary'){
     $class .= '
-        bg-gray-100 dark:bg-slate-900 
-        text-gray-800 dark:text-gray-500 
+        bg-gray-100 
+        text-gray-800 
         border-gray-500
     ';
 }
 
 if($type == 'success'){
     $class .= '
-        bg-teal-100 dark:bg-slate-900 
-        text-teal-800 dark:text-teal-500 
+        bg-teal-100 
+        text-teal-800 
         border-teal-500
     ';
 }
 
 if($type == 'warning'){
     $class .= '
-        bg-amber-50 dark:bg-slate-900 
-        text-amber-800 dark:text-amber-400 
+        bg-amber-50 
+        text-amber-800 
         border-amber-400 
     ';
 }
 
 if($type == 'info'){
     $class .= '
-        bg-sky-100 dark:bg-slate-900 
-        text-sky-800 dark:text-sky-500 
+        bg-sky-100 
+        text-sky-800 
         border-sky-500
     ';
 }
 
 if($type == 'danger'){
     $class .= '
-        bg-rose-100 dark:bg-slate-900 
-        text-rose-800 dark:text-rose-500 
+        bg-rose-100 
+        text-rose-800 
         border-rose-500
     ';
 }
@@ -58,7 +58,7 @@ if($type == 'danger'){
             {{ $icon }}
         </div>
         <div class="ms-4">
-            <h3 id="hs-with-description-label" class="text-sm font-semibold dark:text-slate-300">
+            <h3 id="hs-with-description-label" class="text-sm font-semibold">
                 {{ $title }}
             </h3>
             <div class="text-sm">

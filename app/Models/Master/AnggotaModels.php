@@ -21,6 +21,7 @@ class AnggotaModels extends Model
      * @var string[]
      */
     protected $fillable = [
+        'nomor_anggota',
         'nama',
         'nik',
         'alamat',

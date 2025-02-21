@@ -15,6 +15,7 @@ class MasterAnggotaSeeder extends Seeder
     protected $data = [
         [
             'nama' => 'Suyono Sonto S',
+            'nomor_anggota' => '100001',
             'tanggal_masuk' => '2007-09-13',
             'valid_from' => '2021-02-02',
             'valid_to' => null,
@@ -35,6 +36,7 @@ class MasterAnggotaSeeder extends Seeder
         foreach($this->data as $d) {
             AnggotaModels::create([
                 'nama' => $d['nama'],
+                'nomor_anggota' => $d['nomor_anggota'],
                 'tanggal_masuk' => $d['tanggal_masuk'],
                 'valid_from' => $d['valid_from'],
                 'valid_to' => $d['valid_to'],

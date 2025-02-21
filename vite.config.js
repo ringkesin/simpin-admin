@@ -5,19 +5,13 @@ import tailwindcss from 'tailwindcss'
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: ['resources/css/app.css', 'resources/js/app.js', 'node_modules/preline/dist/preline.js'],
             refresh: true,
         }),
     ],
-    css: {
-        postcss: {
-          plugins: [tailwindcss()],
-        },
-    },
-    server: {
-        hmr: {
-            host: 'localhost',
-        },
-        cors: true,
-    },
+    // css: {
+    //     postcss: {
+    //       plugins: [tailwindcss()],
+    //     },
+    // },
 });

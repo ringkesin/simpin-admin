@@ -59,7 +59,10 @@ class AnggotaTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Nomor Anggota", "p_anggota_id")
+            Column::make("ID", "p_anggota_id")
+                ->sortable()
+                ->searchable(),
+            Column::make("Nomor Anggota", "nomor_anggota")
                 ->sortable()
                 ->searchable(),
             Column::make("Nama", "nama")

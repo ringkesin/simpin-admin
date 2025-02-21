@@ -1,1 +1,1 @@
-<div class="h-px my-2 -mx-1 bg-gray-200 dark:bg-slate-700/50"></div>
+<div class="h-px my-2 -mx-1 bg-gray-200"></div>

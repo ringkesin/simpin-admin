@@ -24,7 +24,7 @@
     <body class="hs-overlay-body-open hs-overlay-body-open:overflow-hidden bg-slate-100">
         <x-layouts.sidebar :menu_code="$menu_code"/>
         <!-- Content -->
-        <div class="sm:hs-overlay-layout-open:ms-64 min-h-[640px] transition-all duration-300 dark:bg-neutral-800">
+        <div class="sm:hs-overlay-layout-open:ms-64 min-h-[640px] transition-all duration-300">
             <x-layouts.header>
                 <x-slot:breadcrumb>
                     <x-layouts.breadcrumbs :breadcrumbs="$breadcrumbs" />

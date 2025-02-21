@@ -56,11 +56,22 @@ class UsersTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Id", "id")
-                ->sortable(),
+            Column::make("Action", "id")->format(function ($value, $row, $column) {
+                return view('livewire.page.user.user-table-action', ['row' => $row]);
+            }),
             Column::make("Name", "name")
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->format(
+                    fn ($value, $row, $column) =>
+                    "<div class='flex items-center'>
+                        <div class='mr-3 shrink-0 w-9'>
+                            <img class='rounded-full' src='" . (($row->profile_photo_path == 'avatar/blank-avatar.png') ? asset('assets/'.$row->profile_photo_path) : '/storage/'.$row->profile_photo_path) . "' width='40' height='40' alt='User 01'>
+                        </div>
+                        <div class='font-medium text-slate-800 dark:text-slate-100'>" . $row->name . "</div>
+                    </div>"
+                )
+                ->html(),
             Column::make("Username", "username")
                 ->sortable()
                 ->searchable(),
@@ -76,20 +87,7 @@ class UsersTable extends DataTableComponent
                 ->sortable(),
             Column::make("Valid until", "valid_until")
                 ->sortable(),
-            Column::make("Remarks", "remarks")
-                ->sortable(),
             Column::make("Profile photo path", "profile_photo_path")
-                ->sortable(),
-            Column::make("Created by", "created_by")
-                ->sortable(),
-            Column::make("Updated by", "updated_by")
-                ->sortable(),
-            Column::make("Deleted by", "deleted_by")
-                ->sortable(),
-            Column::make("Created at", "created_at")
-                ->sortable(),
-            Column::make("Updated at", "updated_at")
-                ->sortable(),
         ];
     }
 

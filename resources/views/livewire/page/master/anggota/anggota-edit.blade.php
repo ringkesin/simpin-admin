@@ -1,18 +1,15 @@
 <div>
     {{-- The Master doesn't talk, he acts. --}}
-    <div>
-        {{-- Because she competes with no one, no one can compete with her. --}}
-        <div class="grid grid-cols-2 mb-6 xs:grid-cols-1">
-            <div>
-                <h1 class="mb-1 text-2xl font-bold md:text-3xl text-slate-800 dark:text-slate-100">
-                    {{$titlePage}}
-                </h1>
-            </div>
+    <div class="grid grid-cols-2 mb-6 xs:grid-cols-1">
+        <div>
+            <h1 class="mb-1 text-2xl font-bold md:text-3xl text-slate-800">
+                {{$titlePage}}
+            </h1>
         </div>
     </div>
-    <div class="p-6 bg-white border rounded-sm shadow-lg dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+    <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200">
         <!----------------Action Button------------------------>
-        <div class='px-4 py-4 mb-6 border rounded bg-slate-50 dark:bg-slate-700/25 border-slate-200 dark:border-slate-600/75'>
+        <div class='px-4 py-4 mb-6 border rounded bg-slate-50 border-slate-200'>
             <div class="flex justify-between gap-2">
                 <div>
                     <x-elements.button :href="route('master.anggota.show', ['id' => $loadData['p_anggota_id']])" :variant="'success'" :style="'outlined'" :type="'link'">
@@ -29,12 +26,12 @@
                     <!-- Group Nomor Anggota -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="p_anggota_id">
-                                Nomor Anggota
+                            <x-form.label for="nomor_anggota">
+                                Nomor Anggota <span class="text-red-500">*</span>
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['p_anggota_id']}}
+                            <x-form.input class="w-full" type="text" name="nomor_anggota" wire:model.lazy="nomor_anggota"/>
                         </div>
                     </div>
                     <!-- Group Input Nama -->
@@ -45,7 +42,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="" wire:model="nama"/>
+                            <x-form.input class="w-full" type="text" name="nama" wire:model.lazy="nama"/>
                         </div>
                     </div>
                     <!-- Group Input NIK -->
@@ -56,7 +53,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="" wire:model="nik"/>
+                            <x-form.input class="w-full" type="text" name="nik" wire:model.lazy="nik"/>
                         </div>
                     </div>
                     <!-- Group Input KTP -->
@@ -67,7 +64,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="" wire:model="ktp"/>
+                            <x-form.input class="w-full" type="text" name="ktp" wire:model.lazy="ktp"/>
                         </div>
                     </div>
                     <!-- Group Input Alamat -->
@@ -78,7 +75,18 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="" wire:model="alamat"/>
+                            <x-form.input class="w-full" type="text" name="alamat" wire:model.lazy="alamat"/>
+                        </div>
+                    </div>
+                    <!-- Group Input Tanggal Lahir -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="tgl_lahir">
+                                Tanggal Lahir <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.input class="w-full" type="date" id="tgl_lahir" name="tgl_lahir" :value="''" wire:model.lazy="tgl_lahir"/>
                         </div>
                     </div>
                 </div>
@@ -111,7 +119,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="date" id="valid_to" name="valid_to" :value="''" wire:model.lazy="valid_until"/>
+                            <x-form.input class="w-full" type="date" id="valid_to" name="valid_to" :value="''" wire:model.lazy="valid_to"/>
                         </div>
                     </div>
                 </div>
@@ -121,7 +129,7 @@
                     {{-- <svg class="w-5 h-5 mr-3 animate-spin" viewBox="0 0 24 24"> --}}
                         {{-- <span class="sr-only">Loading Save Data</span> --}}
                     {{-- </svg> --}}
-                    <span class="me-1 animate-spin inline-block size-3 border-[2px] border-current border-t-transparent text-white dark:text-slate-300 rounded-full" role="status" aria-label="loading">
+                    <span class="me-1 animate-spin inline-block size-3 border-[2px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
                         <span class="sr-only">Processing.....</span>
                     </span>
                     <span class="xs:block">
