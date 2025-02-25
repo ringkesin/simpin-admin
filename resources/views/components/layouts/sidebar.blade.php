@@ -46,14 +46,14 @@
                         </li>
 
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tabungan' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('tabungan.list')}}">
+                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tabungan' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('main.tabungan.list')}}">
                                 <x-lucide-landmark class="size-4"/>
                                 Tabungan
                             </a>
                         </li>
 
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tagihan' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('tagihan.list')}}">
+                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tagihan' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('main.tagihan.list')}}">
                                 <x-lucide-credit-card class="size-4"/>
                                 Tagihan
                             </a>

@@ -7,17 +7,23 @@
             </h1>
         </div>
         <div>
-            <div class="flex justify-end">
+            <div class="flex justify-end gap-3">
                 <div>
-                    <x-elements.button :href="url('master/asuransi/create')" button-type="{{ 'primary' }}">
+                    <x-elements.button :href="route('main.tabungan.create')" button-type="{{ 'primary' }}" :type="'link'">
                         <x-lucide-plus class="size-3"/>
                         <span class="xs:block">Tambah </span>
+                    </x-elements.button>
+                </div>
+                <div>
+                    <x-elements.button :href="route('main.tabungan.export')" button-type="{{ 'primary' }}" :type="'link'">
+                        <x-lucide-folder-input class="size-3"/>
+                        <span class="xs:block">Export </span>
                     </x-elements.button>
                 </div>
             </div>
         </div>
     </div>
     <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200">
-
+        <livewire:page.main.tabungan.tabungan-table />
     </div>
 </div>

@@ -1,27 +1,34 @@
 <?php
 
-namespace App\Livewire\Page\Tabungan;
+namespace App\Livewire\Page\Main\Tabungan;
 
 use Livewire\Component;
+use Illuminate\Database\QueryException;
 
-class TabunganList extends Component
+use App\Traits\MyAlert;
+use App\Models\Main\TabunganModels;
+
+class TabunganCreate extends Component
 {
+    use MyAlert;
+
     public $breadcrumb;
     public $titlePage;
     public $menuCode;
 
     public function mount() {
-        $this->titlePage = 'Tabungan';
+        $this->titlePage = 'Tambah Tabungan Anggota';
         $this->menuCode = 'tabungan';
         $this->breadcrumb = [
             ['link' => null, 'label' => 'Tabungan'],
-            ['link' => route('tabungan.list'), 'label' => 'List']
+            ['link' => route('main.tabungan.list'), 'label' => 'List'],
+            ['link' => route('main.tabungan.create'), 'label' => 'Create']
         ];
     }
 
     public function render()
     {
-        return view('livewire.page.tabungan.tabungan-list')
+        return view('livewire.page.main.tabungan.tabungan-create')
         ->layoutData([
             'title' => $this->titlePage, //Page Title
             'breadcrumbs' => $this->breadcrumb,

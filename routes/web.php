@@ -7,8 +7,12 @@ use App\Livewire\Page\Master\Anggota\AnggotaList;
 use App\Livewire\Page\Master\Anggota\AnggotaCreate;
 use App\Livewire\Page\Master\Anggota\AnggotaShow;
 use App\Livewire\Page\Master\Anggota\AnggotaEdit;
-use App\Livewire\Page\Tabungan\TabunganList;
-use App\Livewire\Page\Tagihan\TagihanList;
+use App\Livewire\Page\Main\Tabungan\TabunganList;
+use App\Livewire\Page\Main\Tabungan\TabunganCreate;
+use App\Livewire\Page\Main\Tabungan\TabunganShow;
+use App\Livewire\Page\Main\Tabungan\TabunganExport;
+use App\Livewire\Page\Main\Tagihan\TagihanList;
+use App\Livewire\Page\Main\Tagihan\TagihanShow;
 use App\Livewire\Page\User\UserList;
 use App\Livewire\Page\User\UserEdit;
 use App\Livewire\Page\User\UserCreate;
@@ -42,10 +46,16 @@ Route::middleware([
             Route::get('edit/{id}', AnggotaEdit::class)->name('master.anggota.edit');
         });
     });
-    Route::prefix('tabungan')->group(function () {
-        Route::get('list', TabunganList::class)->name('tabungan.list');
-    });
-    Route::prefix('tagihan')->group(function () {
-        Route::get('list', TagihanList::class)->name('tagihan.list');
+    Route::prefix('main')->group(function () {
+        Route::prefix('tabungan')->group(function () {
+            Route::get('list', TabunganList::class)->name('main.tabungan.list');
+            Route::get('create', TabunganCreate::class)->name('main.tabungan.create');
+            Route::get('export', TabunganExport::class)->name('main.tabungan.export');
+            Route::get('show/{id}', TabunganShow::class)->name('main.tabungan.show');
+        });
+        Route::prefix('tagihan')->group(function () {
+            Route::get('list', TagihanList::class)->name('main.tagihan.list');
+            Route::get('show/{id}', TagihanShow::class)->name('main.tagihan.show');
+        });
     });
 });
