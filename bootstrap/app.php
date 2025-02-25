@@ -16,8 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'authenticate' => Authenticate::class,
-            'guest' => RedirectIfAuthenticated::class
+            'guest' => RedirectIfAuthenticated::class,
         ]);
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

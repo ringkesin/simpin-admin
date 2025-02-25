@@ -52,6 +52,10 @@
     php artisan db:seed
     ```
 
+    ```
+    php artisan passport:client --personal
+    ```
+
     Note : Jika ingin refresh data (mereset ulang data, biasanya karena bikin tabel baru atau membuat seed baru), lakukan ini :
 
     ```
