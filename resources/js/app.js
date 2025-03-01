@@ -1,5 +1,6 @@
 import './bootstrap';
 import 'preline';
+import $ from 'jquery';
 import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
 import Swal from 'sweetalert2';
 window.Swal = Swal;

@@ -17,7 +17,68 @@
                         <span class="xs:block">Back to list page</span>
                     </x-button>
                 </div>
+                <div>
+                    <x-elements.button :href="'#'" :variant="'secondary'" :style="'outlined'" :type="'link'" wire:click='downloadTemplate'>
+                        <x-lucide-download class="size-5"/>
+                        <span class="xs:block">Download Template Excel</span>
+                    </x-elements.button>
+                </div>
             </div>
         </div>
+        <div
+            class="p-6 text-center border-2 border-gray-300 border-dashed cursor-pointer"
+            x-data="{ isDragging: false }"
+            x-on:dragover.prevent="isDragging = true"
+            x-on:dragleave.prevent="isDragging = false"
+            x-on:drop.prevent="isDragging = false"
+            x-on:drop="
+                let files = event.dataTransfer.files;
+                $wire.upload('files', files);
+            "
+            x-on:click="document.getElementById('fileInput').click()"
+        >
+            <input type="file" wire:model="files" class="hidden" id="fileInput">
+            <label for="fileInput" class="block text-gray-600 cursor-pointer">
+                Seret & Lepaskan file di sini atau klik untuk memilih
+            </label>
+        </div>
+
+        <!-- Menampilkan daftar nama file yang telah dipilih -->
+        @if ($files)
+            <div class="grid grid-cols-6 gap-4 mt-4">
+                <div class="col-span-4 col-start-1">
+                    <h3 class="font-semibold text-gray-700">File yang Dipilih:</h3>
+                    <ul class="list-disc list-inside">
+                        <li class="text-gray-600">{{ $files->getClientOriginalName() }}</li>
+                        {{-- @foreach ($files as $file)
+                            <li class="text-gray-600">{{ $file->getClientOriginalName() }}</li>
+                        @endforeach --}}
+                    </ul>
+                </div>
+                <div class="col-span-2 col-end-7">
+                    <div class="flex justify-end">
+                        <x-elements.button-submit wire:loading.attr="disabled" wire:click='uploadFiles'>
+                            <div wire:loading wire:target="uploadFiles">
+                                {{-- <svg class="w-5 h-5 mr-3 animate-spin" viewBox="0 0 24 24"> --}}
+                                    {{-- <span class="sr-only">Loading Save Data</span> --}}
+                                {{-- </svg> --}}
+                                <span class="me-1 animate-spin inline-block size-3 border-[2px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
+                                    <span class="sr-only">Processing.....</span>
+                                </span>
+                                <span class="xs:block">
+                                    Processing
+                                </span>
+                            </div>
+                            <div class='flex gap-x-1' wire:loading.remove wire:target="uploadFiles">
+                                <x-lucide-square-pen class="size-5"/>
+                                <span class="xs:block">
+                                    Upload data
+                                </span>
+                            </div>
+                        </x-elements.button-submit>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 </div>

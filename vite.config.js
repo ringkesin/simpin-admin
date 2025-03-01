@@ -9,9 +9,14 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-    // css: {
-    //     postcss: {
-    //       plugins: [tailwindcss()],
-    //     },
-    // },
+    resolve: {
+        alias: {
+            jquery: 'jquery/dist/jquery.min.js'
+        }
+    },
+    css: {
+        postcss: {
+          plugins: [tailwindcss()],
+        },
+    },
 });

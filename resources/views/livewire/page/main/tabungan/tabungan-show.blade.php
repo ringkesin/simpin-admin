@@ -18,8 +18,7 @@
                     </x-button>
                 </div>
                 <div>
-
-                    <x-elements.button :href="route('user.edit', $id)" :variant="'secondary'" :style="'outlined'" :type="'link'">
+                    <x-elements.button :href="route('main.tabungan.edit', $id)" :variant="'secondary'" :style="'outlined'" :type="'link'">
                         <x-lucide-square-pen class="size-5"/>
                         <span class="xs:block">Update</span>
                     </x-elements.button>
