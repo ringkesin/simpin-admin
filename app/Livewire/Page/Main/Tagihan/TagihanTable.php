@@ -1,21 +1,24 @@
 <?php
 
-namespace App\Livewire\Page\Master\Anggota;
+namespace App\Livewire\Page\Main\Tagihan;
 
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use App\Models\Master\AnggotaModels;
+use App\Models\Main\TagihanModels;
+use App\Traits\MyHelpers;
 
-class AnggotaTable extends DataTableComponent
+class TagihanTable extends DataTableComponent
 {
-    protected $model = AnggotaModels::class;
+    protected $model = TagihanModels::class;
+
+    use MyHelpers;
 
     public function configure(): void
     {
-        $this->setPrimaryKey('p_anggota_id')
+        $this->setPrimaryKey('t_tagihan_id')
         ->setTableRowUrl(function($row) {
-            return route('master.anggota.show', ['id' => $row->p_anggota_id]);
+            return route('main.tagihan.show', ['id' => $row->t_tagihan_id]);
         });
         $this->setComponentWrapperAttributes([
             'default' => true,
@@ -59,27 +62,48 @@ class AnggotaTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("ID", "p_anggota_id")
+            Column::make("ID", "t_tagihan_id")
                 ->sortable()
                 ->searchable(),
-            Column::make("Nomor Anggota", "nomor_anggota")
+            Column::make("Nomor Anggota", "masterAnggota.nomor_anggota")
                 ->sortable()
                 ->searchable(),
-            Column::make("Nama", "nama")
+            Column::make("Nama", "masterAnggota.nama")
                 ->sortable()
                 ->searchable(),
-            Column::make("Valid from", "valid_from")
+            Column::make("Bulan", "bulan")
+                ->sortable()
+                ->searchable(),
+            Column::make("Tahun", "tahun")
+                ->sortable()
+                ->searchable(),
+            Column::make("Uraian", "uraian")
                 ->sortable(),
-            Column::make("Valid to", "valid_to")
-                ->sortable(),
+            Column::make("Jumlah", "jumlah")
+                ->sortable()
+                ->format(function ($value, $column, $row) {
+                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
+                }),
         ];
     }
 
-    // public function bulkActions(): array
-    // {
-    //     return [
-    //         'activate' => 'Activate',
-    //         'deactivate' => 'Deactivate',
-    //     ];
-    // }
+    public function bulkActions(): array
+    {
+        return [
+            'delete' => 'Delete',
+        ];
+    }
+
+    /**
+     * Fungsi hapus data
+     *
+     */
+    public function delete()
+    {
+        foreach ($this->getSelected() as $id) {
+            TagihanModels::where('t_tagihan_id', $id)
+                ->delete();
+        }
+        $this->clearSelected();
+    }
 }

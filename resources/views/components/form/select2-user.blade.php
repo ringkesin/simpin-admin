@@ -53,9 +53,9 @@
     " wire:ignore {{ $attributes->merge(['class' => 'flex items-center rounded-lg overflow-hidden shadow-sm']) }}>
         {{-- Select Dropdown --}}
         <select
-            {{ $disabled ? 'disabled' : '' }}  
+            {{ $disabled ? 'disabled' : '' }}
             {{ $attributes->merge(['class' => 'single-select select2']) }}
-            @isset($name) name="{{ $name }}" @endif 
+            @isset($name) name="{{ $name }}" @endif
             @if ($id != '') id="{{ $id }}" @endif>
             {{ $slot }}
         </select>
@@ -63,10 +63,10 @@
 
     {{-- Error Tooltip --}}
     @if ($errors->has($name))
-    <div class="absolute inset-y-0 flex items-center end-0 pe-3 cursor-pointer w-auto">
+    <div class="absolute inset-y-0 flex items-center w-auto cursor-pointer end-0 pe-3">
         <div class="relative group">
             <x-ph-warning-circle class="text-red-500"/>
-            <div class="absolute hidden group-hover:block bg-rose-500 text-white text-xs rounded px-4 py-2 left-1/2 -translate-x-1/2 top-full mt-1 z-10 w-auto text-center">
+            <div class="absolute z-10 hidden w-auto px-4 py-2 mt-1 text-xs text-center text-white -translate-x-1/2 rounded group-hover:block bg-rose-500 left-1/2 top-full">
                 {{ $errors->first($name) }}
             </div>
         </div>

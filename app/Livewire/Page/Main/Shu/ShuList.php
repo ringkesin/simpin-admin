@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Livewire\Page\Tabungan;
+namespace App\Livewire\Page\Main\Shu;
 
 use Livewire\Component;
 
-class TabunganList extends Component
+class ShuList extends Component
 {
     public $breadcrumb;
     public $titlePage;
     public $menuCode;
 
     public function mount() {
-        $this->titlePage = 'Tabungan';
-        $this->menuCode = 'tabungan';
+        $this->titlePage = 'SHU';
+        $this->menuCode = 'shu';
         $this->breadcrumb = [
-            ['link' => null, 'label' => 'Tabungan'],
-            ['link' => route('tabungan.list'), 'label' => 'List']
+            ['link' => null, 'label' => 'SHU'],
+            ['link' => route('main.shu.list'), 'label' => 'List']
         ];
     }
 
     public function render()
     {
-        return view('livewire.page.tabungan.tabungan-list')
+        return view('livewire.page.main.shu.shu-list')
         ->layoutData([
             'title' => $this->titlePage, //Page Title
             'breadcrumbs' => $this->breadcrumb,
