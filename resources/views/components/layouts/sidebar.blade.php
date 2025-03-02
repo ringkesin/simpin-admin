@@ -59,6 +59,20 @@
                             </a>
                         </li>
 
+                        <li>
+                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pinjaman' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('main.tagihan.list')}}">
+                                <x-lucide-banknote class="size-4"/>
+                                Pinjaman
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'shu' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('main.tagihan.list')}}">
+                                <x-lucide-badge-percent class="size-4"/>
+                                SHU
+                            </a>
+                        </li>
+
                         <li class="hs-accordion" id="master-accordion">
                             <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 focus:outline-none focus:bg-gray-100" aria-expanded="true" aria-controls="master-accordion-collapse-1">
                                 <x-lucide-database class="size-4"/>

@@ -108,8 +108,20 @@ class TabunganTable extends DataTableComponent
     public function bulkActions(): array
     {
         return [
-            'activate' => 'Activate',
-            'deactivate' => 'Deactivate',
+            'delete' => 'Delete',
         ];
+    }
+
+    /**
+     * Fungsi hapus data
+     *
+     */
+    public function delete()
+    {
+        foreach ($this->getSelected() as $id) {
+            TabunganModels::where('t_tabungan_id', $id)
+                ->delete();
+        }
+        $this->clearSelected();
     }
 }

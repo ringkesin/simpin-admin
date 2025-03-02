@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('p_anggota_id');
             $table->mediumText('uraian');
             $table->double('jumlah', 15, 2);
-            $table->mediumText('remarks');
+            $table->mediumText('remarks')->nullable();
             $table->integer('bulan');
             $table->integer('tahun');
             $table->timestamps($precision = 0);

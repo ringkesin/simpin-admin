@@ -7,11 +7,17 @@
             </h1>
         </div>
         <div>
-            <div class="flex justify-end">
+            <div class="flex justify-end gap-3">
                 <div>
-                    <x-elements.button :href="route('master.anggota.create')" button-type="{{ 'primary' }}" :type="'link'">
+                    <x-elements.button :href="route('main.tagihan.create')" button-type="{{ 'primary' }}" :type="'link'">
                         <x-lucide-plus class="size-3"/>
                         <span class="xs:block">Tambah </span>
+                    </x-elements.button>
+                </div>
+                <div>
+                    <x-elements.button :href="route('main.tagihan.export')" button-type="{{ 'primary' }}" :type="'link'">
+                        <x-lucide-folder-input class="size-3"/>
+                        <span class="xs:block">Export </span>
                     </x-elements.button>
                 </div>
             </div>

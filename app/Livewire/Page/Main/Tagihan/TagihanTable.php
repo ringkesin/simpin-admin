@@ -62,7 +62,7 @@ class TagihanTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("ID", "t_tabungan_id")
+            Column::make("ID", "t_tagihan_id")
                 ->sortable()
                 ->searchable(),
             Column::make("Nomor Anggota", "masterAnggota.nomor_anggota")
@@ -90,8 +90,20 @@ class TagihanTable extends DataTableComponent
     public function bulkActions(): array
     {
         return [
-            'activate' => 'Activate',
-            'deactivate' => 'Deactivate',
+            'delete' => 'Delete',
         ];
+    }
+
+    /**
+     * Fungsi hapus data
+     *
+     */
+    public function delete()
+    {
+        foreach ($this->getSelected() as $id) {
+            TagihanModels::where('t_tagihan_id', $id)
+                ->delete();
+        }
+        $this->clearSelected();
     }
 }

@@ -75,11 +75,11 @@ class AnggotaTable extends DataTableComponent
         ];
     }
 
-    public function bulkActions(): array
-    {
-        return [
-            'activate' => 'Activate',
-            'deactivate' => 'Deactivate',
-        ];
-    }
+    // public function bulkActions(): array
+    // {
+    //     return [
+    //         'activate' => 'Activate',
+    //         'deactivate' => 'Deactivate',
+    //     ];
+    // }
 }

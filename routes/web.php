@@ -13,7 +13,10 @@ use App\Livewire\Page\Main\Tabungan\TabunganShow;
 use App\Livewire\Page\Main\Tabungan\TabunganEdit;
 use App\Livewire\Page\Main\Tabungan\TabunganExport;
 use App\Livewire\Page\Main\Tagihan\TagihanList;
+use App\Livewire\Page\Main\Tagihan\TagihanCreate;
 use App\Livewire\Page\Main\Tagihan\TagihanShow;
+use App\Livewire\Page\Main\Tagihan\TagihanEdit;
+use App\Livewire\Page\Main\Tagihan\TagihanExport;
 use App\Livewire\Page\User\UserList;
 use App\Livewire\Page\User\UserEdit;
 use App\Livewire\Page\User\UserCreate;
@@ -57,7 +60,10 @@ Route::middleware([
         });
         Route::prefix('tagihan')->group(function () {
             Route::get('list', TagihanList::class)->name('main.tagihan.list');
+            Route::get('create', TagihanCreate::class)->name('main.tagihan.create');
+            Route::get('export', TagihanExport::class)->name('main.tagihan.export');
             Route::get('show/{id}', TagihanShow::class)->name('main.tagihan.show');
+            Route::get('edit/{id}', TagihanEdit::class)->name('main.tagihan.edit');
         });
     });
 });
