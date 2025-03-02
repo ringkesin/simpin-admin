@@ -17,6 +17,11 @@ use App\Livewire\Page\Main\Tagihan\TagihanCreate;
 use App\Livewire\Page\Main\Tagihan\TagihanShow;
 use App\Livewire\Page\Main\Tagihan\TagihanEdit;
 use App\Livewire\Page\Main\Tagihan\TagihanExport;
+use App\Livewire\Page\Main\Shu\ShuList;
+use App\Livewire\Page\Main\Shu\ShuCreate;
+use App\Livewire\Page\Main\Shu\ShuShow;
+use App\Livewire\Page\Main\Shu\ShuEdit;
+use App\Livewire\Page\Main\Shu\ShuExport;
 use App\Livewire\Page\User\UserList;
 use App\Livewire\Page\User\UserEdit;
 use App\Livewire\Page\User\UserCreate;
@@ -64,6 +69,13 @@ Route::middleware([
             Route::get('export', TagihanExport::class)->name('main.tagihan.export');
             Route::get('show/{id}', TagihanShow::class)->name('main.tagihan.show');
             Route::get('edit/{id}', TagihanEdit::class)->name('main.tagihan.edit');
+        });
+        Route::prefix('shu')->group(function () {
+            Route::get('list', ShuList::class)->name('main.shu.list');
+            Route::get('create', ShuCreate::class)->name('main.shu.create');
+            Route::get('export', ShuExport::class)->name('main.shu.export');
+            Route::get('show/{id}', ShuShow::class)->name('main.shu.show');
+            Route::get('edit/{id}', ShuEdit::class)->name('main.shu.edit');
         });
     });
 });

@@ -47,13 +47,8 @@
 
     {{-- Error Tooltip --}}
     @if ($errors->has($name))
-    <div class="absolute inset-y-0 flex items-center w-auto cursor-pointer end-0 pe-3">
-        <div class="relative group">
-            <x-ph-warning-circle class="text-red-500"/>
-            <div class="absolute z-10 hidden w-auto px-4 py-2 mt-1 text-xs text-center text-white -translate-x-1/2 rounded group-hover:block bg-rose-500 left-1/2 top-full">
-                {{ $errors->first($name) }}
-            </div>
+        <div {{ $attributes->class(["w-auto px-3 py-1 text-xs text-center text-white rounded group-hover:block bg-rose-500 top-full"])}}>
+            {{ $errors->first($name) }}
         </div>
-    </div>
     @endif
 </div>

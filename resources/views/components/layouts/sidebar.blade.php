@@ -33,7 +33,7 @@
                 <div class="flex flex-col flex-wrap w-full px-2 pb-0 hs-accordion-group" data-hs-accordion-always-open>
                     <ul class="space-y-1">
                         <li class='py-2'>
-                            <h3 class="pl-3 text-xs font-semibold uppercase text-slate-500">
+                            <h3 class="pl-3 text-xs font-semibold uppercase text-slate-400">
                                 {{-- <span class="hidden w-6 text-center lg:block lg:sidebar-expanded:hidden 2xl:hidden" aria-hidden="true">•••</span> --}}
                                 <span class="lg:sidebar-expanded:block 2xl:block">Menu</span>
                             </h3>
@@ -67,7 +67,7 @@
                         </li>
 
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'shu' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('main.tagihan.list')}}">
+                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'shu' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('main.shu.list')}}">
                                 <x-lucide-badge-percent class="size-4"/>
                                 SHU
                             </a>
@@ -93,7 +93,7 @@
                         </li>
 
                         <li class='py-2'>
-                            <h3 class="pl-3 text-xs font-semibold uppercase text-slate-500">
+                            <h3 class="pl-3 text-xs font-semibold uppercase text-slate-400">
                                 {{-- <span class="hidden w-6 text-center lg:block lg:sidebar-expanded:hidden 2xl:hidden" aria-hidden="true">•••</span> --}}
                                 <span class="lg:sidebar-expanded:block 2xl:block">Configuration</span>
                             </h3>
