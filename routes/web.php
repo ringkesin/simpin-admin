@@ -26,6 +26,10 @@ use App\Livewire\Page\User\UserList;
 use App\Livewire\Page\User\UserEdit;
 use App\Livewire\Page\User\UserCreate;
 use App\Livewire\Page\User\UserShow;
+use App\Livewire\Page\Master\Simulasi\SimulasiList;
+use App\Livewire\Page\Master\Simulasi\SimulasiShow;
+//use App\Livewire\Page\Master\Anggota\AnggotaShow;
+//use App\Livewire\Page\Master\Anggota\AnggotaEdit;
 
 // Route::get('/', function () {
 //     return redirect()->route('dashboard');
@@ -53,6 +57,13 @@ Route::middleware([
             Route::get('create', AnggotaCreate::class)->name('master.anggota.create');
             Route::get('show/{id}', AnggotaShow::class)->name('master.anggota.show');
             Route::get('edit/{id}', AnggotaEdit::class)->name('master.anggota.edit');
+        });
+
+        Route::prefix('simulasi')->group(function () {
+            Route::get('list', SimulasiList::class)->name('master.simulasi.list');
+        //    Route::get('create', SimulasiCreate::class)->name('master.simulasi.create');
+            Route::get('show/{id}', SimulasiShow::class)->name('master.simulasi.show');
+        //    Route::get('edit/{id}', SimulasiEdit::class)->name('master.simulasi.edit');
         });
     });
     Route::prefix('main')->group(function () {
