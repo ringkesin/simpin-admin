@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Master\SimulasiPinjamanModel;
 
-class SimulasiPinjamanSeeder extends Seeder
+class TabunganAnggotaSeeder extends Seeder
 {
      protected $data = [
                             ['pinjaman' => 5000000, 'tenor' => 12, 'margin' => 6.91, 'angsuran' => 445458, 'tahun_margin' => 2025],
