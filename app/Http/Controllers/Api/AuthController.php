@@ -5,33 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Api\BaseController;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends BaseController
 {
-    // **API Registration**
-    // public function register(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|string|email|max:255|unique:users',
-    //         'password' => 'required|string|min:8',
-    //     ]);
-
-    //     $user = User::create([
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'password' => Hash::make($request->password),
-    //     ]);
-
-    //     return response()->json([
-    //         'token' => $user->createToken('api-token')->plainTextToken,
-    //         'user' => $user
-    //     ]);
-    // }
-
     // **API Login**
     public function apiLogin(Request $request)
     {
@@ -59,35 +36,27 @@ class AuthController extends BaseController
     public function apiLogout(Request $request)
     {
         $request->user()->tokens()->delete();
-        // return response()->json(['message' => 'Logged out successfully']);
         return $this->sendResponse([], 'Successfully logged out.');
     }
 
-    // // **Web Login (Session-based)**
-    // public function webLogin(Request $request)
-    // {
-    //     $credentials = $request->validate([
-    //         'username' => 'required|username',
-    //         'password' => 'required',
-    //     ]);
+    // **API Logout**
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
 
-    //     if (Auth::attempt($credentials)) {
-    //         $request->session()->regenerate();
-    //         return redirect()->intended('/dashboard'); // Redirect to dashboard
-    //     }
+        $user = $request->user();
 
-    //     return back()->withErrors([
-    //         'email' => 'Invalid credentials',
-    //     ]);
-    // }
+        if (!Hash::check($request->current_password, $user->password)) {
+            return $this->sendError('Current password is incorrect', [], 400);
+        }
 
-    // // **Web Logout**
-    // public function webLogout(Request $request)
-    // {
-    //     Auth::logout();
-    //     $request->session()->invalidate();
-    //     $request->session()->regenerateToken();
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
 
-    //     return redirect('/login');
-    // }
+        return $this->sendResponse([], 'Password changed successfully');
+    }
 }
