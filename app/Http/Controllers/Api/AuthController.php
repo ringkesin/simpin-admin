@@ -2,58 +2,92 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\BaseController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
-    public function login(Request $request)
+    // **API Registration**
+    // public function register(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|string|email|max:255|unique:users',
+    //         'password' => 'required|string|min:8',
+    //     ]);
+
+    //     $user = User::create([
+    //         'name' => $request->name,
+    //         'email' => $request->email,
+    //         'password' => Hash::make($request->password),
+    //     ]);
+
+    //     return response()->json([
+    //         'token' => $user->createToken('api-token')->plainTextToken,
+    //         'user' => $user
+    //     ]);
+    // }
+
+    // **API Login**
+    public function apiLogin(Request $request)
     {
         $request->validate([
-            'username' => 'required',
+            'username' => 'required|string', 
             'password' => 'required',
         ]);
+    
+        $user = User::where('username', $request->username)->first();
 
-        if (!Auth::attempt($request->only('username', 'password'))) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return $this->sendError('Unauthorized', ['error' => 'The provided credentials are incorrect.'], 401);
+        }   
 
-        $user = Auth::user();
-        $token = $user->createToken('simpin')->accessToken;
+        //check role untuk mendefine state = anggota / admin
+        $token = $user->createToken('api-token',['state:anggota'])->plainTextToken;
 
-        return response()->json([
-            'message' => 'Login successful',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user,
-        ]);
-
-        // $client = \Laravel\Passport\Client::where('password_client', true)->first();
-
-        // if (!$client) {
-        //     return response()->json(['error' => 'OAuth client not found'], 500);
-        // }
-        // // $url = config('app.url');
-        // $url = '127.0.0.1:8000';
-        // // return $url;
-
-        // $response = Http::asForm()->post($url . '/oauth/token', [
-        //     'grant_type' => 'password',
-        //     'client_id' => $client->id,
-        //     'client_secret' => $client->secret,
-        //     'username' => $request->email,
-        //     'password' => $request->password,
-        //     'scope' => '',
-        // ]);
+        return $this->sendResponse(
+            ['token' => $token, 'user' => $user], 
+            'Login successful.'
+        );
     }
 
-    public function logout(Request $request)
+    // **API Logout**
+    public function apiLogout(Request $request)
     {
         $request->user()->tokens()->delete();
-
-        return response()->json(['message' => 'Logged out successfully']);
+        // return response()->json(['message' => 'Logged out successfully']);
+        return $this->sendResponse([], 'Successfully logged out.');
     }
+
+    // // **Web Login (Session-based)**
+    // public function webLogin(Request $request)
+    // {
+    //     $credentials = $request->validate([
+    //         'username' => 'required|username',
+    //         'password' => 'required',
+    //     ]);
+
+    //     if (Auth::attempt($credentials)) {
+    //         $request->session()->regenerate();
+    //         return redirect()->intended('/dashboard'); // Redirect to dashboard
+    //     }
+
+    //     return back()->withErrors([
+    //         'email' => 'Invalid credentials',
+    //     ]);
+    // }
+
+    // // **Web Logout**
+    // public function webLogout(Request $request)
+    // {
+    //     Auth::logout();
+    //     $request->session()->invalidate();
+    //     $request->session()->regenerateToken();
+
+    //     return redirect('/login');
+    // }
 }

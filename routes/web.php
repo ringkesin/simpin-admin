@@ -35,10 +35,9 @@ use App\Livewire\Page\User\UserShow;
 Route::redirect('/', 'login');
 
 Route::middleware([
-    'auth:sanctum',
+    'auth',
     config('jetstream.auth_session'),
     'verified',
-    'authenticate'
 ])->group(function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::prefix('user')->group(function () {
