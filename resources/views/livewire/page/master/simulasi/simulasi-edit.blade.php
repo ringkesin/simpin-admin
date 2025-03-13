@@ -1,5 +1,5 @@
 <div>
-    {{-- Because she competes with no one, no one can compete with her. --}}
+    {{-- The Master doesn't talk, he acts. --}}
     <div class="grid grid-cols-2 mb-6 xs:grid-cols-1">
         <div>
             <h1 class="mb-1 text-2xl font-bold md:text-3xl text-slate-800">
@@ -12,89 +12,48 @@
         <div class='px-4 py-4 mb-6 border rounded bg-slate-50 border-slate-200'>
             <div class="flex justify-between gap-2">
                 <div>
-                    <x-elements.button :href="route('master.simulasi.list')" :variant="'success'" :style="'outlined'" :type="'link'">
+                    <x-elements.button :href="route('master.anggota.show', ['id' => $loadData['p_anggota_id']])" :variant="'success'" :style="'outlined'" :type="'link'">
                         <x-lucide-arrow-left class="size-5"/>
-                        <span class="xs:block">Back to list page</span>
+                        <span class="xs:block">Back to view page</span>
                     </x-button>
-                </div>
-                <div>
-
-                    <x-elements.button :href="route('master.simulasi.edit', $id)" :variant="'secondary'" :style="'outlined'" :type="'link'">
-                        <x-lucide-square-pen class="size-5"/>
-                        <span class="xs:block">Update</span>
-                    </x-elements.button>
-
-                    @if(empty($loadData['user_id']))
-                    <x-elements.button :variant="'primary'" :style="'outlined'" :type="'button'" wire:click="registerUser" wire:loading.attr="disabled" >
-                        <div class='flex gap-x-1' >
-                            <x-lucide-user-plus class="size-5" wire:loading.remove wire:target="registerUser"/>
-                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="registerUser">
-                                <span class="sr-only">Processing.....</span>
-                            </span>
-                            <span class="xs:block">Create User</span>
-                        </div>
-                    </x-elements.button>
-                    @else
-                    <x-elements.button :href="'#'" :variant="'warning'" :style="'outlined'" :type="'button'" wire:click="resetUser"  wire:loading.attr="disabled">
-                        <div class='flex gap-x-1' >
-                            <x-lucide-rotate-ccw class="size-5" wire:loading.remove wire:target="resetUser"/>
-                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="resetUser">
-                                <span class="sr-only">Processing.....</span>
-                            </span>
-                            <span class="xs:block">Reset User</span>
-                        </div>
-                    </x-elements.button>
-                    @endif
-                    {{-- <x-elements.button-href
-                        :href="route('master.anggota.destroy', $attr['data']['id'])"
-                        button-type="{{ 'danger' }}"
-                        class='confirm-delete'
-                    >
-                        <i class="fa-regular fa-trash-can"></i>
-                        <span class="hidden ml-2 xs:block">Delete</span>
-                    </x-elements.button-href> --}}
                 </div>
             </div>
         </div>
-        <div class="mt-5">
-            <div class="grid w-full grid-cols-1 gap-4 px-5 py-5 text-xl font-bold place-items-center">
-                <span>Detail</span>
-            </div>
-            <hr class="px-5 py-5">
+        <form wire:submit="saveUpdate">
             <div class="grid grid-cols-12 gap-10">
                 <!-- Kolom Kiri -->
                 <div class="col-span-12 md:col-span-6">
                     <!-- Group Nomor Anggota -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="p_anggota_id">
-                               Jumlah Pinjaman
+                            <x-form.label for="nomor_anggota">
+                                Nomor Anggota <span class="text-red-500">*</span>
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['pinjaman']}}
+                            <x-form.input class="w-full" type="text" name="nomor_anggota" wire:model.lazy="nomor_anggota"/>
                         </div>
                     </div>
                     <!-- Group Input Nama -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="nama">
-                                Nama Anggota
+                                Nama Anggota <span class="text-red-500">*</span>
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['nama']}}
+                            <x-form.input class="w-full" type="text" name="nama" wire:model.lazy="nama"/>
                         </div>
                     </div>
                     <!-- Group Input NIK -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="nik">
-                                NIK Anggota
+                                NIK Anggota <span class="text-red-500">*</span>
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['nik']}}
+                            <x-form.input class="w-full" type="text" name="nik" wire:model.lazy="nik"/>
                         </div>
                     </div>
                     <!-- Group Input KTP -->
@@ -105,7 +64,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['ktp']}}
+                            <x-form.input class="w-full" type="text" name="ktp" wire:model.lazy="ktp"/>
                         </div>
                     </div>
                     <!-- Group Input Alamat -->
@@ -116,7 +75,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['alamat']}}
+                            <x-form.input class="w-full" type="text" name="alamat" wire:model.lazy="alamat"/>
                         </div>
                     </div>
                     <!-- Group Input Tanggal Lahir -->
@@ -127,7 +86,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['tgl_lahir']}}
+                            <x-form.input class="w-full" type="date" id="tgl_lahir" name="tgl_lahir" :value="''" wire:model.lazy="tgl_lahir"/>
                         </div>
                     </div>
                 </div>
@@ -140,7 +99,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['tanggal_masuk']}}
+                            <x-form.input class="w-full" type="date" id="tanggal_masuk" name="tanggal_masuk" :value="''" wire:model.lazy="tanggal_masuk"/>
                         </div>
                     </div>
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
@@ -150,7 +109,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['valid_from']}}
+                            <x-form.input class="w-full" type="date" id="valid_from" name="valid_from" :value="''" wire:model.lazy="valid_from"/>
                         </div>
                     </div>
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
@@ -160,11 +119,30 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['valid_to']}}
+                            <x-form.input class="w-full" type="date" id="valid_to" name="valid_to" :value="''" wire:model.lazy="valid_to"/>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <x-elements.button-submit class="mt-5" wire:loading.attr="disabled" wire:confirm="Are you sure your data is correct?">
+                <div wire:loading wire:target="saveUpdate">
+                    {{-- <svg class="w-5 h-5 mr-3 animate-spin" viewBox="0 0 24 24"> --}}
+                        {{-- <span class="sr-only">Loading Save Data</span> --}}
+                    {{-- </svg> --}}
+                    <span class="me-1 animate-spin inline-block size-3 border-[2px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
+                        <span class="sr-only">Processing.....</span>
+                    </span>
+                    <span class="xs:block">
+                        Processing
+                    </span>
+                </div>
+                <div class='flex gap-x-1' wire:loading.remove wire:target="saveUpdate">
+                    <x-lucide-square-pen class="size-5"/>
+                    <span class="xs:block">
+                        Update data
+                    </span>
+                </div>
+            </x-elements.button-submit>
+        </form>
     </div>
 </div>
