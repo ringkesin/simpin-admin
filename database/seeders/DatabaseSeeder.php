@@ -26,7 +26,8 @@ class DatabaseSeeder extends Seeder
             MasterAnggotaSeeder::class,
             MasterStatusPengajuanSeeder::class,
             RbacRoleSeeder::class,
-            RbacRoleUserSeeder::class
+            RbacRoleUserSeeder::class,
+            SimulasiPinjamanSeeder::class
         ]);
     }
 }

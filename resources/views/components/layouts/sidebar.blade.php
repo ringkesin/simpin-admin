@@ -88,6 +88,11 @@
                                         Anggota
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm {{$menu_code == 'master-simulasi' ? 'bg-gray-100 pl-5' : ''}} text-gray-700 rounded-lg hover:bg-gray-100 focus:outline-none focus:bg-gray-100" href="{{route('master.simulasi.list')}}">
+                                        Simulasi Pinjaman
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
