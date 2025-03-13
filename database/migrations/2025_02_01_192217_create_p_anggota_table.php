@@ -35,7 +35,7 @@ return new class extends Migration
         });
 
         // Set nilai awal AUTO_INCREMENT ke 100001
-        DB::statement('ALTER TABLE p_anggota AUTO_INCREMENT = 1');
+        //DB::statement('ALTER TABLE p_anggota AUTO_INCREMENT = 1');
     }
 
     /**
