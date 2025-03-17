@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\User;
 
 class AnggotaModels extends Model
 {
@@ -31,6 +32,9 @@ class AnggotaModels extends Model
         'tgl_lahir',
         'p_jenis_kelamin_id',
         'user_id',
+        'email',
+        'mobile',
+        'is_registered',
         'valid_from',
         'valid_to',
         'created_by',

@@ -9,10 +9,12 @@ use App\Models\User;
 use App\Models\Rbac\RoleUserModel;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\MyAlert;
+use App\Traits\MyHelpers;
 
 class AnggotaShow extends Component
 {
     use MyAlert;
+    use MyHelpers;
 
     public $breadcrumb;
     public $titlePage;
@@ -53,9 +55,9 @@ class AnggotaShow extends Component
             try {
                 $postUser = User::create([
                     'username' => $this->loadData['nomor_anggota'],
-                    'email' => $this->loadData['nomor_anggota'].'@kkba.com',
+                    'email' => $this->setIfNull($this->loadData['email'], $this->loadData['nomor_anggota'].'@kkba.com'),
                     'name' => $this->loadData['nama'],
-                    'mobile' => '0899999'.$this->id,
+                    'mobile' => $this->setIfNull($this->loadData['mobile'], '0899999'.$this->id),
                     'password' => Hash::make($this->tglLahir),
                     'valid_from' => $this->loadData['valid_from'],
                     'profile_photo_path' => 'avatar/blank-avatar.png'
@@ -69,7 +71,8 @@ class AnggotaShow extends Component
                     ]);
                     if($createRoleUser) {
                         $updateAnggotaUserId = AnggotaModels::where('p_anggota_id', $this->id)->update([
-                            'user_id' => $postUser['id']
+                            'user_id' => $postUser['id'],
+                            'is_registered' => TRUE
                         ]);
                         if($updateAnggotaUserId) {
                             $redirect = route('master.anggota.show', ['id' => $this->id]);

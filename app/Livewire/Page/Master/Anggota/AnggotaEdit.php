@@ -19,6 +19,8 @@ class AnggotaEdit extends Component
     public $id;
     public $nomor_anggota;
     public $nama;
+    public $email;
+    public $mobile;
     public $nik;
     public $ktp;
     public $alamat;
@@ -26,6 +28,7 @@ class AnggotaEdit extends Component
     public $tanggal_masuk;
     public $valid_from;
     public $valid_to;
+    public $is_registered;
 
     public function mount($id) {
         $this->titlePage = 'Update Master Anggota';
@@ -46,6 +49,8 @@ class AnggotaEdit extends Component
         $this->loadData = $data;
         $this->nomor_anggota = $this->loadData['nomor_anggota'];
         $this->nama = $this->loadData['nama'];
+        $this->email = $this->loadData['email'];
+        $this->mobile = $this->loadData['mobile'];
         $this->nik = $this->loadData['nik'];
         $this->ktp = $this->loadData['ktp'];
         $this->alamat = $this->loadData['alamat'];
@@ -53,6 +58,7 @@ class AnggotaEdit extends Component
         $this->tanggal_masuk = $this->loadData['tanggal_masuk'];
         $this->valid_from = $this->loadData['valid_from'];
         $this->valid_to = $this->loadData['valid_to'];
+        $this->is_registered = $this->loadData['is_registered'];
     }
 
     public function saveUpdate() {
@@ -85,17 +91,20 @@ class AnggotaEdit extends Component
             $post = AnggotaModels::where('p_anggota_id', $this->id)->update([
                 'nomor_anggota' => $this->nomor_anggota,
                 'nama' => $this->nama,
+                'email' => $this->email,
+                'mobile' => $this->mobile,
                 'nik' => $this->nik,
                 'ktp' => $this->ktp,
                 'tgl_lahir' => $this->tgl_lahir,
                 'alamat' => $this->alamat,
                 'tanggal_masuk' => $this->tanggal_masuk,
                 'valid_from' => $this->valid_from,
-                'valid_to' => $this->valid_to
+                'valid_to' => $this->valid_to,
+                'is_registered' => $this->is_registered
             ]);
 
             if($post) {
-                $redirect = route('master.anggota.show', ['id' => $post]);
+                $redirect = route('master.anggota.show', ['id' => $this->id]);
                 $this->sweetalert([
                     'icon' => 'success',
                     'confirmButtonText' => 'Okay',
