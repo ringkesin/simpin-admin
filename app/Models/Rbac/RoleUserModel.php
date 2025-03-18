@@ -34,6 +34,14 @@ class RoleUserModel extends Model
         'updated_by'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'valid_from' => 'date',
+            'valid_until' => 'date',
+        ];
+    }
+
     public function role(): HasOne
     {
         return $this->hasOne(RoleModel::class, 'id', 'role_id');

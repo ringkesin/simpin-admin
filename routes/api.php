@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
-// ->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'apiLogout']);
