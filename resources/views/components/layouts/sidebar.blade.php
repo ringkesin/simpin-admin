@@ -39,35 +39,35 @@
                             </h3>
                         </li>
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'dashboard' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('dashboard')}}">
+                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'dashboard' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('dashboard')}}">
                                 <x-lucide-home class="size-4"/>
                                 Dashboard
                             </a>
                         </li>
 
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tabungan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.tabungan.list')}}">
+                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tabungan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.tabungan.list')}}">
                                 <x-lucide-landmark class="size-4"/>
                                 Tabungan
                             </a>
                         </li>
 
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tagihan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.tagihan.list')}}">
+                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tagihan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.tagihan.list')}}">
                                 <x-lucide-credit-card class="size-4"/>
                                 Tagihan
                             </a>
                         </li>
 
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pinjaman' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.pinjaman.list')}}">
+                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pinjaman' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.pinjaman.list')}}">
                                 <x-lucide-banknote class="size-4"/>
                                 Pinjaman
                             </a>
                         </li>
 
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'shu' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.shu.list')}}">
+                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'shu' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.shu.list')}}">
                                 <x-lucide-badge-percent class="size-4"/>
                                 SHU
                             </a>
@@ -84,12 +84,12 @@
                             <div id="master-accordion-collapse-1" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 {{ (in_array($menu_code, ['master-anggota','master-simulasi'])) ? '' : 'hidden'}}" role="region" aria-labelledby="master-accordion">
                                 <ul class="pt-1 space-y-1 ps-7">
                                     <li>
-                                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm {{$menu_code == 'master-anggota' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} rounded-lg" href="{{route('master.anggota.list')}}">
+                                        <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 text-sm {{$menu_code == 'master-anggota' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} rounded-lg" href="{{route('master.anggota.list')}}">
                                         Anggota
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm {{$menu_code == 'master-simulasi' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} rounded-lg" href="{{route('master.simulasi.list')}}">
+                                        <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 text-sm {{$menu_code == 'master-simulasi' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} rounded-lg" href="{{route('master.simulasi.list')}}">
                                         Simulasi Pinjaman
                                         </a>
                                     </li>
@@ -104,7 +104,7 @@
                             </h3>
                         </li>
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'user' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('user.list')}}">
+                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'user' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('user.list')}}">
                                 <x-lucide-user class="size-4"/>
                                 User
                             </a>

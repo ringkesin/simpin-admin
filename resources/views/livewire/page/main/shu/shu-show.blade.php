@@ -12,13 +12,13 @@
         <div class='px-4 py-4 mb-6 border rounded bg-slate-50 border-slate-200'>
             <div class="flex justify-between gap-2">
                 <div>
-                    <x-elements.button :href="route('main.shu.list')" :variant="'success'" :style="'outlined'" :type="'link'">
+                    <x-elements.button wire:navigate :href="route('main.shu.list')" :variant="'success'" :style="'outlined'" :type="'link'">
                         <x-lucide-arrow-left class="size-5"/>
                         <span class="xs:block">Back to list page</span>
                     </x-button>
                 </div>
                 <div>
-                    <x-elements.button :href="route('main.shu.edit', $id)" :variant="'secondary'" :style="'outlined'" :type="'link'">
+                    <x-elements.button wire:navigate :href="route('main.shu.edit', $id)" :variant="'secondary'" :style="'outlined'" :type="'link'">
                         <x-lucide-square-pen class="size-5"/>
                         <span class="xs:block">Update</span>
                     </x-elements.button>
