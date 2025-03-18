@@ -9,7 +9,7 @@
             <li class="flex items-center text-sm">
                 <a class="
                     flex items-center
-                    text-gray-800
+                    text-slate-800
                    
                     hover:text-blue-600
                    
@@ -21,7 +21,7 @@
                 </a>
 
                 @if(!$loop->last)
-                <svg class="flex-shrink-0 w-5 h-5 mx-1 text-gray-400" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <svg class="flex-shrink-0 w-5 h-5 mx-1 text-slate-400" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path d="M6 13L10 3" stroke="currentColor" stroke-linecap="round" />
                 </svg>
                 @endif

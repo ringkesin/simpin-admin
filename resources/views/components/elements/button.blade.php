@@ -10,28 +10,28 @@
 
     if($variant == 'primary'){
         if($style == 'solid'){
-            $class .= 'text-white bg-[#658cff] hover:bg-white border-[#658cff] hover:text-[#658cff] ';
+            $class .= 'text-white bg-blue-600 hover:bg-white border-blue-600 hover:text-blue-600 ';
         }
         if($style == 'outlined'){
-            $class .= 'text-[#658cff] bg-white hover:bg-[#658cff] border-[#658cff] hover:text-white ';
+            $class .= 'text-blue-600 bg-white hover:bg-blue-600 border-blue-600 hover:text-white ';
         }
     }
 
     if($variant == 'secondary'){
         if($style == 'solid'){
-            $class .= 'text-gray-800 bg-gray-200 hover:bg-white border-gray-200 hover:border-gray-300 hover:text-gray-800 ';
+            $class .= 'text-slate-800 bg-slate-200 hover:bg-white border-slate-200 hover:border-slate-300 hover:text-slate-800 ';
         }
         if($style == 'outlined'){
-            $class .= 'text-gray-800 bg-white hover:bg-gray-100 border-gray-300 hover:text-gray-800 ';
+            $class .= 'text-slate-800 bg-white hover:bg-slate-100 border-slate-300 hover:text-slate-800 ';
         }
     }
 
     if($variant == 'success'){
         if($style == 'solid'){
-            $class .= 'text-white bg-teal-400 hover:bg-white border-teal-400 hover:text-teal-400 ';
+            $class .= 'text-white bg-blue-600 hover:bg-white border-blue-600 hover:text-blue-600 ';
         }
         if($style == 'outlined'){
-            $class .= 'text-teal-400 bg-white hover:bg-teal-400 border-teal-400 hover:text-white ';
+            $class .= 'text-blue-600 bg-white hover:bg-blue-600 border-blue-600 hover:text-white ';
         }
     }
 

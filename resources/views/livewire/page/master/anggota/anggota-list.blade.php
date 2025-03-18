@@ -1,6 +1,6 @@
 <div>
     {{-- Because she competes with no one, no one can compete with her. --}}
-    <div class="grid grid-cols-2 mb-6 xs:grid-cols-1">
+    <div class="grid grid-cols-2 mb-4 xs:grid-cols-1">
         <div>
             <h1 class="mb-1 text-2xl font-bold md:text-3xl text-slate-800">
                 {{$titlePage}}
@@ -17,7 +17,7 @@
             </div>
         </div>
     </div>
-    <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200">
+    <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200">
         <livewire:page.master.anggota.anggota-table />
     </div>
 </div>

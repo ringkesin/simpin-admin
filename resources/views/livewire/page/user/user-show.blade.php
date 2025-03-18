@@ -1,6 +1,6 @@
 <div>
     {{-- Success is as dangerous as failure. --}}
-    <div class="grid grid-cols-2 mb-6 xs:grid-cols-1">
+    <div class="grid grid-cols-2 mb-4 xs:grid-cols-1">
         <div>
             <h1 class="mb-1 text-2xl font-bold md:text-3xl text-slate-800">
                 {{$titlePage}}

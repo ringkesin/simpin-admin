@@ -1,5 +1,5 @@
-<header class="relative flex flex-wrap w-full py-3 text-sm shadow-md md:justify-start md:flex-nowrap bg-slate-100">
-    <nav class="max-w-[98rem] w-full mx-auto px-4 md:flex md:items-center md:justify-between">
+<header class="relative flex flex-wrap w-full py-3 text-sm bg-white shadow-lg shadow-slate-300/50 md:justify-start md:flex-nowrap">
+    <nav class="max-w-[98rem] w-full mx-auto px-6 md:flex md:items-center md:justify-between">
         <div class="flex items-center justify-between">
             <!-- Navigation Toggle -->
             <div class="p-2 lg:hidden">

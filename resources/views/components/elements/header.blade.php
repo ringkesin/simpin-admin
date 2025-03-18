@@ -38,7 +38,7 @@
                 <x-theme-toggle />
 
                 <!-- Divider -->
-                <hr class="w-px h-6 bg-slate-200 dark:bg-slate-700 border-none" />
+                <hr class="w-px h-6 border-none bg-slate-200 dark:bg-slate-700" />
 
                 <!-- User button -->
                 <x-dropdown-profile align="right" />
