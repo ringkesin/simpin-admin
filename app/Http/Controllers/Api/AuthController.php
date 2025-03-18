@@ -2,58 +2,61 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\BaseController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Hash;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
-    public function login(Request $request)
+    // **API Login**
+    public function apiLogin(Request $request)
     {
         $request->validate([
-            'username' => 'required',
+            'username' => 'required|string', 
             'password' => 'required',
         ]);
+    
+        $user = User::where('username', $request->username)->first();
 
-        if (!Auth::attempt($request->only('username', 'password'))) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return $this->sendError('Unauthorized', ['error' => 'The provided credentials are incorrect.'], 401);
+        }   
 
-        $user = Auth::user();
-        $token = $user->createToken('simpin')->accessToken;
+        //check role untuk mendefine state = anggota / admin
+        $token = $user->createToken('api-token',['state:anggota'])->plainTextToken;
 
-        return response()->json([
-            'message' => 'Login successful',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user,
-        ]);
-
-        // $client = \Laravel\Passport\Client::where('password_client', true)->first();
-
-        // if (!$client) {
-        //     return response()->json(['error' => 'OAuth client not found'], 500);
-        // }
-        // // $url = config('app.url');
-        // $url = '127.0.0.1:8000';
-        // // return $url;
-
-        // $response = Http::asForm()->post($url . '/oauth/token', [
-        //     'grant_type' => 'password',
-        //     'client_id' => $client->id,
-        //     'client_secret' => $client->secret,
-        //     'username' => $request->email,
-        //     'password' => $request->password,
-        //     'scope' => '',
-        // ]);
+        return $this->sendResponse(
+            ['token' => $token, 'user' => $user], 
+            'Login successful.'
+        );
     }
 
-    public function logout(Request $request)
+    // **API Logout**
+    public function apiLogout(Request $request)
     {
         $request->user()->tokens()->delete();
+        return $this->sendResponse([], 'Successfully logged out.');
+    }
 
-        return response()->json(['message' => 'Logged out successfully']);
+    // **API Logout**
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return $this->sendError('Current password is incorrect', [], 400);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return $this->sendResponse([], 'Password changed successfully');
     }
 }

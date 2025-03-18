@@ -17,6 +17,8 @@ use App\Livewire\Page\Main\Tagihan\TagihanCreate;
 use App\Livewire\Page\Main\Tagihan\TagihanShow;
 use App\Livewire\Page\Main\Tagihan\TagihanEdit;
 use App\Livewire\Page\Main\Tagihan\TagihanExport;
+use App\Livewire\Page\Main\Pinjaman\PinjamanList;
+use App\Livewire\Page\Main\Pinjaman\PinjamanShow;
 use App\Livewire\Page\Main\Shu\ShuList;
 use App\Livewire\Page\Main\Shu\ShuCreate;
 use App\Livewire\Page\Main\Shu\ShuShow;
@@ -39,10 +41,9 @@ use App\Livewire\Page\Master\Simulasi\SimulasiEdit;
 Route::redirect('/', 'login');
 
 Route::middleware([
-    'auth:sanctum',
+    'auth',
     config('jetstream.auth_session'),
     'verified',
-    'authenticate'
 ])->group(function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::prefix('user')->group(function () {
@@ -87,6 +88,10 @@ Route::middleware([
             Route::get('export', ShuExport::class)->name('main.shu.export');
             Route::get('show/{id}', ShuShow::class)->name('main.shu.show');
             Route::get('edit/{id}', ShuEdit::class)->name('main.shu.edit');
+        });
+        Route::prefix('pinjaman')->group(function () {
+            Route::get('list', PinjamanList::class)->name('main.pinjaman.list');
+            Route::get('show/{id}', PinjamanShow::class)->name('main.pinjaman.show');
         });
     });
 });

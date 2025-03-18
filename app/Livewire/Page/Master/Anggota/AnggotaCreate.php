@@ -18,6 +18,8 @@ class AnggotaCreate extends Component
     #component input
     public $nomor_anggota;
     public $nama;
+    public $email;
+    public $mobile;
     public $nik;
     public $ktp;
     public $alamat;
@@ -25,6 +27,7 @@ class AnggotaCreate extends Component
     public $tanggal_masuk;
     public $valid_from;
     public $valid_to;
+    public $is_registered = FALSE;
 
     public function mount() {
         $this->titlePage = 'Tambah Master Anggota';
@@ -64,13 +67,16 @@ class AnggotaCreate extends Component
             $post = AnggotaModels::create([
                 'nomor_anggota' => $this->nomor_anggota,
                 'nama' => $this->nama,
+                'email' => $this->email,
+                'mobile' => $this->mobile,
                 'nik' => $this->nik,
                 'ktp' => $this->ktp,
                 'tgl_lahir' => $this->tgl_lahir,
                 'alamat' => $this->alamat,
                 'tanggal_masuk' => $this->tanggal_masuk,
                 'valid_from' => $this->valid_from,
-                'valid_to' => $this->valid_to
+                'valid_to' => $this->valid_to,
+                'is_registered' => $this->is_registered
             ]);
 
             if($post) {

@@ -86,6 +86,28 @@
                             {{$loadData['nama']}}
                         </div>
                     </div>
+                     <!-- Group Input Email -->
+                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="email">
+                                Email Anggota
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            {{$this->setIfNull($loadData['email'], '')}}
+                        </div>
+                    </div>
+                    <!-- Group Input Mobile -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="mobile">
+                                Nomor HP Anggota
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            {{$this->setIfNull($loadData['mobile'], '')}}
+                        </div>
+                    </div>
                     <!-- Group Input NIK -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -94,7 +116,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['nik']}}
+                            {{ $loadData['nik']}}
                         </div>
                     </div>
                     <!-- Group Input KTP -->
@@ -161,6 +183,20 @@
                         </div>
                         <div class="col-span-12 md:col-span-8">
                             {{$loadData['valid_to']}}
+                        </div>
+                    </div>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="is_registered">
+                                Member ?
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            @if ($loadData['is_registered'])
+                                <x-lucide-circle-check-big class="w-5 text-green-500"/>
+                            @else
+                                <x-lucide-badge-x class="w-5 text-rose-500"/>
+                            @endif
                         </div>
                     </div>
                 </div>

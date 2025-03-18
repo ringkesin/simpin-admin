@@ -24,10 +24,11 @@ class DatabaseSeeder extends Seeder
             AppsSeeder::class,
             AppsParamSeeder::class,
             MasterAnggotaSeeder::class,
+            MasterJenisPinjamanSeeder::class,
             MasterStatusPengajuanSeeder::class,
             RbacRoleSeeder::class,
             RbacRoleUserSeeder::class,
-            SimulasiPinjamanSeeder::class
+            SimulasiPinjamanSeeder::class,
         ]);
     }
 }
