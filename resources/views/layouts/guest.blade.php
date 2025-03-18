@@ -52,7 +52,7 @@
 
                 <!-- Image -->
                 <div class="absolute top-0 bottom-0 right-0 hidden md:block md:w-1/2" aria-hidden="true">
-                    <img class="object-cover object-center w-full h-full" src="{{ asset('img/auth-bg-2.jpg') }}" width="760" height="1024" alt="Authentication image" />
+                    <img class="object-cover object-center w-full h-full" src="{{ asset('/assets/img/auth-bg-2.jpeg') }}" width="720" height="1024" alt="Authentication image" />
                     <img class="absolute left-0 hidden ml-8 -translate-x-1/2 top-1/4 lg:block" src="{{ asset('/assets/img/auth-decoration.png') }}" width="218" height="224" alt="Authentication decoration" />
                 </div>
 
