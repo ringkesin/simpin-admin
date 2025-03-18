@@ -24,27 +24,7 @@
                         <span class="xs:block">Update</span>
                     </x-elements.button>
 
-                    @if(empty($loadData['user_id']))
-                    <x-elements.button :variant="'primary'" :style="'outlined'" :type="'button'" wire:click="registerUser" wire:loading.attr="disabled" >
-                        <div class='flex gap-x-1' >
-                            <x-lucide-user-plus class="size-5" wire:loading.remove wire:target="registerUser"/>
-                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="registerUser">
-                                <span class="sr-only">Processing.....</span>
-                            </span>
-                            <span class="xs:block">Create User</span>
-                        </div>
-                    </x-elements.button>
-                    @else
-                    <x-elements.button :href="'#'" :variant="'warning'" :style="'outlined'" :type="'button'" wire:click="resetUser"  wire:loading.attr="disabled">
-                        <div class='flex gap-x-1' >
-                            <x-lucide-rotate-ccw class="size-5" wire:loading.remove wire:target="resetUser"/>
-                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="resetUser">
-                                <span class="sr-only">Processing.....</span>
-                            </span>
-                            <span class="xs:block">Reset User</span>
-                        </div>
-                    </x-elements.button>
-                    @endif
+
                     {{-- <x-elements.button-href
                         :href="route('master.anggota.destroy', $attr['data']['id'])"
                         button-type="{{ 'danger' }}"
@@ -67,67 +47,64 @@
                     <!-- Group Nomor Anggota -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="p_anggota_id">
+                            <x-form.label for="pinjaman">
                                Jumlah Pinjaman
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['pinjaman']}}
+
+                          Rp.   {{$this->toRupiah($loadData['pinjaman'])}}
                         </div>
                     </div>
                     <!-- Group Input Nama -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="nama">
-                                Nama Anggota
+                               Bunga
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['nama']}}
+                            {{$loadData['margin']}} %
                         </div>
                     </div>
                     <!-- Group Input NIK -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="nik">
-                                NIK Anggota
+                                Tahun
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['nik']}}
+                            {{$loadData['tahun_margin']}}
                         </div>
                     </div>
                     <!-- Group Input KTP -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="ktp">
-                                No KTP
-                            </x-form.label>
+                           &nbsp;
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['ktp']}}
+                            &nbsp;
                         </div>
                     </div>
                     <!-- Group Input Alamat -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="alamat">
-                                Alamat
+                                &nbsp;
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['alamat']}}
+                            &nbsp;
                         </div>
                     </div>
                     <!-- Group Input Tanggal Lahir -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="tgl_lahir">
-                                Tanggal Lahir <span class="text-red-500">*</span>
-                            </x-form.label>
+                            &nbsp;
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['tgl_lahir']}}
+                            &nbsp;
                         </div>
                     </div>
                 </div>
@@ -136,31 +113,28 @@
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="tanggal_masuk">
-                                Tanggal Masuk <span class="text-red-500">*</span>
+                                Tenor <span class="text-red-500">: </span>
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['tanggal_masuk']}}
+                            {{$loadData['tenor']}} Bulan
                         </div>
                     </div>
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="valid_from">
-                                Valid Dari <span class="text-red-500">*</span>
+                               Angsuran <span class="text-red-500">:</span>
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['valid_from']}}
+                          Rp.  {{$this->toRupiah($loadData['angsuran'])}}
                         </div>
                     </div>
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="valid_to">
-                                Valid Sampai
-                            </x-form.label>
-                        </div>
+                            &nbsp;
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['valid_to']}}
+                            &nbsp;
                         </div>
                     </div>
                 </div>

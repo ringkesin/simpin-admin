@@ -10,10 +10,12 @@ use App\Models\User;
 use App\Models\Rbac\RoleUserModel;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\MyAlert;
+use App\Traits\MyHelpers;
 
 class SimulasiShow extends Component
 {
     use MyAlert;
+    use MyHelpers;
 
     public $breadcrumb;
     public $titlePage;
@@ -21,12 +23,12 @@ class SimulasiShow extends Component
 
     public $loadData;
     public $id;
-    public $tglLahir;
     public $pinjaman;
+    public $tenor;
 
     public function mount($id) {
         $this->titlePage = 'Detail Simulasi Angsuran';
-        $this->menuCode = 'master-anggota';
+        $this->menuCode = 'master-simulasi';
         $this->breadcrumb = [
             ['link' => null, 'label' => 'Master'],
             ['link' => route('master.simulasi.list'), 'label' => 'Simulasi'],
@@ -40,8 +42,8 @@ class SimulasiShow extends Component
     public function getData($id) {
         $data = SimulasiPinjamanModel::find($id);
         $this->loadData = $data;
-        $this->tglLahir = str_replace("-", "", $this->loadData['tgl_lahir']);
-        $this->pinjaman = number_format($this->loadData['pinjaman']);
+        //$this->tglLahir = str_replace("-", "", $this->loadData['tgl_lahir']);
+        //$this->pinjaman = number_format($this->loadData['pinjaman']);
     }
 
 

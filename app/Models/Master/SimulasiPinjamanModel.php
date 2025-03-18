@@ -30,4 +30,18 @@ class SimulasiPinjamanModel extends Model
         'status'
     ];
 
+    public function updatedBy() : HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'updated_by');
+    }
+
+    public function createdBy(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'created_by');
+    }
+
+    public function userId(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

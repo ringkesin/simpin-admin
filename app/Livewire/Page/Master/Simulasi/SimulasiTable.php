@@ -6,10 +6,13 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Master\SimulasiPinjamanModel;
+use App\Traits\MyHelpers;
 
 class SimulasiTable extends DataTableComponent
 {
     protected $model = SimulasiPinjamanModel::class;
+
+    use MyHelpers;
 
     public function configure(): void
     {
@@ -61,15 +64,18 @@ class SimulasiTable extends DataTableComponent
     {
         return [
             Column::make("ID", "id")
-                ->sortable()
-                ->searchable(),
+                ->sortable(),
             Column::make("Pinjaman", "pinjaman")
                 ->sortable()
+                 ->format(function ($value, $column, $row) {
+                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';})
                 ->searchable(),
             Column::make("Tenor", "tenor")
                 ->sortable()
                 ->searchable(),
             Column::make("Angsuran", "angsuran")
+                ->format(function ($value, $column, $row) {
+                return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';})
                 ->sortable(),
             Column::make("Margin", "margin")
                 ->sortable(),

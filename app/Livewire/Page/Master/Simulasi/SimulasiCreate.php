@@ -41,7 +41,6 @@ class SimulasiCreate extends Component
             'tenor' => 'required',
             'angsuran' => 'required',
         ], [
-            'nomor_anggota' => 'Nomor Anggota required',
             'pinjaman.required' => 'Masukkan Jumlah Pinjaman.',
             'margin.required' => 'Bunga Masih kosong.',
             'tahun_margin.required' => 'Tahun Bunga Kosong.',
