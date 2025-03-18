@@ -17,6 +17,15 @@ class RbacRoleUserSeeder extends Seeder
                     'user_id' => 1
                 ],
             ]
+        ],
+        [
+            "role_id" => 3,
+            "valid_from" => "2023-09-01",
+            "items" => [
+                [
+                    'user_id' => 1
+                ],
+            ]
         ]
     ];
     /**

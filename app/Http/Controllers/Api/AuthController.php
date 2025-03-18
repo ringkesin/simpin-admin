@@ -23,7 +23,7 @@ class AuthController extends BaseController
             ->whereHas('roleUser.role', function ($query) {
                 $query->whereIn('code', ['mobile_anggota', 'mobile_admin']); 
             })
-            ->first();
+            ->first();            
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return $this->sendError('Unauthorized', ['error' => 'The provided credentials are incorrect.'], 401);
@@ -106,6 +106,7 @@ class AuthController extends BaseController
                     'created_by',
                     'updated_by',
                     'deleted_by',
+                    'is_registered'
                 ]);
             }
 
