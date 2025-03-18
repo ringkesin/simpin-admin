@@ -18,24 +18,21 @@ class SimulasiEdit extends Component
 
     public $loadData;
     public $id;
-    public $nomor_anggota;
-    public $nama;
-    public $nik;
-    public $ktp;
-    public $alamat;
-    public $tgl_lahir;
-    public $tanggal_masuk;
-    public $valid_from;
-    public $valid_to;
+    public $pinjaman;
+    public $tenor;
+    public $margin;
+    public $angsuran;
+    public $tahun_margin;
+
 
     public function mount($id) {
-        $this->titlePage = 'Update Master Anggota';
-        $this->menuCode = 'master-anggota';
+        $this->titlePage = 'Update Simulasi Angsuran';
+        $this->menuCode = 'master-simulasi';
         $this->breadcrumb = [
             ['link' => null, 'label' => 'Master'],
-            ['link' => route('master.anggota.list'), 'label' => 'Anggota'],
-            ['link' => route('master.anggota.show', ['id' => $id]), 'label' => 'Show'],
-            ['link' => route('master.anggota.edit', ['id' => $id]), 'label' => 'Edit']
+            ['link' => route('master.simulasi.list'), 'label' => 'Simulasi'],
+            ['link' => route('master.simulasi.show', ['id' => $id]), 'label' => 'Show'],
+            ['link' => route('master.simulasi.edit', ['id' => $id]), 'label' => 'Edit']
         ];
 
         $this->id = $id;
@@ -43,60 +40,46 @@ class SimulasiEdit extends Component
     }
 
     public function getData($id) {
-        $data = AnggotaModels::find($id);
+        $data = SimulasiPinjamanModel::find($id);
         $this->loadData = $data;
-        $this->nomor_anggota = $this->loadData['nomor_anggota'];
-        $this->nama = $this->loadData['nama'];
-        $this->nik = $this->loadData['nik'];
-        $this->ktp = $this->loadData['ktp'];
-        $this->alamat = $this->loadData['alamat'];
-        $this->tgl_lahir = $this->loadData['tgl_lahir'];
-        $this->tanggal_masuk = $this->loadData['tanggal_masuk'];
-        $this->valid_from = $this->loadData['valid_from'];
-        $this->valid_to = $this->loadData['valid_to'];
+        $this->pinjaman = $this->loadData['pinjaman'];
+        $this->tenor = $this->loadData['tenor'];
+        $this->margin = $this->loadData['margin'];
+        $this->tahun_margin = $this->loadData['tahun_margin'];
+        $this->angsuran = $this->loadData['angsuran'];
+
     }
 
     public function saveUpdate() {
         $validated = $this->validate([
-            'nomor_anggota' => 'required',
-            'nama' => 'required',
-            'nik' =>  'required',
-            'tgl_lahir' => 'required|date',
-            'tanggal_masuk' => 'required|date',
-            'valid_from' => 'required|date',
+            'pinjaman' => 'required',
+            'margin' => 'required',
+            'tahun_margin' => 'required',
+            'tenor' => 'required',
+            'angsuran' => 'required',
         ], [
-            'nomor_anggota.required' => 'Nomor Anggota required',
-            'nama.required' => 'User required.',
-            'nik.required' => 'ID Sign required.',
-            'tgl_lahir.required' => 'Tanggal lahir required.',
-            'tgl_lahir.date' => 'Format Tanggal lahir must "yyyy/mm/dd".',
-            'tanggal_masuk.required' => 'Tanggal Masuk required.',
-            'tanggal_masuk.date' => 'Format Tanggal Masuk must "yyyy/mm/dd".',
-            'valid_from.required' => 'Valid from required.',
-            'valid_from.date' => 'Format Valid from must "yyyy/mm/dd".',
-            'valid_to.date' => 'Format Valid until must "yyyy/mm/dd".',
+            'pinjaman.required' => 'Masukkan Jumlah Pinjaman.',
+            'margin.required' => 'Bunga Masih kosong.',
+            'tahun_margin.required' => 'Tahun Bunga Kosong.',
+            'tenor.date' => 'Tenor kosong.',
         ]);
-        if($this->valid_to == "") {
-            $this->valid_to = null;
+        if($this->pinjaman == "") {
+            $this->pinjaman = null;
         }
 
-        $redirect = route('master.anggota.list');
+        $redirect = route('master.simulasi.list');
 
         try {
-            $post = AnggotaModels::where('p_anggota_id', $this->id)->update([
-                'nomor_anggota' => $this->nomor_anggota,
-                'nama' => $this->nama,
-                'nik' => $this->nik,
-                'ktp' => $this->ktp,
-                'tgl_lahir' => $this->tgl_lahir,
-                'alamat' => $this->alamat,
-                'tanggal_masuk' => $this->tanggal_masuk,
-                'valid_from' => $this->valid_from,
-                'valid_to' => $this->valid_to
+            $post = SimulasiPinjamanModel::where('id', $this->id)->update([
+                'pinjaman' => $this->pinjaman,
+                'margin' => $this->margin,
+                'tahun_margin' => $this->tahun_margin,
+                'tenor' => $this->tenor,
+                'angsuran' => $this->angsuran
             ]);
 
             if($post) {
-                $redirect = route('master.anggota.show', ['id' => $post]);
+                $redirect = route('master.simulasi.show', ['id' => $this->id]);
                 $this->sweetalert([
                     'icon' => 'success',
                     'confirmButtonText' => 'Okay',
@@ -130,7 +113,7 @@ class SimulasiEdit extends Component
 
     public function render()
     {
-        return view('livewire.page.master.anggota.anggota-edit')
+        return view('livewire.page.master.simulasi.simulasi-edit')
         ->layoutData([
             'title' => $this->titlePage, //Page Title
             'breadcrumbs' => $this->breadcrumb,
