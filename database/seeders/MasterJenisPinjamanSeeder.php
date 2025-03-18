@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Master\StatusPengajuanModels;
+use App\Models\Master\JenisPinjamanModels;
 
-class MasterStatusPengajuanSeeder extends Seeder
+class MasterJenisPinjamanSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,13 +14,13 @@ class MasterStatusPengajuanSeeder extends Seeder
 
      protected $data = [
         [
-            'nama' => 'Pending',
+            'nama' => 'Pinjaman Umum',
         ],
         [
-            'nama' => 'Reject',
+            'nama' => 'Pinjaman Khusus',
         ],
         [
-            'nama' => 'Approve',
+            'nama' => 'Pinjaman Barang',
         ]
     ];
 
@@ -28,7 +28,7 @@ class MasterStatusPengajuanSeeder extends Seeder
     public function run(): void
     {
         foreach ($this->data as $d) {
-            StatusPengajuanModels::create([
+            JenisPinjamanModels::create([
                 "nama" => $d['nama']
             ]);
         }

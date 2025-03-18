@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('ktp')->nullable();
             $table->string('tempat_lahir')->nullable();
             $table->string('tgl_lahir')->nullable();
+            $table->string('email')->nullable();
+            $table->string('mobile')->nullable();
+            $table->boolean('is_registered');
             $table->unsignedBigInteger('p_jenis_kelamin_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('p_company_id')->nullable();

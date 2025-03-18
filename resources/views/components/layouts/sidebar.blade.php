@@ -60,7 +60,7 @@
                         </li>
 
                         <li>
-                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pinjaman' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('main.tagihan.list')}}">
+                            <a class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pinjaman' ? 'bg-gray-100' : ''}} text-sm text-gray-700' rounded-lg hover:bg-gray-100" href="{{route('main.pinjaman.list')}}">
                                 <x-lucide-banknote class="size-4"/>
                                 Pinjaman
                             </a>

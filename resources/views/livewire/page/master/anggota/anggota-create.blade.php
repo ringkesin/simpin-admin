@@ -45,6 +45,28 @@
                             <x-form.input class="w-full" type="text" name="nama" wire:model.lazy="nama"/>
                         </div>
                     </div>
+                    <!-- Group Input Email -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="email">
+                                Email
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.input class="w-full" type="email" name="email" wire:model.lazy="email"/>
+                        </div>
+                    </div>
+                    <!-- Group Input Mobile -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="mobile">
+                                No HP
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.input class="w-full" type="number" name="mobile" wire:model.lazy="mobile"/>
+                        </div>
+                    </div>
                     <!-- Group Input NIK -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -120,6 +142,16 @@
                         </div>
                         <div class="col-span-12 md:col-span-8">
                             <x-form.input class="w-full" type="date" id="valid_to" name="valid_to" :value="''" wire:model.lazy="valid_to"/>
+                        </div>
+                    </div>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="is_registered">
+                                Member ?
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.checkbox class="w-8 py-3" :id="'is_registered'" :name="'is_registered'" value="" wire:model.lazy="is_registered"/>
                         </div>
                     </div>
                 </div>
