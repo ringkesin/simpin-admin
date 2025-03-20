@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             RbacRoleSeeder::class,
             RbacRoleUserSeeder::class,
             SimulasiPinjamanSeeder::class,
+            MasterUnitSeeder::class
         ]);
     }
 }
