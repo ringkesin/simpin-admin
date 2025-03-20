@@ -21,13 +21,13 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    Route::post('/anggota/register', [AnggotaController::class, 'register']);
     Route::get('/anggota/{p_anggota_id}', [AnggotaController::class, 'getAnggotaById']);
 
     Route::post('/file/get-link', [FileController::class, 'getLink']);
-
-    Route::get('/unit', [UnitController::class, 'getAll']);
 });
+
+Route::post('/anggota/register', [AnggotaController::class, 'register']);
+Route::get('/unit', [UnitController::class, 'getAll']);
 
 Route::get('/secure-file/{path}', [FileController::class, 'getSecureFile'])
         ->where('path', '.*')

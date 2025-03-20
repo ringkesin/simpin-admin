@@ -21,19 +21,19 @@ class AnggotaController extends BaseController
                 'nama' => 'required|string|max:255',
                 'alamat_email' => 'required|email:rfc,dns|unique:p_anggota,email',
                 'nomor_hp' => 'required|string|max:15|unique:p_anggota,mobile',
-                'nomor_pegawai' => 'required|string|max:15|unique:p_anggota,nik',
+                'nomor_pegawai' => 'nullable|string|max:15|unique:p_anggota,nik',
                 'nomor_ktp' => 'required|string|max:20|unique:p_anggota,ktp',
                 'tempat_lahir' => 'required|string|max:64',
                 'tanggal_lahir' => ['required', Rule::date()->format('Y-m-d'),],
                 'alamat' => 'nullable|string|max:1024',
                 'p_unit_id' => 'nullable|integer',
                 'attachment_ktp' => 'required|file|mimes:jpg,png,pdf|max:2048',
-                'attachment_kartu_pegawai' => 'required|file|mimes:jpg,png,pdf|max:2048',
+                'attachment_kartu_pegawai' => ( ! empty($request->nomor_pegawai) ? 'required|' : '').'file|mimes:jpg,png,pdf|max:2048',
             ],[
                 'nama.required' => 'Nama harus diisi',
                 'alamat_email.required' => 'Email harus diisi',
                 'nomor_hp.required' => 'Nomor HP harus diisi',
-                'nomor_pegawai.required' => 'Nomor Pegawai harus diisi',
+                // 'nomor_pegawai.required' => 'Nomor Pegawai harus diisi',
                 'nomor_ktp.required' => 'Nomor KTP harus diisi',
                 'tempat_lahir.required' => 'Tempat Lahir harus diisi',
                 'tanggal_lahir.required' => 'Tanggal Lahir harus diisi',
@@ -58,7 +58,9 @@ class AnggotaController extends BaseController
             $newNomorAnggota = $lastAnggota ? $lastAnggota->nomor_anggota + 1 : 100001; 
 
             $ktpPath = $request->file('attachment_ktp')->store('uploads/ktp', 'local');
-            $employeeCardIdPath = $request->file('attachment_kartu_pegawai')->store('uploads/kartu_pegawai', 'local');
+            if( ! empty($request->nomor_pegawai)){
+                $employeeCardIdPath = $request->file('attachment_kartu_pegawai')->store('uploads/kartu_pegawai', 'local');
+            }
 
             $anggota = AnggotaModels::create([
                 'nama' => $request->nama,
@@ -83,12 +85,14 @@ class AnggotaController extends BaseController
                 'atribut_attachment' => $ktpPath
             ]);
 
-            AnggotaAtributModels::create([
-                'p_anggota_id' => $anggota->p_anggota_id,
-                'atribut_kode' => 'kartu_pegawai',
-                'atribut_value' => $request->nomor_pegawai,
-                'atribut_attachment' => $employeeCardIdPath
-            ]);
+            if( ! empty($request->nomor_pegawai)){
+                AnggotaAtributModels::create([
+                    'p_anggota_id' => $anggota->p_anggota_id,
+                    'atribut_kode' => 'kartu_pegawai',
+                    'atribut_value' => $request->nomor_pegawai,
+                    'atribut_attachment' => $employeeCardIdPath
+                ]);
+            }
 
             DB::commit();
 
