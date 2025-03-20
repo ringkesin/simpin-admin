@@ -18,6 +18,14 @@ class RoleModel extends Model
 
     public $timestamps = false;
 
+    protected function casts(): array
+    {
+        return [
+            'valid_from' => 'date',
+            'valid_until' => 'date',
+        ];
+    }
+
     public function apps(): HasOne
     {
         return $this->hasOne(AppsModel::class, 'id', 'apps_id');

@@ -11,40 +11,32 @@ class RbacRoleSeeder extends Seeder
     protected $data = [
         [
             "apps_id" => 1,
-            "code" => "RA0120240214",
-            "name" => "Administrator",
+            "code" => "web_super_admin",
+            "name" => "Web - Super Admin",
             "remarks" => "",
             "valid_from" => "2023-09-01",
             "valid_until" => NULL
         ],
         [
             "apps_id" => 1,
-            "code" => "RA0220240214",
-            "name" => "Admin SIMPIN",
+            "code" => "web_admin_simpin",
+            "name" => "Web - Admin Simpin",
             "remarks" => "",
             "valid_from" => "2023-09-01",
             "valid_until" => NULL
         ],
         [
             "apps_id" => 2,
-            "code" => "RM0120240214",
-            "name" => "Administrator Mobile",
+            "code" => "mobile_admin",
+            "name" => "Mobile - Admin",
             "remarks" => "",
             "valid_from" => "2023-09-01",
             "valid_until" => NULL
         ],
         [
             "apps_id" => 2,
-            "code" => "RM0220240214",
-            "name" => "Admin Mobile SIMPIN",
-            "remarks" => "",
-            "valid_from" => "2023-09-01",
-            "valid_until" => NULL
-        ],
-        [
-            "apps_id" => 2,
-            "code" => "RM0320240214",
-            "name" => "Anggota",
+            "code" => "mobile_anggota",
+            "name" => "Mobile - Anggota",
             "remarks" => "",
             "valid_from" => "2023-09-01",
             "valid_until" => NULL

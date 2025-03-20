@@ -65,7 +65,7 @@ class AnggotaShow extends Component
 
                 if($postUser) {
                     $createRoleUser = RoleUserModel::create([
-                        'role_id' => 5,
+                        'role_id' => 4,
                         'user_id' => $postUser['id'],
                         'valid_from' => $this->loadData['valid_from']
                     ]);

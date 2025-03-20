@@ -3,12 +3,17 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+
+use App\Models\Master\AnggotaModels;
+use Laravel\Sanctum\HasApiTokens;
+use App\Models\Rbac\RoleUserModel;
+use Laravel\Jetstream\HasProfilePhoto;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 // use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -67,22 +72,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'valid_from' => 'date',
+            'valid_until' => 'date',
         ];
     }
 
-    /**
-     * Find the user instance for the given username.
-     */
-    // public function findForPassport(string $username): User
-    // {
-    //     return $this->where('username', $username)->first();
-    // }
+    public function roleUser(): HasMany
+    {
+        return $this->hasMany(RoleUserModel::class, 'user_id', 'id');
+    }
 
-    /**
-     * Validate the password of the user for the Passport password grant.
-     */
-    // public function validateForPassportPasswordGrant(string $password): bool
-    // {
-    //     return Hash::check($password, $this->password);
-    // }
+    public function anggota(): HasOne
+    {
+        return $this->hasOne(AnggotaModels::class, 'user_id', 'id')->withDefault();
+    }
 }

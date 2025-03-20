@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseController;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class AuthController extends BaseController
 {
@@ -16,20 +17,106 @@ class AuthController extends BaseController
             'username' => 'required|string', 
             'password' => 'required',
         ]);
-    
-        $user = User::where('username', $request->username)->first();
+
+        $user = User::with(['roleUser', 'roleUser.role', 'anggota'])
+            ->where('username', $request->username)
+            ->whereHas('roleUser.role', function ($query) {
+                $query->whereIn('code', ['mobile_anggota', 'mobile_admin']); 
+            })
+            ->first();            
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return $this->sendError('Unauthorized', ['error' => 'The provided credentials are incorrect.'], 401);
-        }   
+        }
 
-        //check role untuk mendefine state = anggota / admin
-        $token = $user->createToken('api-token',['state:anggota'])->plainTextToken;
+        $today = Carbon::today();
 
-        return $this->sendResponse(
-            ['token' => $token, 'user' => $user], 
-            'Login successful.'
-        );
+        //users validity
+        if ($user->valid_from && $user->valid_from->greaterThan($today)) {
+            return $this->sendError('Unauthorized', ['error' => 'Akun anda belum aktif'], 403);
+        }
+        if ($user->valid_until && $user->valid_until->lessThan($today)) {
+            return $this->sendError('Unauthorized', ['error' => 'Akun anda sudah expired.'], 403);
+        }
+
+        $error = 0;
+        $roleCode = null;
+        foreach($user->roleUser as $r){
+            if($r->role->apps->code == 'mobile'){
+                $roleCode = $r->role->code;
+                if ($r->valid_from && $r->valid_from->greaterThan($today)) {
+                    $error++;
+                }
+                if ($r->valid_until && $r->valid_until->lessThan($today)) {
+                    $error++;
+                }
+                if ($r->role->valid_from && $r->role->valid_from->greaterThan($today)) {
+                    $error++;
+                }
+                if ($r->role->valid_until && $r->role->valid_until->lessThan($today)) {
+                    $error++;
+                }
+            }
+        }
+
+        if( ! empty($user->anggota)){
+            if ($user->anggota->valid_from && $user->anggota->valid_from->greaterThan($today)) {
+                $error++;
+            }
+            if ($user->anggota->valid_to && $user->anggota->valid_to->lessThan($today)) {
+                $error++;
+            }
+        }
+
+        if($error == 0){
+            $state = 'anggota';
+            if($roleCode == 'mobile_admin'){
+                $state = 'admin';
+            }
+            $token = $user->createToken('api-token',['state:'.$state])->plainTextToken;
+
+            $user->makeHidden([
+                'email_verified_at',
+                'two_factor_confirmed_at',
+                'current_team_id',
+                'valid_from',
+                'valid_until',
+                'remarks',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+                'created_by',
+                'updated_by',
+                'deleted_by',
+                'roleUser',
+                'anggota',
+            ]);
+
+            if( ! empty($user->anggota)){
+                $user->anggota->makeHidden([
+                    'valid_from',
+                    'valid_to',
+                    'p_jenis_kelamin_id',
+                    'user_id',
+                    'p_company_id',
+                    'p_unit_id',
+                    'created_at',
+                    'updated_at',
+                    'deleted_at',
+                    'created_by',
+                    'updated_by',
+                    'deleted_by',
+                    'is_registered'
+                ]);
+            }
+
+            return $this->sendResponse(
+                ['token' => $token, 'role' => $roleCode, 'anggota'=> $user->anggota, 'user' => $user, ], 
+                'Login successful.'
+            );
+        }
+
+        return $this->sendError('Unauthorized', ['error' => 'Anda tidak memiliki akses.'], 401);
     }
 
     // **API Logout**

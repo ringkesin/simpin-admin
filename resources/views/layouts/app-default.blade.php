@@ -6,6 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
+        <link rel="icon" type="image/png" href="{{asset('/assets/img/logokkba-icon.ico')}}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -33,7 +34,7 @@
                     <x-layouts.breadcrumbs :breadcrumbs="$breadcrumbs" />
                 </x-slot:breadcrumb>
             </x-layouts.header>
-            <div class="w-full px-5 py-5 md:mb-0">
+            <div class="w-full px-6 py-5 md:mb-0">
                 {{$slot}}
             </div>
         </div>

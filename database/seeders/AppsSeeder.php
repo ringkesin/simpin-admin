@@ -32,12 +32,12 @@ class AppsSeeder extends Seeder
     {
         foreach($this->data as $d) {
             if($d['name'] == 'Admin Simpan Pinjam') {
-                $kode = '20250122114501';
+                $kode = 'web_admin';
             } else {
-                $kode = '20250122114502';
+                $kode = 'mobile';
             }
             AppsModel::create([
-                'code' => 'AP'.$kode,
+                'code' => $kode,
                 'name' => $d['name'],
                 'remarks' => (isset($d['remarks']) ? $d['remarks'] : null),
                 'valid_from' => $d['valid_from']
