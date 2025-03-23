@@ -24,7 +24,7 @@
                         <span class="xs:block">Update</span>
                     </x-elements.button>
 
-                    @if(empty($loadData['user_id']))
+                    @if(empty($loadData['user_id']) && !empty($loadData['tgl_lahir']))
                     <x-elements.button :variant="'primary'" :style="'outlined'" :type="'button'" wire:click="registerUser" wire:loading.attr="disabled" >
                         <div class='flex gap-x-1' >
                             <x-lucide-user-plus class="size-5" wire:loading.remove wire:target="registerUser"/>
@@ -34,7 +34,7 @@
                             <span class="xs:block">Create User</span>
                         </div>
                     </x-elements.button>
-                    @else
+                    @elseif(!empty($loadData['user_id']))
                     <x-elements.button :href="'#'" :variant="'warning'" :style="'outlined'" :type="'button'" wire:click="resetUser"  wire:loading.attr="disabled">
                         <div class='flex gap-x-1' >
                             <x-lucide-rotate-ccw class="size-5" wire:loading.remove wire:target="resetUser"/>
