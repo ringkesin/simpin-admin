@@ -12,13 +12,13 @@
     </div>
     <div class="grid grid-cols-3 gap-5">
         <div class="px-5 py-5 bg-white rounded-lg shadow-lg shadow-slate-300/50">
-            <h2 class="font-bold">Jumlah Anggota</h2>
+            <h2 class="font-bold">Jumlah Anggota Aktif</h2>
             <div class="grid items-center grid-cols-3 pt-3">
                 <div class="text-green-500">
                     <x-lucide-user class="size-10"/>
                 </div>
                 <div class="flex justify-end">
-                    <span class="text-2xl font-semibold">100</span>
+                    <span class="text-2xl font-semibold">{{$this->anggotaCount()}}</span>
                 </div>
             </div>
         </div>

@@ -3,6 +3,7 @@
 namespace App\Livewire\Page;
 
 use Livewire\Component;
+use App\Models\Master\AnggotaModels;
 
 class Dashboard extends Component
 {
@@ -16,6 +17,17 @@ class Dashboard extends Component
         $this->breadcrumb = [
             ['link' => null, 'label' => 'Dashboard']
         ];
+    }
+
+    public function anggotaCount() {
+        $anggotaCount = AnggotaModels::where(function ($query) {
+                                        $query->whereNull('valid_to')
+                                            ->orWhere('valid_to', '<', now());
+                                    })
+                                    ->where('valid_from', '<=', now())
+                                    ->count();
+
+        return $anggotaCount;
     }
 
     public function render()
