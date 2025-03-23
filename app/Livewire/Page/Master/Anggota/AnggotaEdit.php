@@ -69,6 +69,7 @@ class AnggotaEdit extends Component
             'tgl_lahir' => 'required|date',
             'tanggal_masuk' => 'required|date',
             'valid_from' => 'required|date',
+            'valid_to' => 'date|nullable'
         ], [
             'nomor_anggota.required' => 'Nomor Anggota required',
             'nama.required' => 'User required.',

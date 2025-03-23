@@ -131,7 +131,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="date" id="valid_from" name="valid_from" :value="''" wire:model.lazy="valid_from"/>
+                            <x-form.input class="w-full" type="date" id="valid_from" name="valid_from" :value="''" wire:model="valid_from"/>
                         </div>
                     </div>
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
@@ -141,7 +141,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="date" id="valid_to" name="valid_to" :value="''" wire:model.lazy="valid_to"/>
+                            <x-form.input class="w-full" type="date" id="valid_to" name="valid_to" :value="''" wire:model="valid_to"/>
                         </div>
                     </div>
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
