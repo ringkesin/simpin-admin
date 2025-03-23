@@ -68,10 +68,22 @@ class AnggotaTable extends DataTableComponent
             Column::make("Nama", "nama")
                 ->sortable()
                 ->searchable(),
-            Column::make("Valid from", "valid_from")
+            Column::make("Valid Dari", "valid_from")
                 ->sortable(),
-            Column::make("Valid to", "valid_to")
+            Column::make("Valid Sampai", "valid_to")
                 ->sortable(),
+            Column::make("Anggota ?", "is_registered")
+                ->sortable()
+                ->searchable()
+                ->format(function ($value, $column, $row) {
+                    return empty($value) ? '<span class="text-sm font-semibold text-white px-1.5 bg-blue-500 rounded-full">Belum</span>' :  '<span class="text-sm font-semibold text-white px-1.5 bg-green-500 rounded-full">Sudah</span>';
+                })->html(),
+            Column::make("Terdaftar di User", "user_id")
+                ->sortable()
+                ->searchable()
+                ->format(function ($value, $column, $row) {
+                    return empty($value) ? '<span class="text-sm font-semibold text-white px-1.5 bg-blue-500 rounded-full">Belum</span>' :  '<span class="text-sm font-semibold text-white px-1.5 bg-green-500 rounded-full">Sudah</span>';
+                })->html(),
         ];
     }
 
