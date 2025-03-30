@@ -202,5 +202,23 @@
                 </div>
             </div>
         </div>
+        <div class="mt-5">
+            <div class="grid w-full grid-cols-1 gap-4 px-5 py-5 text-xl font-bold place-items-center">
+                <span>Detail Atribut Anggota</span>
+            </div>
+            <hr class="px-5 py-5">
+            <div class="grid grid-cols-2 gap-10">
+                @foreach ($loadDataAttr as $attr)
+                    <div>
+                        <x-elements.detail label="{{ $attr['atribut_value'] }}">
+                            @php
+                                $pp = ($attr['atribut_attachment']) ? '/storage/'.$attr['atribut_attachment'] : asset('assets/img/blank-doc.png');
+                            @endphp
+                            <img class='rounded-2xl' src="{{ $pp }}" width="130">
+                        </x-elements.detail>
+                    </div>
+                @endforeach
+            </div>
+        </div>
     </div>
 </div>

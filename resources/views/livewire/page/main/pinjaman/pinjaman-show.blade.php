@@ -70,6 +70,21 @@
             </div>
         </div>
         <div class="mt-5">
+            <x-elements.header-form>Detail Atribut Anggota</x-header-form>
+            <div class="grid grid-cols-2 gap-10">
+                @foreach ($loadDataAttr as $attr)
+                    <div>
+                        <x-elements.detail label="{{ $attr['atribut_value'] }}">
+                            @php
+                                $pp = ($attr['atribut_attachment']) ? '/storage/'.$attr['atribut_attachment'] : asset('assets/img/blank-doc.png');
+                            @endphp
+                            <img class='rounded-2xl' src="{{ $pp }}" width="130">
+                        </x-elements.detail>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        <div class="mt-5">
             <x-elements.header-form>Approval</x-header-form>
             <form wire:submit="saveApproval">
                 <x-elements.detail label="Jumlah Pinjaman yang Disetujui">

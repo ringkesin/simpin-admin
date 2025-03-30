@@ -10,6 +10,7 @@ use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
 use App\Models\Main\PinjamanModels;
 use App\Models\Master\StatusPengajuanModels;
+use App\Models\Master\AnggotaAtributModels;
 
 class PinjamanShow extends Component
 {
@@ -20,7 +21,9 @@ class PinjamanShow extends Component
     public $titlePage;
     public $menuCode;
 
-    public $loadData;
+    public $loadData = [];
+    public $loadDataAttr = [];
+
     public $listStatus;
     public $id;
     public $ri_jumlah_pinjaman;
@@ -45,6 +48,12 @@ class PinjamanShow extends Component
         $this->ri_jumlah_pinjaman = $this->loadData['ri_jumlah_pinjaman'];
         $this->prakiraan_nilai_pasar = $this->loadData['prakiraan_nilai_pasar'];
         $this->p_status_pengajuan_id = $this->loadData['p_status_pengajuan_id'];
+        $this->getDataAttr($data['p_anggota_id']);
+    }
+
+    public function getDataAttr($id) {
+        $data = AnggotaAtributModels::where('p_anggota_id', '=', $id)->get();
+        $this->loadDataAttr = $data;
     }
 
     public function listStatusPinjaman() {

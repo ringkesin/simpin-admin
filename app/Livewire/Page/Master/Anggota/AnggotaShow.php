@@ -5,6 +5,7 @@ namespace App\Livewire\Page\Master\Anggota;
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 use App\Models\Master\AnggotaModels;
+use App\Models\Master\AnggotaAtributModels;
 use App\Models\User;
 use App\Models\Rbac\RoleUserModel;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +21,8 @@ class AnggotaShow extends Component
     public $titlePage;
     public $menuCode;
 
-    public $loadData;
+    public $loadData = [];
+    public $loadDataAttr = [];
     public $id;
     public $tglLahir;
 
@@ -35,12 +37,18 @@ class AnggotaShow extends Component
 
         $this->id = $id;
         $this->getData($id);
+        $this->getDataAttr($id);
     }
 
     public function getData($id) {
         $data = AnggotaModels::find($id);
         $this->loadData = $data;
         $this->tglLahir = str_replace("-", "", $this->loadData['tgl_lahir']);
+    }
+
+    public function getDataAttr($id) {
+        $data = AnggotaAtributModels::where('p_anggota_id', '=', $id)->get();
+        $this->loadDataAttr = $data;
     }
 
     public function registerUser() {
