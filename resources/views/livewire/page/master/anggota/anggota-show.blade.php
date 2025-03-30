@@ -94,7 +94,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$this->setIfNull($loadData['email'], '')}}
+                            {{$this->setIfNull($loadData['email'], '-')}}
                         </div>
                     </div>
                     <!-- Group Input Mobile -->
@@ -105,7 +105,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$this->setIfNull($loadData['mobile'], '')}}
+                            {{$this->setIfNull($loadData['mobile'], '-')}}
                         </div>
                     </div>
                     <!-- Group Input NIK -->
@@ -127,7 +127,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['ktp']}}
+                            {{$this->setIfNull($loadData['ktp'], '-')}}
                         </div>
                     </div>
                     <!-- Group Input Alamat -->
@@ -138,7 +138,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['alamat']}}
+                            {{$this->setIfNull($loadData['alamat'], '-')}}
                         </div>
                     </div>
                     <!-- Group Input Tanggal Lahir -->
@@ -182,7 +182,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['valid_to']}}
+                            {{$this->setIfNull($loadData['valid_to'], '-')}}
                         </div>
                     </div>
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
