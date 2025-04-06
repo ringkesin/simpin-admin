@@ -12,7 +12,7 @@ use App\Models\Master\AnggotaModels;
 use App\Models\Master\AnggotaAtributModels;
 use Exception;
 
-class AnggotaController extends BaseController
+class MasterAnggotaController extends BaseController
 {
     public function register(Request $request)
     {

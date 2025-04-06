@@ -4,8 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FileController;
-use App\Http\Controllers\Api\UnitController;
-use App\Http\Controllers\Api\AnggotaController;
+use App\Http\Controllers\Api\MasterUnitController;
+use App\Http\Controllers\Api\MasterAnggotaController;
+use App\Http\Controllers\Api\MasterJenisPinjamanController;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
 
@@ -21,13 +22,15 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    Route::get('/anggota/{p_anggota_id}', [AnggotaController::class, 'getAnggotaById']);
+    Route::get('/anggota/{p_anggota_id}', [MasterAnggotaController::class, 'getAnggotaById']);
 
     Route::post('/file/get-link', [FileController::class, 'getLink']);
+
+    Route::get('/master/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);
 });
 
-Route::post('/anggota/register', [AnggotaController::class, 'register']);
-Route::get('/unit', [UnitController::class, 'getAll']);
+Route::post('/anggota/register', [MasterAnggotaController::class, 'register']);
+Route::get('/master/unit', [MasterUnitController::class, 'getAll']);
 
 Route::get('/secure-file/{path}', [FileController::class, 'getSecureFile'])
         ->where('path', '.*')
