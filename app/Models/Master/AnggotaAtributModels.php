@@ -23,8 +23,19 @@ class AnggotaAtributModels extends Model
         'updated_by'
     ];
 
+    protected $appends = ['atribut_kode_beautify'];
+
     public function masterAnggota(): HasOne
     {
         return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id');
+    }
+
+    public function getAtributKodeBeautifyAttribute()
+    {
+        return match ($this->atribut_kode) {
+            'ktp' => 'KTP',
+            'kartu_pegawai' => 'Kartu Pegawai',
+            default => ucwords(str_replace('_', ' ', $this->atribut_kode)),
+        };
     }
 }

@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\FileController;
 use App\Http\Controllers\Api\MasterUnitController;
 use App\Http\Controllers\Api\MasterAnggotaController;
 use App\Http\Controllers\Api\MasterJenisPinjamanController;
+use App\Http\Controllers\Api\MasterKeperluanPinjamanController;
+use App\Http\Controllers\Api\PinjamanController;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
 
@@ -23,10 +25,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/anggota/{p_anggota_id}', [MasterAnggotaController::class, 'getAnggotaById']);
-
     Route::post('/file/get-link', [FileController::class, 'getLink']);
-
     Route::get('/master/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);
+    Route::get('/master/keperluan-pinjaman', [MasterKeperluanPinjamanController::class, 'getAll']);
+    Route::post('/pinjaman/pengajuan', [PinjamanController::class, 'pengajuan']);
 });
 
 Route::post('/anggota/register', [MasterAnggotaController::class, 'register']);
