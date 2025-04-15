@@ -59,7 +59,6 @@ class ShuController extends BaseController
                                         + $shu['shu_ditabung']
                                         + $shu['shu_tahun_lalu'];
 
-                    $shu['bulan'] = $request->bulan;
                     $shu['tahun'] = $request->tahun;
                     $shu['total_shu'] = $total_shu;
                     $shuPeriod = $shu;
