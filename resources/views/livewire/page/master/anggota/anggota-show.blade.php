@@ -209,13 +209,17 @@
             <hr class="px-5 py-5">
             <div class="grid grid-cols-2 gap-10">
                 @foreach ($loadDataAttr as $attr)
-                    <div>
-                        <x-elements.detail label="{{ $attr['atribut_value'] }}">
-                            @php
-                                $pp = ($attr['atribut_attachment']) ? '/storage/'.$attr['atribut_attachment'] : asset('assets/img/blank-doc.png');
-                            @endphp
-                            <img class='rounded-2xl' src="{{ $pp }}" width="130">
-                        </x-elements.detail>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="p_anggota_id">
+                                {{ $attr['atribut_kode'] }}
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $attr['atribut_attachment'] }}' target='_blank'>
+                                {{ $attr['atribut_value'] }} <x-lucide-external-link class="w-4"/> 
+                            </a>
+                        </div>
                     </div>
                 @endforeach
             </div>

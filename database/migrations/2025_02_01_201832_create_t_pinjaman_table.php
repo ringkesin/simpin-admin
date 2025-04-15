@@ -15,18 +15,29 @@ return new class extends Migration
             $table->bigIncrements('t_pinjaman_id');
             $table->unsignedBigInteger('p_anggota_id');
             $table->unsignedBigInteger('p_jenis_pinjaman_id');
+            $table->json('p_pinjaman_keperluan_ids')->nullable();
+            $table->string('jenis_barang')->nullable()->comment('Diisi Jika Jenis Pinjaman Kredit Barang');
+            $table->string('merk_type')->nullable()->comment('Diisi Jika Jenis Pinjaman Kredit Barang');
+            $table->integer('tenor')->comment('Dalam Bulan');
+
             $table->double('ra_jumlah_pinjaman', 15, 2);
             $table->double('ri_jumlah_pinjaman', 15, 2);
-            $table->string('alamat')->nullable();
-            $table->double('prakiraan_nilai_pasar', 15, 2);
+
+            $table->string('jaminan')->nullable();
+            $table->string('jaminan_keterangan')->nullable();
+            $table->double('jaminan_perkiraan_nilai', 15, 2);
+            
             $table->string('no_rekening')->nullable();
             $table->string('bank')->nullable();
+            
             $table->string('doc_ktp')->nullable();
-            $table->string('doc_surat_nikah')->nullable();
-            $table->string('dok_kk')->nullable();
-            $table->string('dok_kartu_anggota')->nullable();
-            $table->string('dok_slip_gaji')->nullable();
+            $table->string('doc_ktp_suami_istri')->nullable();
+            $table->string('doc_kk')->nullable();
+            $table->string('doc_kartu_anggota')->nullable();
+            $table->string('doc_slip_gaji')->nullable();
+
             $table->unsignedBigInteger('p_status_pengajuan_id');
+
             $table->timestamps($precision = 0);
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->unsignedInteger('created_by')->nullable();

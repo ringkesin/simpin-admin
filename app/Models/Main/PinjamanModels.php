@@ -26,14 +26,19 @@ class PinjamanModels extends Model
     protected $fillable = [
         'p_anggota_id',
         'p_jenis_pinjaman_id',
+        'p_pinjaman_keperluan_ids',
+        'jenis_barang',
+        'merk_type',
+        'tenor',
         'ra_jumlah_pinjaman',
         'ri_jumlah_pinjaman',
-        'alamat',
-        'prakiraan_nilai_pasar',
+        'jaminan',
+        'jaminan_keterangan',
+        'jaminan_perkiraan_nilai',
         'no_rekening',
         'bank',
         'doc_ktp',
-        'doc_surat_nikah',
+        'doc_ktp_suami_istri',
         'doc_kk',
         'doc_kartu_anggota',
         'doc_slip_gaji',
@@ -42,6 +47,10 @@ class PinjamanModels extends Model
         'updated_by',
         'deleted_by',
         'deleted_at'
+    ];
+
+    protected $casts = [
+        'p_pinjaman_keperluan_ids' => 'array',
     ];
 
     public function updatedBy() : HasOne

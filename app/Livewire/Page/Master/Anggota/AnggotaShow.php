@@ -11,6 +11,8 @@ use App\Models\Rbac\RoleUserModel;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class AnggotaShow extends Component
 {
@@ -48,7 +50,25 @@ class AnggotaShow extends Component
 
     public function getDataAttr($id) {
         $data = AnggotaAtributModels::where('p_anggota_id', '=', $id)->get();
-        $this->loadDataAttr = $data;
+        $attribute = [];
+        foreach($data as $d){
+
+            $fileUrl = null;
+            if (Storage::exists($d->atribut_attachment)) {
+                $fileUrl = URL::temporarySignedRoute(
+                    'secure-file', // Route name
+                    now()->addMinutes(1), // Expiration time
+                    ['path' => $d->atribut_attachment] // File path parameter
+                );
+            }
+
+            $attribute[] = [
+                'atribut_kode' => $d->atribut_kode_beautify,
+                'atribut_value' => $d->atribut_value,
+                'atribut_attachment' => $fileUrl
+            ];
+        }
+        $this->loadDataAttr = $attribute;
     }
 
     public function registerUser() {
