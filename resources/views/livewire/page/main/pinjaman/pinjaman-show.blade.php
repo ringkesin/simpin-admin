@@ -157,9 +157,9 @@
                         </div>
                     </div>
                 </x-elements.detail>
-                <x-elements.detail label="Status Pengajuan">
+                <x-elements.detail label="Status Pinjaman">
                     <x-form.select-single name="p_status_pengajuan_id" wire:model.lazy="p_status_pengajuan_id" class="w-full md:w-72" id="p_status_pengajuan_id">
-                        <option value="">Pilih Prakiraan Nilai Pasar</option>
+                        <option value="">Pilih Status Pinjaman</option>
                             @foreach ($this->listStatusPinjaman() as $value)
                                 <option value="{{ $value['p_status_pengajuan_id'] }}">{{ $value['nama'] }}</option>
                             @endforeach
