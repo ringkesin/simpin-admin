@@ -40,46 +40,82 @@
             <x-elements.header-form>Dokumen Peminjam</x-header-form>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <x-elements.detail label="KTP">
-                        @php
-                            $pp = ($loadData['doc_ktp']) ? '/storage/'.$loadData['doc_ktp'] : asset('assets/img/blank-doc.png');
-                        @endphp
-                        <img class='rounded-2xl' src="{{ $pp }}" width="130">
-                    </x-elements.detail>
-                    <x-elements.detail label="Surat Nikah">
-                        @php
-                            $pp = ($loadData['doc_surat_nikah']) ? '/storage/'.$loadData['doc_surat_nikah'] : asset('assets/img/blank-doc.png');
-                        @endphp
-                        <img class='rounded-2xl' src="{{ $pp }}" width="130">
-                    </x-elements.detail>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="doc_ktp">
+                                KTP
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_ktp_sec'] }}' target='_blank'>
+                                <p class="w-64 overflow-hidden text-ellipsis whitespace-nowrap">{{ $loadData['doc_ktp_name'] }}</p> <x-lucide-external-link class="w-4"/>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="doc_ktp_suami_istri">
+                                Surat Nikah
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_ktp_suami_istri_sec'] }}' target='_blank'>
+                                <p class="w-64 overflow-hidden text-ellipsis whitespace-nowrap">{{ $loadData['doc_ktp_suami_istri_name'] }}</p> <x-lucide-external-link class="w-4"/>
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 <div>
-                    <x-elements.detail label="Kartu Keluarga">
-                        @php
-                            $pp = ($loadData['doc_kk']) ? '/storage/'.$loadData['doc_kk'] : asset('assets/img/blank-doc.png');
-                        @endphp
-                        <img class='rounded-2xl' src="{{ $pp }}" width="130">
-                    </x-elements.detail>
-                    <x-elements.detail label="Slip Gaji">
-                        @php
-                            $pp = ($loadData['doc_slip_gaji']) ? '/storage/'.$loadData['doc_slip_gaji'] : asset('assets/img/blank-doc.png');
-                        @endphp
-                        <img class='rounded-2xl' src="{{ $pp }}" width="130">
-                    </x-elements.detail>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="doc_kk">
+                                Kartu Keluarga
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_kk_sec'] }}' target='_blank'>
+                                <p class="w-64 overflow-hidden text-ellipsis whitespace-nowrap">{{ $loadData['doc_kk_name'] }}</p> <x-lucide-external-link class="w-4"/>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="doc_slip_gaji">
+                                Slip Gaji
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_slip_gaji_sec'] }}' target='_blank'>
+                                <p class="w-64 overflow-hidden text-ellipsis whitespace-nowrap">{{ $loadData['doc_slip_gaji_name'] }}</p> <x-lucide-external-link class="w-4"/>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="mt-5">
             <x-elements.header-form>Detail Atribut Anggota</x-header-form>
-            <div class="grid grid-cols-2 gap-10">
+            <div class="grid grid-cols-2 gap-4">
                 @foreach ($loadDataAttr as $attr)
-                    <div>
+                    {{-- <div>
                         <x-elements.detail label="{{ $attr['atribut_value'] }}">
                             @php
                                 $pp = ($attr['atribut_attachment']) ? '/storage/'.$attr['atribut_attachment'] : asset('assets/img/blank-doc.png');
                             @endphp
                             <img class='rounded-2xl' src="{{ $pp }}" width="130">
                         </x-elements.detail>
+                    </div> --}}
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="p_anggota_id">
+                                {{ $attr['atribut_kode'] }}
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $attr['atribut_attachment'] }}' target='_blank'>
+                                {{ $attr['atribut_value'] }} <x-lucide-external-link class="w-4"/>
+                            </a>
+                        </div>
                     </div>
                 @endforeach
             </div>

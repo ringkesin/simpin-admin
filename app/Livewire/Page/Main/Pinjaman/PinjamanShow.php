@@ -12,6 +12,9 @@ use App\Models\Main\PinjamanModels;
 use App\Models\Master\StatusPengajuanModels;
 use App\Models\Master\AnggotaAtributModels;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+
 class PinjamanShow extends Component
 {
     use MyAlert;
@@ -48,12 +51,76 @@ class PinjamanShow extends Component
         $this->ri_jumlah_pinjaman = $this->loadData['ri_jumlah_pinjaman'];
         $this->prakiraan_nilai_pasar = $this->loadData['prakiraan_nilai_pasar'];
         $this->p_status_pengajuan_id = $this->loadData['p_status_pengajuan_id'];
+
+        $fileUrlDocKtp = null;
+        if (Storage::exists($this->loadData['doc_ktp'])) {
+            $fileUrlDocKtp = URL::temporarySignedRoute(
+                'secure-file', // Route name
+                now()->addMinutes(1), // Expiration time
+                ['path' => $this->loadData['doc_ktp']] // File path parameter
+            );
+        }
+        $this->loadData['doc_ktp_sec'] = $fileUrlDocKtp;
+        $this->loadData['doc_ktp_name'] = basename($this->loadData['doc_ktp']);
+
+        $fileUrlSuamiIstri = null;
+        if (Storage::exists($this->loadData['doc_ktp_suami_istri'])) {
+            $fileUrlSuamiIstri = URL::temporarySignedRoute(
+                'secure-file', // Route name
+                now()->addMinutes(1), // Expiration time
+                ['path' => $this->loadData['doc_ktp_suami_istri']] // File path parameter
+            );
+        }
+        $this->loadData['doc_ktp_suami_istri_sec'] = $fileUrlSuamiIstri;
+        $this->loadData['doc_ktp_suami_istri_name'] = basename($this->loadData['doc_ktp_suami_istri']);
+
+        $fileUrlKK = null;
+        if (Storage::exists($this->loadData['doc_kk'])) {
+            $fileUrlKK = URL::temporarySignedRoute(
+                'secure-file', // Route name
+                now()->addMinutes(1), // Expiration time
+                ['path' => $this->loadData['doc_kk']] // File path parameter
+            );
+        }
+        $this->loadData['doc_kk_sec'] = $fileUrlKK;
+        $this->loadData['doc_kk_name'] = basename($this->loadData['doc_kk']);
+
+        $fileUrlSlipGaji = null;
+        if (Storage::exists($this->loadData['doc_slip_gaji'])) {
+            $fileUrlSlipGaji = URL::temporarySignedRoute(
+                'secure-file', // Route name
+                now()->addMinutes(1), // Expiration time
+                ['path' => $this->loadData['doc_slip_gaji']] // File path parameter
+            );
+        }
+        $this->loadData['doc_slip_gaji_sec'] = $fileUrlSlipGaji;
+        $this->loadData['doc_slip_gaji_name'] = basename($this->loadData['doc_slip_gaji']);
+
         $this->getDataAttr($data['p_anggota_id']);
     }
 
     public function getDataAttr($id) {
         $data = AnggotaAtributModels::where('p_anggota_id', '=', $id)->get();
-        $this->loadDataAttr = $data;
+        // $this->loadDataAttr = $data;
+        $attribute = [];
+        foreach($data as $d){
+
+            $fileUrl = null;
+            if (Storage::exists($d->atribut_attachment)) {
+                $fileUrl = URL::temporarySignedRoute(
+                    'secure-file', // Route name
+                    now()->addMinutes(1), // Expiration time
+                    ['path' => $d->atribut_attachment] // File path parameter
+                );
+            }
+
+            $attribute[] = [
+                'atribut_kode' => $d->atribut_kode_beautify,
+                'atribut_value' => $d->atribut_value,
+                'atribut_attachment' => $fileUrl
+            ];
+        }
+        $this->loadDataAttr = $attribute;
     }
 
     public function listStatusPinjaman() {
