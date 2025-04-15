@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Livewire\Page\Main\Shu;
+namespace App\Livewire\Page\Main\Tabungan;
 
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ShuTemplateExport;
+use App\Exports\TabunganTemplateExport;
 use PhpOffice\PhpSpreadsheet\IOFactory; // ✅ Impor ini!
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
-use App\Models\Main\ShuModels;
+use App\Models\Main\TabunganModels;
 use App\Models\Master\AnggotaModels;
 use Livewire\WithFileUploads;
 
-class ShuExport extends Component
+class TabunganImport extends Component
 {
     use MyAlert;
     use MyHelpers;
@@ -30,18 +30,18 @@ class ShuExport extends Component
     public $data;
 
     public function mount() {
-        $this->titlePage = 'Export SHU Anggota';
-        $this->menuCode = 'shu';
+        $this->titlePage = 'Import Tabungan Anggota';
+        $this->menuCode = 'tabungan';
         $this->breadcrumb = [
-            ['link' => null, 'label' => 'SHU'],
-            ['link' => route('main.shu.list'), 'label' => 'List'],
-            ['link' => route('main.shu.export'), 'label' => 'Export']
+            ['link' => null, 'label' => 'Tabungan'],
+            ['link' => route('main.tabungan.list'), 'label' => 'List'],
+            ['link' => route('main.tabungan.import'), 'label' => 'Import']
         ];
     }
 
     public function downloadTemplate()
     {
-        return Excel::download(new ShuTemplateExport, 'template_shu.xlsx');
+        return Excel::download(new TabunganTemplateExport, 'template_tabungan.xlsx');
     }
 
     public function updatedFiles()
@@ -72,14 +72,18 @@ class ShuExport extends Component
         foreach ($rows as $row) {
             if (
                 !empty($row[0]) &&
-                !empty($row[1])
+                !empty($row[1]) &&
+                !empty($row[2])
                 ) {
                 $this->data[] = [
                     'nomor_anggota' => trim($row[0]),
-                    'tahun' => $row[1],
-                    'shu_diterima' => floatval($row[2]),
-                    'shu_dibagi' => floatval($row[3]),
-                    'shu_ditabung' => floatval($row[4])
+                    'bulan' => $row[1],
+                    'tahun' => $row[2],
+                    'simpanan_pokok' => floatval($row[3]),
+                    'simpanan_wajib' => floatval($row[4]),
+                    'tabungan_sukarela' => floatval($row[5]),
+                    'tabungan_indir' => floatval($row[6]),
+                    'kompensasi_masa_kerja' => floatval($row[7]),
                 ];
             }
         }
@@ -92,23 +96,28 @@ class ShuExport extends Component
             foreach ($this->data as $dataLoop) {
                 $dataFind = AnggotaModels::where('nomor_anggota', $dataLoop['nomor_anggota'])->first();
                 if(isset($dataFind['p_anggota_id'])) {
-                    $checkDuplicatePeriod = ShuModels::where([
+                    $checkDuplicatePeriod = TabunganModels::where([
+                        ['bulan', '=', $dataLoop['bulan']],
                         ['tahun', '=', $dataLoop['tahun']],
                         ['p_anggota_id', '=', $dataFind['p_anggota_id']]
                     ])->count();
 
                     if($checkDuplicatePeriod == 0) {
-                        ShuModels::create([
+                        TabunganModels::create([
                             'p_anggota_id' => $dataFind['p_anggota_id'],
+                            'bulan' => $dataLoop['bulan'],
                             'tahun' => $dataLoop['tahun'],
-                            'shu_diterima' => $dataLoop['shu_diterima'],
-                            'shu_dibagi' => $dataLoop['shu_dibagi'],
-                            'shu_ditabung' => $dataLoop['shu_ditabung']
+                            'simpanan_pokok' => $dataLoop['simpanan_pokok'],
+                            'simpanan_wajib' => $dataLoop['simpanan_wajib'],
+                            'tabungan_sukarela' => $dataLoop['tabungan_sukarela'],
+                            'tabungan_indir' => $dataLoop['tabungan_indir'],
+                            'kompensasi_masa_kerja' => $dataLoop['kompensasi_masa_kerja'],
                         ]);
                     }
                 }
             }
-            $redirect = route('main.shu.list');
+            // dd(route('main.tabungan.list'));
+            $redirect = route('main.tabungan.list');
             return $this->sweetalert([
                 'icon' => 'success',
                 'confirmButtonText' => 'Okay',
@@ -134,7 +143,7 @@ class ShuExport extends Component
 
     public function render()
     {
-        return view('livewire.page.main.shu.shu-export')
+        return view('livewire.page.main.tabungan.tabungan-import')
         ->layoutData([
             'title' => $this->titlePage, //Page Title
             'breadcrumbs' => $this->breadcrumb,

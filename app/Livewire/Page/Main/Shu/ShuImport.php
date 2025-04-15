@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Livewire\Page\Main\Tagihan;
+namespace App\Livewire\Page\Main\Shu;
 
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\TagihanTemplateExport;
+use App\Exports\ShuTemplateExport;
 use PhpOffice\PhpSpreadsheet\IOFactory; // ✅ Impor ini!
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
-use App\Models\Main\TagihanModels;
+use App\Models\Main\ShuModels;
 use App\Models\Master\AnggotaModels;
 use Livewire\WithFileUploads;
 
-class TagihanExport extends Component
+class ShuImport extends Component
 {
     use MyAlert;
     use MyHelpers;
@@ -30,18 +30,18 @@ class TagihanExport extends Component
     public $data;
 
     public function mount() {
-        $this->titlePage = 'Export Tagihan Anggota';
-        $this->menuCode = 'tagihan';
+        $this->titlePage = 'Import SHU Anggota';
+        $this->menuCode = 'shu';
         $this->breadcrumb = [
-            ['link' => null, 'label' => 'Tagihan'],
-            ['link' => route('main.tagihan.list'), 'label' => 'List'],
-            ['link' => route('main.tagihan.export'), 'label' => 'Export']
+            ['link' => null, 'label' => 'SHU'],
+            ['link' => route('main.shu.list'), 'label' => 'List'],
+            ['link' => route('main.shu.import'), 'label' => 'Import']
         ];
     }
 
     public function downloadTemplate()
     {
-        return Excel::download(new TagihanTemplateExport, 'template_tagihan.xlsx');
+        return Excel::download(new ShuTemplateExport, 'template_shu.xlsx');
     }
 
     public function updatedFiles()
@@ -72,16 +72,14 @@ class TagihanExport extends Component
         foreach ($rows as $row) {
             if (
                 !empty($row[0]) &&
-                !empty($row[1]) &&
-                !empty($row[2])
+                !empty($row[1])
                 ) {
                 $this->data[] = [
                     'nomor_anggota' => trim($row[0]),
-                    'bulan' => $row[1],
-                    'tahun' => $row[2],
-                    'uraian' => $row[3],
-                    'jumlah' => floatval($row[4]),
-                    'remarks' => $row[5]
+                    'tahun' => $row[1],
+                    'shu_diterima' => floatval($row[2]),
+                    'shu_dibagi' => floatval($row[3]),
+                    'shu_ditabung' => floatval($row[4])
                 ];
             }
         }
@@ -94,18 +92,23 @@ class TagihanExport extends Component
             foreach ($this->data as $dataLoop) {
                 $dataFind = AnggotaModels::where('nomor_anggota', $dataLoop['nomor_anggota'])->first();
                 if(isset($dataFind['p_anggota_id'])) {
-                    TagihanModels::create([
-                        'p_anggota_id' => $dataFind['p_anggota_id'],
-                        'bulan' => $dataLoop['bulan'],
-                        'tahun' => $dataLoop['tahun'],
-                        'uraian' => $dataLoop['uraian'],
-                        'jumlah' => $dataLoop['jumlah'],
-                        'remarks' => $dataLoop['remarks']
-                    ]);
+                    $checkDuplicatePeriod = ShuModels::where([
+                        ['tahun', '=', $dataLoop['tahun']],
+                        ['p_anggota_id', '=', $dataFind['p_anggota_id']]
+                    ])->count();
+
+                    if($checkDuplicatePeriod == 0) {
+                        ShuModels::create([
+                            'p_anggota_id' => $dataFind['p_anggota_id'],
+                            'tahun' => $dataLoop['tahun'],
+                            'shu_diterima' => $dataLoop['shu_diterima'],
+                            'shu_dibagi' => $dataLoop['shu_dibagi'],
+                            'shu_ditabung' => $dataLoop['shu_ditabung']
+                        ]);
+                    }
                 }
             }
-            // dd(route('main.tagihan.list'));
-            $redirect = route('main.tagihan.list');
+            $redirect = route('main.shu.list');
             return $this->sweetalert([
                 'icon' => 'success',
                 'confirmButtonText' => 'Okay',
@@ -131,7 +134,7 @@ class TagihanExport extends Component
 
     public function render()
     {
-        return view('livewire.page.main.tagihan.tagihan-export')
+        return view('livewire.page.main.shu.shu-import')
         ->layoutData([
             'title' => $this->titlePage, //Page Title
             'breadcrumbs' => $this->breadcrumb,

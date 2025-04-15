@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Livewire\Page\Main\Tabungan;
+namespace App\Livewire\Page\Main\Tagihan;
 
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\TabunganTemplateExport;
+use App\Exports\TagihanTemplateExport;
 use PhpOffice\PhpSpreadsheet\IOFactory; // ✅ Impor ini!
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
-use App\Models\Main\TabunganModels;
+use App\Models\Main\TagihanModels;
 use App\Models\Master\AnggotaModels;
 use Livewire\WithFileUploads;
 
-class TabunganExport extends Component
+class TagihanImport extends Component
 {
     use MyAlert;
     use MyHelpers;
@@ -30,18 +30,18 @@ class TabunganExport extends Component
     public $data;
 
     public function mount() {
-        $this->titlePage = 'Export Tabungan Anggota';
-        $this->menuCode = 'tabungan';
+        $this->titlePage = 'Import Tagihan Anggota';
+        $this->menuCode = 'tagihan';
         $this->breadcrumb = [
-            ['link' => null, 'label' => 'Tabungan'],
-            ['link' => route('main.tabungan.list'), 'label' => 'List'],
-            ['link' => route('main.tabungan.export'), 'label' => 'Export']
+            ['link' => null, 'label' => 'Tagihan'],
+            ['link' => route('main.tagihan.list'), 'label' => 'List'],
+            ['link' => route('main.tagihan.import'), 'label' => 'Import']
         ];
     }
 
     public function downloadTemplate()
     {
-        return Excel::download(new TabunganTemplateExport, 'template_tabungan.xlsx');
+        return Excel::download(new TagihanTemplateExport, 'template_tagihan.xlsx');
     }
 
     public function updatedFiles()
@@ -79,11 +79,9 @@ class TabunganExport extends Component
                     'nomor_anggota' => trim($row[0]),
                     'bulan' => $row[1],
                     'tahun' => $row[2],
-                    'simpanan_pokok' => floatval($row[3]),
-                    'simpanan_wajib' => floatval($row[4]),
-                    'tabungan_sukarela' => floatval($row[5]),
-                    'tabungan_indir' => floatval($row[6]),
-                    'kompensasi_masa_kerja' => floatval($row[7]),
+                    'uraian' => $row[3],
+                    'jumlah' => floatval($row[4]),
+                    'remarks' => $row[5]
                 ];
             }
         }
@@ -96,28 +94,18 @@ class TabunganExport extends Component
             foreach ($this->data as $dataLoop) {
                 $dataFind = AnggotaModels::where('nomor_anggota', $dataLoop['nomor_anggota'])->first();
                 if(isset($dataFind['p_anggota_id'])) {
-                    $checkDuplicatePeriod = TabunganModels::where([
-                        ['bulan', '=', $dataLoop['bulan']],
-                        ['tahun', '=', $dataLoop['tahun']],
-                        ['p_anggota_id', '=', $dataFind['p_anggota_id']]
-                    ])->count();
-
-                    if($checkDuplicatePeriod == 0) {
-                        TabunganModels::create([
-                            'p_anggota_id' => $dataFind['p_anggota_id'],
-                            'bulan' => $dataLoop['bulan'],
-                            'tahun' => $dataLoop['tahun'],
-                            'simpanan_pokok' => $dataLoop['simpanan_pokok'],
-                            'simpanan_wajib' => $dataLoop['simpanan_wajib'],
-                            'tabungan_sukarela' => $dataLoop['tabungan_sukarela'],
-                            'tabungan_indir' => $dataLoop['tabungan_indir'],
-                            'kompensasi_masa_kerja' => $dataLoop['kompensasi_masa_kerja'],
-                        ]);
-                    }
+                    TagihanModels::create([
+                        'p_anggota_id' => $dataFind['p_anggota_id'],
+                        'bulan' => $dataLoop['bulan'],
+                        'tahun' => $dataLoop['tahun'],
+                        'uraian' => $dataLoop['uraian'],
+                        'jumlah' => $dataLoop['jumlah'],
+                        'remarks' => $dataLoop['remarks']
+                    ]);
                 }
             }
-            // dd(route('main.tabungan.list'));
-            $redirect = route('main.tabungan.list');
+            // dd(route('main.tagihan.list'));
+            $redirect = route('main.tagihan.list');
             return $this->sweetalert([
                 'icon' => 'success',
                 'confirmButtonText' => 'Okay',
@@ -143,7 +131,7 @@ class TabunganExport extends Component
 
     public function render()
     {
-        return view('livewire.page.main.tabungan.tabungan-export')
+        return view('livewire.page.main.tagihan.tagihan-import')
         ->layoutData([
             'title' => $this->titlePage, //Page Title
             'breadcrumbs' => $this->breadcrumb,

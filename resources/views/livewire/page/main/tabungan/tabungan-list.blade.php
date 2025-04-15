@@ -15,9 +15,9 @@
                     </x-elements.button>
                 </div>
                 <div>
-                    <x-elements.button wire:navigate :href="route('main.tabungan.export')" button-type="{{ 'primary' }}" :type="'link'">
+                    <x-elements.button wire:navigate :href="route('main.tabungan.import')" button-type="{{ 'primary' }}" :type="'link'">
                         <x-lucide-folder-input class="size-3"/>
-                        <span class="xs:block">Export </span>
+                        <span class="xs:block">Import </span>
                     </x-elements.button>
                 </div>
             </div>
