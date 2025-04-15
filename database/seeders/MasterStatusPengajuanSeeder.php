@@ -14,13 +14,31 @@ class MasterStatusPengajuanSeeder extends Seeder
 
      protected $data = [
         [
+            'nama' => 'Draft',
+        ],
+        [
+            'nama' => 'Cancelled',
+        ],
+        [
             'nama' => 'Pending',
         ],
         [
             'nama' => 'Reject',
         ],
         [
+            'nama' => 'Under Review',
+        ],
+        [
             'nama' => 'Approve',
+        ],
+        [
+            'nama' => 'On installment',
+        ],
+        [
+            'nama' => 'Overdue',
+        ],
+        [
+            'nama' => 'Paid off'
         ]
     ];
 
