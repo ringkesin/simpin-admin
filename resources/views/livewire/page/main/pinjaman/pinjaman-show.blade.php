@@ -32,7 +32,9 @@
             <x-elements.header-form>Detail Pinjaman</x-header-form>
             <x-elements.detail label="Jenis Pinjaman">{{ $this->setIfNull($loadData['masterJenisPinjaman']['nama'],'-') }}</x-elements.detail>
             <x-elements.detail label="RA Pinjaman">{{ $this->setIfNull('Rp. '.$this->toRupiah($loadData['ra_jumlah_pinjaman']),'-') }}</x-elements.detail>
-            <x-elements.detail label="Alamat yang didaftarkan">{{ $this->setIfNull($loadData['alamat'],'-') }}</x-elements.detail>
+            <x-elements.detail label="Jaminan">{{ $this->setIfNull($loadData['jaminan'],'-') }}</x-elements.detail>
+            <x-elements.detail label="Keterangan Jaminan">{{ $this->setIfNull($loadData['jaminan_keterangan'],'-') }}</x-elements.detail>
+            <x-elements.detail label="Perkiraan Nilai Jaminan">{{ $this->setIfNull('Rp. '.$this->toRupiah($loadData['jaminan_perkiraan_nilai'],'-')) }}</x-elements.detail>
             <x-elements.detail label="No. Rekening">{{ $this->setIfNull($loadData['no_rekening'],'-') }}</x-elements.detail>
             <x-elements.detail label="Nama Bank">{{ $this->setIfNull($loadData['bank'],'-') }}</x-elements.detail>
         </div>
