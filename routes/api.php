@@ -9,6 +9,9 @@ use App\Http\Controllers\Api\MasterAnggotaController;
 use App\Http\Controllers\Api\MasterJenisPinjamanController;
 use App\Http\Controllers\Api\MasterKeperluanPinjamanController;
 use App\Http\Controllers\Api\PinjamanController;
+use App\Http\Controllers\Api\TabunganController;
+use App\Http\Controllers\Api\TagihanController;
+use App\Http\Controllers\Api\ShuController;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
 
@@ -29,6 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/master/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);
     Route::get('/master/keperluan-pinjaman', [MasterKeperluanPinjamanController::class, 'getAll']);
     Route::post('/pinjaman/pengajuan', [PinjamanController::class, 'pengajuan']);
+    Route::post('/tabungan', [TabunganController::class, 'getByAnggota']);
+    Route::post('/tagihan', [TagihanController::class, 'getByAnggota']);
+    Route::post('/shu', [ShuController::class, 'getByAnggota']);
 });
 
 Route::post('/anggota/register', [MasterAnggotaController::class, 'register']);

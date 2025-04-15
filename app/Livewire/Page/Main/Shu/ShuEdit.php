@@ -29,6 +29,7 @@ class ShuEdit extends Component
     public $shu_diterima;
     public $shu_dibagi;
     public $shu_ditabung;
+    public $shu_tahun_lalu;
 
     public function mount($id) {
         $this->titlePage = 'Update SHU Anggota';
@@ -53,6 +54,7 @@ class ShuEdit extends Component
         $this->shu_diterima = $this->loadData['shu_diterima'];
         $this->shu_dibagi = $this->loadData['shu_dibagi'];
         $this->shu_ditabung = $this->loadData['shu_ditabung'];
+        $this->shu_tahun_lalu = $this->loadData['shu_tahun_lalu'];
     }
 
     public function getAnggota() {
@@ -66,13 +68,15 @@ class ShuEdit extends Component
             'tahun' => 'required',
             'shu_diterima' =>  'required',
             'shu_dibagi' => 'required',
-            'shu_ditabung' => 'required'
+            'shu_ditabung' => 'required',
+            'shu_tahun_lalu' => 'required'
         ], [
             'p_anggota_id' => 'Nama Anggota required',
             'tahun.required' => 'Tahun required.',
             'shu_diterima.required' => 'SHU Diterima required.',
             'shu_dibagi.required' => 'SHU Dibagi required.',
             'shu_ditabung.required' => 'SHU Ditabung required.',
+            'shu_tahun_lalu.required' => 'SHU Tahun Lalu required'
         ]);
 
         try {
@@ -89,6 +93,7 @@ class ShuEdit extends Component
                     'shu_diterima' => $this->shu_diterima,
                     'shu_dibagi' => $this->shu_dibagi,
                     'shu_ditabung' => $this->shu_ditabung,
+                    'shu_tahun_lalu' => $this->shu_tahun_lalu,
                 ]);
 
                 if($post) {

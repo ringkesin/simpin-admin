@@ -15,9 +15,10 @@ return new class extends Migration
             $table->bigIncrements('t_shu_id');
             $table->unsignedBigInteger('p_anggota_id');
             $table->integer('tahun');
-            $table->double('shu_diterima', 15, 2);
-            $table->double('shu_dibagi', 15, 2);
-            $table->double('shu_ditabung', 15, 2);
+            $table->double('shu_diterima', 15, 2)->default(0);
+            $table->double('shu_dibagi', 15, 2)->default(0);
+            $table->double('shu_ditabung', 15, 2)->default(0);
+            $table->double('shu_tahun_lalu', 15, 2)->default(0);
             $table->timestamps($precision = 0);
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->unsignedInteger('created_by')->nullable();
