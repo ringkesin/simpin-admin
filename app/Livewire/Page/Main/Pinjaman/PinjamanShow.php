@@ -11,6 +11,7 @@ use App\Traits\MyHelpers;
 use App\Models\Main\PinjamanModels;
 use App\Models\Master\StatusPengajuanModels;
 use App\Models\Master\AnggotaAtributModels;
+use App\Models\Master\PinjamanKeperluanModels;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -95,6 +96,14 @@ class PinjamanShow extends Component
         }
         $this->loadData['doc_slip_gaji_sec'] = $fileUrlSlipGaji;
         $this->loadData['doc_slip_gaji_name'] = basename($this->loadData['doc_slip_gaji']);
+
+        foreach($this->loadData['p_pinjaman_keperluan_ids'] as $d){
+            $keperluanValue = PinjamanKeperluanModels::find($d);
+            $attribute[] = [
+                'keperluan_nama' => $keperluanValue['keperluan']
+            ];
+        }
+        $this->loadData['keperluan'] = $attribute;
 
         $this->getDataAttr($data['p_anggota_id']);
     }

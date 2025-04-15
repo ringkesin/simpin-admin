@@ -26,17 +26,29 @@
             <x-elements.detail label="Telp">{{ $this->setIfNull($loadData['masterAnggota']['userId']['mobile'],'-') }}</x-elements.detail>
             <x-elements.detail label="Alamat">{{ $this->setIfNull($loadData['masterAnggota']['userId']['alamat'],'-') }}</x-elements.detail>
             <x-elements.detail label="Email">{{ $this->setIfNull($loadData['masterAnggota']['userId']['email'],'-') }}</x-elements.detail>
-            <x-elements.detail label="Telp">{{ $this->setIfNull($loadData['masterAnggota']['userId']['mobile'],'-') }}</x-elements.detail>
         </div>
         <div class="mt-5">
             <x-elements.header-form>Detail Pinjaman</x-header-form>
             <x-elements.detail label="Jenis Pinjaman">{{ $this->setIfNull($loadData['masterJenisPinjaman']['nama'],'-') }}</x-elements.detail>
             <x-elements.detail label="RA Pinjaman">{{ $this->setIfNull('Rp. '.$this->toRupiah($loadData['ra_jumlah_pinjaman']),'-') }}</x-elements.detail>
+            @if($loadData['p_jenis_pinjaman_id'] == 3)
+            <x-elements.detail label="Jenis Barang">{{ $this->setIfNull($loadData['jenis_barang'],'-') }}</x-elements.detail>
+            <x-elements.detail label="Merek Tipe">{{ $this->setIfNull($loadData['merk_type'],'-') }}</x-elements.detail>
+            @endif
             <x-elements.detail label="Jaminan">{{ $this->setIfNull($loadData['jaminan'],'-') }}</x-elements.detail>
             <x-elements.detail label="Keterangan Jaminan">{{ $this->setIfNull($loadData['jaminan_keterangan'],'-') }}</x-elements.detail>
             <x-elements.detail label="Perkiraan Nilai Jaminan">{{ $this->setIfNull('Rp. '.$this->toRupiah($loadData['jaminan_perkiraan_nilai'],'-')) }}</x-elements.detail>
             <x-elements.detail label="No. Rekening">{{ $this->setIfNull($loadData['no_rekening'],'-') }}</x-elements.detail>
             <x-elements.detail label="Nama Bank">{{ $this->setIfNull($loadData['bank'],'-') }}</x-elements.detail>
+            <x-elements.detail label="Tenor">{{ $this->setIfNull($loadData['tenor'],'-') }}</x-elements.detail>
+            <x-elements.detail label="Keperluan">
+                <ol class="list-decimal list-inside">
+                @php $no_keperluan = 1; @endphp
+                @foreach ($loadData['keperluan'] as $keperluan)
+                    <li>{{ $keperluan['keperluan_nama'] }}</li>
+                @endforeach
+                </ol>
+            </x-elements.detail>
         </div>
         <div class="mt-5">
             <x-elements.header-form>Dokumen Peminjam</x-header-form>
