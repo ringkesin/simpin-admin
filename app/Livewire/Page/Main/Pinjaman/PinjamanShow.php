@@ -31,7 +31,6 @@ class PinjamanShow extends Component
     public $listStatus;
     public $id;
     public $ri_jumlah_pinjaman;
-    public $prakiraan_nilai_pasar;
     public $p_status_pengajuan_id;
 
     public function mount($id) {
@@ -47,10 +46,9 @@ class PinjamanShow extends Component
     }
 
     public function getData($id) {
-        $data = PinjamanModels::find($id);
+        $data = PinjamanModels::with(['masterAnggota','masterJenisPinjaman'])->find($id);
         $this->loadData = $data;
         $this->ri_jumlah_pinjaman = $this->loadData['ri_jumlah_pinjaman'];
-        $this->prakiraan_nilai_pasar = $this->loadData['prakiraan_nilai_pasar'];
         $this->p_status_pengajuan_id = $this->loadData['p_status_pengajuan_id'];
 
         $fileUrlDocKtp = null;
@@ -97,13 +95,14 @@ class PinjamanShow extends Component
         $this->loadData['doc_slip_gaji_sec'] = $fileUrlSlipGaji;
         $this->loadData['doc_slip_gaji_name'] = basename($this->loadData['doc_slip_gaji']);
 
+        $attribute = [];
         foreach($this->loadData['p_pinjaman_keperluan_ids'] as $d){
             $keperluanValue = PinjamanKeperluanModels::find($d);
-            $attribute[] = [
-                'keperluan_nama' => $keperluanValue['keperluan']
-            ];
+            // dd($keperluanValue);
+            $attribute[] = $keperluanValue->keperluan;
         }
         $this->loadData['keperluan'] = $attribute;
+        $this->loadData = $this->loadData->toArray();
 
         $this->getDataAttr($data['p_anggota_id']);
     }
@@ -140,18 +139,15 @@ class PinjamanShow extends Component
     public function saveApproval() {
         $validated = $this->validate([
             'ri_jumlah_pinjaman' => 'required',
-            'prakiraan_nilai_pasar' => 'required',
             'p_status_pengajuan_id' => 'required'
         ], [
             'ri_jumlah_pinjaman' => 'Jumlah Pinjaman yang Disetujui required',
-            'prakiraan_nilai_pasar' => 'Prakiraan Nilai Pasar required',
             'p_status_pengajuan_id.required' => 'Status Pengajuan required.'
         ]);
 
         try {
             $post = PinjamanModels::where('t_pinjaman_id', $this->id)->update([
                 'ri_jumlah_pinjaman' => $this->ri_jumlah_pinjaman,
-                'prakiraan_nilai_pasar' => $this->prakiraan_nilai_pasar,
                 'p_status_pengajuan_id' => $this->p_status_pengajuan_id,
             ]);
 
@@ -164,6 +160,7 @@ class PinjamanShow extends Component
                     'text' => 'Data Berhasil Disimpan !',
                     'redirectUrl' => $redirect
                 ]);
+                // $this->redirectRoute('main.pinjaman.show', ['id' => $this->id], navigate: true);
             } else {
                 $this->sweetalert([
                     'icon' => 'warning',
