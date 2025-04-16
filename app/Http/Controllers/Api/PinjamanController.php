@@ -60,47 +60,49 @@ class PinjamanController extends BaseController
             DB::beginTransaction();
 
             $user = $request->user();
+            $isAnggota = $user->tokenCan('state:anggota');
             $p_anggota_id = $user->anggota?->p_anggota_id;
-            if( ! empty($p_anggota_id)){
-                $doc_ktp_path = $request->file('doc_ktp')->store('uploads/ktp', 'local');
-                $doc_doc_ktp_suami_istri_path = $request->file('doc_ktp_suami_istri')->store('uploads/ktp_suami_istri', 'local');
-                $doc_kk_path = $request->file('doc_kk')->store('uploads/kartu_keluarga', 'local');
-                $doc_kartu_anggota_path = $request->file('doc_kartu_anggota')->store('uploads/kartu_anggota', 'local');
-                $doc_slip_gaji_path = $request->file('doc_slip_gaji')->store('uploads/slip_gaji', 'local');
-
-                $pinjaman = PinjamanModels::create([
-                    'p_anggota_id' => $p_anggota_id,
-                    'p_jenis_pinjaman_id' => $request->p_jenis_pinjaman_id,
-                    'p_pinjaman_keperluan_ids' => $request->p_pinjaman_keperluan_ids,
-                    'jenis_barang' => $request->jenis_barang,
-                    'merk_type' => $request->merk_type,
-                    'tenor' => $request->tenor,
-                    'ra_jumlah_pinjaman' => $request->ra_jumlah_pinjaman,
-                    'ri_jumlah_pinjaman' => 0,
-                    'jaminan' => $request->jaminan,
-                    'jaminan_keterangan' => $request->jaminan_keterangan,
-                    'jaminan_perkiraan_nilai' => $request->jaminan_perkiraan_nilai,
-                    'no_rekening' => $request->no_rekening,
-                    'bank' => $request->bank,
-                    'doc_ktp' => $doc_ktp_path,
-                    'doc_ktp_suami_istri' => $doc_doc_ktp_suami_istri_path,
-                    'doc_kk' => $doc_kk_path,
-                    'doc_kartu_anggota' => $doc_kartu_anggota_path,
-                    'doc_slip_gaji' => $doc_slip_gaji_path,
-                    'p_status_pengajuan_id' => 1,
-                    'created_by' => $user->id,
-                    'updated_by' => $user->id
-                ]);
-
-                DB::commit();
-
-                return $this->sendResponse(['pinjaman' => $pinjaman], 'Pengajuan Pinjaman Berhasil Disubmit');
+            
+            if ($isAnggota && (int) $request->p_anggota_id !== $p_anggota_id) {
+                return response()->json(['message' => 'Tidak diizinkan input data dengan anggota id = '.$request->p_anggota_id], 403);
             }
-            else {
-                return $this->sendError('Not Found', ['error' => 'Data anggota tidak ditemukan'], 404);
-            }
+
+            $doc_ktp_path = $request->file('doc_ktp')->store('uploads/ktp', 'local');
+            $doc_doc_ktp_suami_istri_path = $request->file('doc_ktp_suami_istri')->store('uploads/ktp_suami_istri', 'local');
+            $doc_kk_path = $request->file('doc_kk')->store('uploads/kartu_keluarga', 'local');
+            $doc_kartu_anggota_path = $request->file('doc_kartu_anggota')->store('uploads/kartu_anggota', 'local');
+            $doc_slip_gaji_path = $request->file('doc_slip_gaji')->store('uploads/slip_gaji', 'local');
+
+            $pinjaman = PinjamanModels::create([
+                'p_anggota_id' => $request->p_anggota_id,
+                'p_jenis_pinjaman_id' => $request->p_jenis_pinjaman_id,
+                'p_pinjaman_keperluan_ids' => ($request->p_jenis_pinjaman_id == 3) ? [] : $request->p_pinjaman_keperluan_ids,
+                'jenis_barang' => ($request->p_jenis_pinjaman_id == 3) ? $request->jenis_barang : null,
+                'merk_type' => ($request->p_jenis_pinjaman_id == 3) ? $request->merk_type : null,
+                'tenor' => $request->tenor,
+                'ra_jumlah_pinjaman' => $request->ra_jumlah_pinjaman,
+                'ri_jumlah_pinjaman' => 0,
+                'jaminan' => $request->jaminan,
+                'jaminan_keterangan' => $request->jaminan_keterangan,
+                'jaminan_perkiraan_nilai' => $request->jaminan_perkiraan_nilai,
+                'no_rekening' => $request->no_rekening,
+                'bank' => $request->bank,
+                'doc_ktp' => $doc_ktp_path,
+                'doc_ktp_suami_istri' => $doc_doc_ktp_suami_istri_path,
+                'doc_kk' => $doc_kk_path,
+                'doc_kartu_anggota' => $doc_kartu_anggota_path,
+                'doc_slip_gaji' => $doc_slip_gaji_path,
+                'p_status_pengajuan_id' => 1,
+                'created_by' => $user->id,
+                'updated_by' => $user->id
+            ]);
+
+            DB::commit();
+
+            return $this->sendResponse(['pinjaman' => $pinjaman], 'Pengajuan Pinjaman Berhasil Disubmit');
         } catch (Exception $e) {
             DB::rollBack();
+            \Log::error('Error : ' . $e->getMessage());
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
@@ -109,11 +111,8 @@ class PinjamanController extends BaseController
     {
         try {
             $user = $request->user();
-            $p_anggota_id = $user->anggota?->p_anggota_id;
-
-            if (!$p_anggota_id) {
-                return $this->sendError('Data anggota tidak ditemukan.', [], 404);
-            }
+            $isAdmin = $user->tokenCan('state:admin');
+            $isAnggota = $user->tokenCan('state:anggota');
 
             $statusId = $request->input('p_status_pengajuan_id');
             $jenisPinjamanId = $request->input('p_jenis_pinjaman_id');
@@ -121,7 +120,16 @@ class PinjamanController extends BaseController
             $month = $request->input('month'); // e.g., 4 (April)
             $year = $request->input('year'); // e.g., 2025
 
-            $query = PinjamanModels::with(['masterJenisPinjaman','masterStatusPengajuan'])->where('p_anggota_id', $p_anggota_id);
+            if($isAdmin){
+                $query = PinjamanModels::with(['masterJenisPinjaman','masterStatusPengajuan','masterAnggota']);
+            }
+            if($isAnggota) {
+                $p_anggota_id = $user->anggota?->p_anggota_id;
+                if (!$p_anggota_id) {
+                    return $this->sendError('Data anggota tidak ditemukan.', [], 404);
+                }
+                $query = PinjamanModels::with(['masterJenisPinjaman','masterStatusPengajuan','masterAnggota'])->where('p_anggota_id', $p_anggota_id);
+            }
 
             if ($statusId) {
                 $query->where('p_status_pengajuan_id', $statusId);
@@ -177,14 +185,14 @@ class PinjamanController extends BaseController
             $isAnggota = $user->tokenCan('state:anggota');
 
             if ($isAdmin) {
-                $data = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan'])->find($id);
+                $data = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan', 'masterAnggota'])->find($id);
             } 
             elseif ($isAnggota) {
                 $p_anggota_id = $user->anggota?->p_anggota_id;
                 if (!$p_anggota_id) {
                     return $this->sendError('Data anggota tidak ditemukan.', [], 404);
                 }
-                $data = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan'])
+                $data = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan', 'masterAnggota'])
                     ->where('t_pinjaman_id', $id)
                     ->where('p_anggota_id', $p_anggota_id)
                     ->first();
@@ -210,5 +218,33 @@ class PinjamanController extends BaseController
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
+
+    public function deletePengajuanById(Request $request, $id)
+    {
+        $user = $request->user();
+        $isAnggota = $user->tokenCan('state:anggota');
+        $p_anggota_id = $user->anggota?->p_anggota_id;
+
+        $pinjaman = PinjamanModels::find($id);
+        if (! $pinjaman) {
+            return response()->json(['message' => 'Data pinjaman tidak ditemukan.'], 404);
+        }
+        
+        if ($isAnggota && $pinjaman->p_anggota_id !== $p_anggota_id) {
+            return response()->json(['message' => 'Tidak diizinkan menghapus pinjaman ini.'], 403);
+        }
+
+        if ($isAnggota){
+            if($pinjaman->p_status_pengajuan_id <> 2) //pending
+            {
+                return response()->json(['message' => "Tidak diizinkan menghapus pinjaman ini, karena statusnya tidak lagi 'Pending'."], 403);
+            }
+        }
+
+        $pinjaman->delete();
+    
+        return $this->sendResponse([], 'Data pinjaman berhasil dihapus');
+    }
+
 
 }

@@ -14,9 +14,6 @@ class MasterStatusPengajuanSeeder extends Seeder
 
      protected $data = [
         [
-            'nama' => 'Draft',
-        ],
-        [
             'nama' => 'Cancelled',
         ],
         [

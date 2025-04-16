@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pinjaman/pengajuan', [PinjamanController::class, 'formPengajuan']);
     Route::post('/pinjaman/list', [PinjamanController::class, 'listPengajuan']);
     Route::get('/pinjaman/preview/{id}', [PinjamanController::class, 'getPengajuanById'])->where('id', '[0-9]+');
+    Route::delete('/pinjaman/delete/{id}', [PinjamanController::class, 'deletePengajuanById'])->where('id', '[0-9]+');
     Route::post('/tabungan', [TabunganController::class, 'getByAnggota']);
     Route::post('/tagihan', [TagihanController::class, 'getByAnggota']);
     Route::post('/shu', [ShuController::class, 'getByAnggota']);

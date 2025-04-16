@@ -12,6 +12,7 @@ use App\Models\Master\StatusPengajuanModels;
 
 class PinjamanModels extends Model
 {
+    use SoftDeletes;
     use HasFactory;
 
     protected $table = 't_pinjaman';
@@ -50,6 +51,9 @@ class PinjamanModels extends Model
     ];
 
     protected $casts = [
+        'p_anggota_id' => 'integer',
+        'p_jenis_pinjaman_id' => 'integer',
+        'p_status_pengajuan_id' => 'integer',
         'p_pinjaman_keperluan_ids' => 'array',
     ];
 
