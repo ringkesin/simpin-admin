@@ -161,7 +161,54 @@ class PinjamanController extends BaseController
 
             return $this->sendResponse($pinjaman, 'Daftar Pinjaman Berhasil Diambil');
         } catch (\Exception $e) {
+            \Log::error('Error retrieving pinjaman: ' . $e->getMessage());
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
+
+    public function getPengajuanById(Request $request, $id)
+    {
+        try {
+            $data = false;
+
+            //------------Filter by Owner-------------------------------------//
+            $user = $request->user();
+            $isAdmin = $user->tokenCan('state:admin');
+            $isAnggota = $user->tokenCan('state:anggota');
+
+            if ($isAdmin) {
+                $data = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan'])->find($id);
+            } 
+            elseif ($isAnggota) {
+                $p_anggota_id = $user->anggota?->p_anggota_id;
+                if (!$p_anggota_id) {
+                    return $this->sendError('Data anggota tidak ditemukan.', [], 404);
+                }
+                $data = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan'])
+                    ->where('t_pinjaman_id', $id)
+                    ->where('p_anggota_id', $p_anggota_id)
+                    ->first();
+            } else {
+                return $this->sendError('Anda tidak memiliki akses.', [], 403);
+            }
+            //------------End Filter by Owner-------------------------------------//
+            
+            if (!$data) {
+                return $this->sendError('Pinjaman tidak ditemukan atau tidak memiliki akses.', [], 404);
+            }
+
+            $keperluanIds = is_array($data->p_pinjaman_keperluan_ids)
+                ? $data->p_pinjaman_keperluan_ids
+                : json_decode($data->p_pinjaman_keperluan_ids, true);
+
+            $data->pinjaman_keperluan_nama = PinjamanKeperluanModels::whereIn('p_pinjaman_keperluan_id', $keperluanIds)
+                ->pluck('keperluan');
+
+            return $this->sendResponse($data, 'Data pinjaman berhasil digenerate');
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving pinjaman: ' . $e->getMessage());
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

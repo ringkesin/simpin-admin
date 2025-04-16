@@ -27,12 +27,13 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    Route::get('/anggota/{p_anggota_id}', [MasterAnggotaController::class, 'getAnggotaById']);
+    Route::get('/anggota/{p_anggota_id}', [MasterAnggotaController::class, 'getAnggotaById'])->where('id', '[0-9]+');
     Route::post('/file/get-link', [FileController::class, 'getLink']);
     Route::get('/master/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);
     Route::get('/master/keperluan-pinjaman', [MasterKeperluanPinjamanController::class, 'getAll']);
     Route::post('/pinjaman/pengajuan', [PinjamanController::class, 'formPengajuan']);
     Route::post('/pinjaman/list', [PinjamanController::class, 'listPengajuan']);
+    Route::get('/pinjaman/preview/{id}', [PinjamanController::class, 'getPengajuanById'])->where('id', '[0-9]+');
     Route::post('/tabungan', [TabunganController::class, 'getByAnggota']);
     Route::post('/tagihan', [TagihanController::class, 'getByAnggota']);
     Route::post('/shu', [ShuController::class, 'getByAnggota']);
