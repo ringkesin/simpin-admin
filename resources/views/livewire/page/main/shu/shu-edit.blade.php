@@ -68,7 +68,7 @@
             <x-elements.header-form>SHU Detail</x-header-form>
             <div class="grid grid-cols-12 gap-10">
                 <!-- Kolom Kiri -->
-                <div class="col-span-12 md:col-span-4">
+                <div class="col-span-12 md:col-span-6">
                     <!-- Group SHU Diterima -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -84,7 +84,7 @@
                     </div>
                 </div>
                 <!-- Kolom Tengah -->
-                <div class="col-span-12 md:col-span-4">
+                <div class="col-span-12 md:col-span-6">
                     <!-- Group SHU Dibagi -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -100,7 +100,7 @@
                     </div>
                 </div>
                 <!-- Kolom Kanan -->
-                <div class="col-span-12 md:col-span-4">
+                <div class="col-span-12 md:col-span-6">
                     <!-- Group SHU Ditabung -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -111,6 +111,22 @@
                         <div class="col-span-12 md:col-span-8">
                             <div class="col-span-12 md:col-span-8">
                                 <x-form.input class="w-full" type="number" name="shu_ditabung" wire:model.lazy="shu_ditabung"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Kolom Kanan -->
+                <div class="col-span-12 md:col-span-6">
+                    <!-- Group SHU Tahun Lalu -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="shu_tahun_lalu">
+                                SHU Tahun Lalu <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <div class="col-span-12 md:col-span-8">
+                                <x-form.input class="w-full" type="number" name="shu_tahun_lalu" wire:model.lazy="shu_tahun_lalu"/>
                             </div>
                         </div>
                     </div>

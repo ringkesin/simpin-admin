@@ -79,7 +79,8 @@ class ShuImport extends Component
                     'tahun' => $row[1],
                     'shu_diterima' => floatval($row[2]),
                     'shu_dibagi' => floatval($row[3]),
-                    'shu_ditabung' => floatval($row[4])
+                    'shu_ditabung' => floatval($row[4]),
+                    'shu_tahun_lalu' => floatval($row[4])
                 ];
             }
         }
@@ -103,7 +104,8 @@ class ShuImport extends Component
                             'tahun' => $dataLoop['tahun'],
                             'shu_diterima' => $dataLoop['shu_diterima'],
                             'shu_dibagi' => $dataLoop['shu_dibagi'],
-                            'shu_ditabung' => $dataLoop['shu_ditabung']
+                            'shu_ditabung' => $dataLoop['shu_ditabung'],
+                            'shu_tahun_lalu' => $dataLoop['shu_tahun_lalu']
                         ]);
                     }
                 }

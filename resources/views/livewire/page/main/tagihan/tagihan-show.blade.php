@@ -33,7 +33,7 @@
             <x-elements.detail label="Periode">{{ $this->toMonth($loadData['bulan']) }} {{$loadData['tahun']}}</x-elements.detail>
             <x-elements.detail label="Uraian">{{ $this->setIfNull($loadData['uraian'], '-') }}</x-elements.detail>
             <x-elements.detail label="Jumlah">{{ 'Rp. '.$this->toRupiah($loadData['jumlah']) }}</x-elements.detail>
-            <x-elements.detail label="Remarks">{{ $this->setIfNull($loadData['tabungan_sukarela'], '-') }}</x-elements.detail>
+            <x-elements.detail label="Remarks">{{ $this->setIfNull($loadData['remarks'], '-') }}</x-elements.detail>
         </div>
     </div>
 </div>

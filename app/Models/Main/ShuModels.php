@@ -26,6 +26,7 @@ class ShuModels extends Model
         'shu_diterima',
         'shu_dibagi',
         'shu_ditabung',
+        'shu_tahun_lalu',
         'tahun',
         'created_by',
         'updated_by',

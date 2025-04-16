@@ -34,6 +34,7 @@
             <x-elements.detail label="SHU Diterima">{{ 'Rp. '.$this->toRupiah($loadData['shu_diterima']) }}</x-elements.detail>
             <x-elements.detail label="SHU Dibagi">{{ 'Rp. '.$this->toRupiah($loadData['shu_dibagi']) }}</x-elements.detail>
             <x-elements.detail label="SHU Ditabung">{{ 'Rp. '.$this->toRupiah($loadData['shu_ditabung']) }}</x-elements.detail>
+            <x-elements.detail label="SHU Tahun Lalu">{{ 'Rp. '.$this->toRupiah($loadData['shu_tahun_lalu']) }}</x-elements.detail>
         </div>
     </div>
 </div>
