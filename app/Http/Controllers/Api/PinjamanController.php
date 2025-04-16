@@ -92,7 +92,7 @@ class PinjamanController extends BaseController
                 'doc_kk' => $doc_kk_path,
                 'doc_kartu_anggota' => $doc_kartu_anggota_path,
                 'doc_slip_gaji' => $doc_slip_gaji_path,
-                'p_status_pengajuan_id' => 1,
+                'p_status_pengajuan_id' => 2, //pending
                 'created_by' => $user->id,
                 'updated_by' => $user->id
             ]);
