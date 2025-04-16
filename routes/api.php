@@ -31,7 +31,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/file/get-link', [FileController::class, 'getLink']);
     Route::get('/master/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);
     Route::get('/master/keperluan-pinjaman', [MasterKeperluanPinjamanController::class, 'getAll']);
-    Route::post('/pinjaman/pengajuan', [PinjamanController::class, 'pengajuan']);
+    Route::post('/pinjaman/pengajuan', [PinjamanController::class, 'formPengajuan']);
+    Route::post('/pinjaman/list', [PinjamanController::class, 'listPengajuan']);
     Route::post('/tabungan', [TabunganController::class, 'getByAnggota']);
     Route::post('/tagihan', [TagihanController::class, 'getByAnggota']);
     Route::post('/shu', [ShuController::class, 'getByAnggota']);

@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Main\PinjamanModels;
+use App\Models\Master\PinjamanKeperluanModels;
 use Exception;
 
 class PinjamanController extends BaseController
 {
-    public function pengajuan(Request $request)
+    public function formPengajuan(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
@@ -100,6 +101,66 @@ class PinjamanController extends BaseController
             }
         } catch (Exception $e) {
             DB::rollBack();
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function listPengajuan(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $p_anggota_id = $user->anggota?->p_anggota_id;
+
+            if (!$p_anggota_id) {
+                return $this->sendError('Data anggota tidak ditemukan.', [], 404);
+            }
+
+            $statusId = $request->input('p_status_pengajuan_id');
+            $jenisPinjamanId = $request->input('p_jenis_pinjaman_id');
+            $p_pinjaman_keperluan_id = $request->input('p_pinjaman_keperluan_id');
+            $month = $request->input('month'); // e.g., 4 (April)
+            $year = $request->input('year'); // e.g., 2025
+
+            $query = PinjamanModels::with(['masterJenisPinjaman','masterStatusPengajuan'])->where('p_anggota_id', $p_anggota_id);
+
+            if ($statusId) {
+                $query->where('p_status_pengajuan_id', $statusId);
+            }
+
+            if ($jenisPinjamanId) {
+                $query->where('p_jenis_pinjaman_id', $jenisPinjamanId);
+            }
+
+            if ($p_pinjaman_keperluan_id) {
+                $query->whereJsonContains('p_pinjaman_keperluan_ids', $p_pinjaman_keperluan_id);
+            }
+
+            if ($month && $year) {
+                $query->whereMonth('created_at', $month)
+                    ->whereYear('created_at', $year);
+            } elseif ($month) {
+                $query->whereMonth('created_at', $month);
+            } elseif ($year) {
+                $query->whereYear('created_at', $year);
+            }
+
+            $pinjaman = $query
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+
+            $pinjaman->getCollection()->transform(function ($item) {
+                $keperluanIds = is_array($item->p_pinjaman_keperluan_ids)
+                    ? $item->p_pinjaman_keperluan_ids
+                    : json_decode($item->p_pinjaman_keperluan_ids, true);
+    
+                $item->pinjaman_keperluan_nama = PinjamanKeperluanModels::whereIn('p_pinjaman_keperluan_id', $keperluanIds)
+                    ->pluck('keperluan');
+    
+                return $item;
+            });
+
+            return $this->sendResponse($pinjaman, 'Daftar Pinjaman Berhasil Diambil');
+        } catch (\Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
