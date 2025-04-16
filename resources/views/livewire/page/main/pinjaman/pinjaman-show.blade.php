@@ -87,12 +87,12 @@
                     </div>
                     <div>
                         <x-elements.detail label="ID Card Pegawai">
-                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_kartu_anggota'] }}' target='_blank'>
+                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_id_card_pegawai'] }}' target='_blank'>
                                 Preview <x-lucide-external-link class="w-4"/>
                             </a>
                         </x-elements.detail>
                         <x-elements.detail label="Slip Gaji Terakhir">
-                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_slip_gaji'] }}' target='_blank'>
+                            <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_slip_gaji_sec'] }}' target='_blank'>
                                 Preview <x-lucide-external-link class="w-4"/>
                             </a>
                         </x-elements.detail>

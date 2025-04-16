@@ -95,6 +95,16 @@ class PinjamanShow extends Component
         $this->loadData['doc_slip_gaji_sec'] = $fileUrlSlipGaji;
         $this->loadData['doc_slip_gaji_name'] = basename($this->loadData['doc_slip_gaji']);
 
+        $fileUrlIDCardPegawai = null;
+        if (Storage::exists($this->loadData['doc_kartu_anggota'])) {
+            $fileUrlIDCardPegawai = URL::temporarySignedRoute(
+                'secure-file', // Route name
+                now()->addMinutes(1), // Expiration time
+                ['path' => $this->loadData['doc_kartu_anggota']] // File path parameter
+            );
+        }
+        $this->loadData['doc_id_card_pegawai'] = $fileUrlIDCardPegawai;
+
         $attribute = [];
         foreach($this->loadData['p_pinjaman_keperluan_ids'] as $d){
             $keperluanValue = PinjamanKeperluanModels::find($d);
