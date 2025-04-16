@@ -77,17 +77,17 @@ class PinjamanTable extends DataTableComponent
             Column::make("Jenis Pinjaman", "masterJenisPinjaman.nama")
                 ->sortable()
                 ->searchable(),
-            Column::make("Ra", "ra_jumlah_pinjaman")
+            Column::make("Jumlah Pengajuan", "ra_jumlah_pinjaman")
                 ->sortable()
                 ->format(function ($value, $column, $row) {
                     return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
                 }),
-            Column::make("Ri", "ri_jumlah_pinjaman")
+            Column::make("Jumlah Disetujui", "ri_jumlah_pinjaman")
                 ->sortable()
                 ->format(function ($value, $column, $row) {
                     return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
                 }),
-            Column::make("Status Pengajuan", "masterStatusPengajuan.nama")
+            Column::make("Status Pinjaman", "masterStatusPengajuan.nama")
                 ->sortable()
                 ->searchable()
                 ->format(function ($value, $column, $row) {
