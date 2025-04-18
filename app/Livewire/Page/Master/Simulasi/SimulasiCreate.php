@@ -16,12 +16,9 @@ class SimulasiCreate extends Component
     public $menuCode;
 
     #component input
-
-    public $pinjaman;
     public $margin;
     public $tahun_margin;
     public $tenor;
-    public $angsuran;
 
     public function mount() {
         $this->titlePage = 'Tambah Simulasi Angsuran';
@@ -35,30 +32,20 @@ class SimulasiCreate extends Component
 
     public function saveInsert() {
         $validated = $this->validate([
-            'pinjaman' => 'required',
             'margin' => 'required',
             'tahun_margin' => 'required',
             'tenor' => 'required',
-            'angsuran' => 'required',
         ], [
-            'pinjaman.required' => 'Masukkan Jumlah Pinjaman.',
             'margin.required' => 'Bunga Masih kosong.',
             'tahun_margin.required' => 'Tahun Bunga Kosong.',
             'tenor.date' => 'Tenor kosong.',
-            'angsuran.required' => 'Angsuran kosong.',
         ]);
-
-        if($this->pinjaman == "") {
-            $this->pinjaman = 0;
-        }
 
         try {
             $post = SimulasiPinjamanModel::create([
-                'pinjaman' => $this->pinjaman,
                 'margin' => $this->margin,
                 'tahun_margin' => $this->tahun_margin,
-                'tenor' => $this->tenor,
-                'angsuran' => $this->angsuran
+                'tenor' => $this->tenor
             ]);
 
             if($post) {

@@ -18,10 +18,8 @@ class SimulasiEdit extends Component
 
     public $loadData;
     public $id;
-    public $pinjaman;
     public $tenor;
     public $margin;
-    public $angsuran;
     public $tahun_margin;
 
 
@@ -42,40 +40,30 @@ class SimulasiEdit extends Component
     public function getData($id) {
         $data = SimulasiPinjamanModel::find($id);
         $this->loadData = $data;
-        $this->pinjaman = $this->loadData['pinjaman'];
         $this->tenor = $this->loadData['tenor'];
         $this->margin = $this->loadData['margin'];
         $this->tahun_margin = $this->loadData['tahun_margin'];
-        $this->angsuran = $this->loadData['angsuran'];
 
     }
 
     public function saveUpdate() {
         $validated = $this->validate([
-            'pinjaman' => 'required',
             'margin' => 'required',
             'tahun_margin' => 'required',
             'tenor' => 'required',
-            'angsuran' => 'required',
         ], [
-            'pinjaman.required' => 'Masukkan Jumlah Pinjaman.',
             'margin.required' => 'Bunga Masih kosong.',
             'tahun_margin.required' => 'Tahun Bunga Kosong.',
             'tenor.date' => 'Tenor kosong.',
         ]);
-        if($this->pinjaman == "") {
-            $this->pinjaman = null;
-        }
 
         $redirect = route('master.simulasi.list');
 
         try {
             $post = SimulasiPinjamanModel::where('id', $this->id)->update([
-                'pinjaman' => $this->pinjaman,
                 'margin' => $this->margin,
                 'tahun_margin' => $this->tahun_margin,
-                'tenor' => $this->tenor,
-                'angsuran' => $this->angsuran
+                'tenor' => $this->tenor
             ]);
 
             if($post) {
