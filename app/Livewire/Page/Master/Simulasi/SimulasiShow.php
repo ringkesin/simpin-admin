@@ -23,7 +23,6 @@ class SimulasiShow extends Component
 
     public $loadData;
     public $id;
-    public $pinjaman;
     public $tenor;
 
     public function mount($id) {

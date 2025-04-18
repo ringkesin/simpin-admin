@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\PinjamanController;
 use App\Http\Controllers\Api\TabunganController;
 use App\Http\Controllers\Api\TagihanController;
 use App\Http\Controllers\Api\ShuController;
+use App\Http\Controllers\Api\SimulasiPinjamanController;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
 
@@ -40,6 +41,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tabungan', [TabunganController::class, 'getByAnggota']);
     Route::post('/tagihan', [TagihanController::class, 'getByAnggota']);
     Route::post('/shu', [ShuController::class, 'getByAnggota']);
+    Route::prefix('/simulasi')->group(function () {
+        Route::post('/pinjaman', [SimulasiPinjamanController::class, 'getSimulasi']);
+        Route::post('/tenor', [SimulasiPinjamanController::class, 'getTenorSimulasi']);
+    });
 });
 
 Route::post('/anggota/register', [MasterAnggotaController::class, 'register']);

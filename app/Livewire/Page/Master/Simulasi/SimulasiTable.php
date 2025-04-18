@@ -65,19 +65,13 @@ class SimulasiTable extends DataTableComponent
         return [
             Column::make("ID", "id")
                 ->sortable(),
-            Column::make("Pinjaman", "pinjaman")
-                ->sortable()
-                 ->format(function ($value, $column, $row) {
-                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';})
-                ->searchable(),
-            Column::make("Tenor", "tenor")
+            Column::make("Tahun", "tahun_margin")
                 ->sortable()
                 ->searchable(),
-            Column::make("Angsuran", "angsuran")
-                ->format(function ($value, $column, $row) {
-                return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';})
-                ->sortable(),
-            Column::make("Margin", "margin")
+            Column::make("Tenor (Bulan)", "tenor")
+                ->sortable()
+                ->searchable(),
+            Column::make("Margin (%)", "margin")
                 ->sortable(),
         ];
     }

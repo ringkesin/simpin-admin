@@ -23,29 +23,7 @@
             <div class="grid grid-cols-12 gap-10">
                 <!-- Kolom Kiri -->
                 <div class="col-span-12 md:col-span-6">
-                    <!-- Group Jumlah Pinjaman -->
-                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
-                        <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="pinjaman">
-                               Jumlah Pinjaman <span class="text-red-500">*</span>
-                            </x-form.label>
-                        </div>
-                        <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="pinjaman" wire:model.lazy="pinjaman"/>
-                        </div>
-                    </div>
-                    <!-- Group Input Bunga -->
-                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
-                        <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="margin">
-                               Margin / Bunga <span class="text-red-500">*</span>
-                            </x-form.label>
-                        </div>
-                        <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="margin" wire:model.lazy="margin"/>
-                        </div>
-                    </div>
-                    <!-- Group Tahun Margin -->
+                    <!-- Group Input Tahun -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="tahun_margin">
@@ -56,39 +34,29 @@
                             <x-form.input class="w-full" type="text" name="tahun_margin" wire:model.lazy="tahun_margin"/>
                         </div>
                     </div>
-
-                </div>
-                <!-- Kolom Tenor -->
-                <div class="col-span-12 md:col-span-6">
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="tenor">
-                                Tenor <span class="text-red-500">*</span>
+                                Tenor (Bulan) <span class="text-red-500">*</span>
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.select-single name="tenor" wire:model.lazy="tenor" class="w-full md:w-full" id="tenor">
-                                <option value="">Pilih Tenor</option>
-                                <option value="12">1 Tahun</option>
-                                <option value="24">2 Tahun</option>
-                                <option value="36">3 Tahun</option>
-                                <option value="48">4 Tahun</option>
-                            </x-form.select-single>
+                            <x-form.input class="w-full" type="number" id="tenor" name="tenor" :value="''" wire:model.lazy="tenor"/>
                         </div>
                     </div>
+                </div>
+                <!-- Kolom Kanan -->
+                <div class="col-span-12 md:col-span-6">
+                    <!-- Group Input Margin -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="angsuran">
-                                Angsuran <span class="text-red-500">*</span>
+                            <x-form.label for="margin">
+                                Margin / Bunga (%) <span class="text-red-500">*</span>
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" id="angsuran" name="angsuran" :value="''" wire:model.lazy="angsuran"/>
+                            <x-form.input class="w-full" type="text" name="margin" wire:model.lazy="margin"/>
                         </div>
-                    </div>
-                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
-                      <div class="col-span-12 md:col-span-4">
-                           &nbsp;
                     </div>
                 </div>
             </div>

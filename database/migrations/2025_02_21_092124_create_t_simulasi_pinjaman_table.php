@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('t_simulasi_pinjaman', function (Blueprint $table) {
             $table->increments('id');
-            $table->double('pinjaman');
+            // $table->double('pinjaman');
             $table->integer('tenor');
             $table->decimal('margin', 5, 2);
-            $table->double('angsuran', 15, 2);
+            // $table->double('angsuran', 15, 2);
             $table->integer('tahun_margin');
             $table->enum('status', ['aktif', 'tidak'])->default('aktif');
             $table->timestamps();
