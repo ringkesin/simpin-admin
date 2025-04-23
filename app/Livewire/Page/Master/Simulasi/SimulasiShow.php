@@ -5,7 +5,7 @@ namespace App\Livewire\Page\Master\Simulasi;
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 use App\Models\Master\AnggotaModels;
-use App\Models\Master\SimulasiPinjamanModel;
+use App\Models\Master\SimulasiPinjamanModels;
 use App\Models\User;
 use App\Models\Rbac\RoleUserModel;
 use Illuminate\Support\Facades\Hash;
@@ -39,7 +39,7 @@ class SimulasiShow extends Component
     }
 
     public function getData($id) {
-        $data = SimulasiPinjamanModel::find($id);
+        $data = SimulasiPinjamanModels::find($id);
         $this->loadData = $data;
         //$this->tglLahir = str_replace("-", "", $this->loadData['tgl_lahir']);
         //$this->pinjaman = number_format($this->loadData['pinjaman']);

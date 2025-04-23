@@ -4,7 +4,7 @@ namespace App\Livewire\Page\Master\Simulasi;
 
 use Livewire\Component;
 use Illuminate\Database\QueryException;
-use App\Models\Master\SimulasiPinjamanModel;
+use App\Models\Master\SimulasiPinjamanModels;
 use App\Traits\MyAlert;
 
 class SimulasiCreate extends Component
@@ -42,7 +42,7 @@ class SimulasiCreate extends Component
         ]);
 
         try {
-            $post = SimulasiPinjamanModel::create([
+            $post = SimulasiPinjamanModels::create([
                 'margin' => $this->margin,
                 'tahun_margin' => $this->tahun_margin,
                 'tenor' => $this->tenor

@@ -5,12 +5,12 @@ namespace App\Livewire\Page\Master\Simulasi;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use App\Models\Master\SimulasiPinjamanModel;
+use App\Models\Master\SimulasiPinjamanModels;
 use App\Traits\MyHelpers;
 
 class SimulasiTable extends DataTableComponent
 {
-    protected $model = SimulasiPinjamanModel::class;
+    protected $model = SimulasiPinjamanModels::class;
 
     use MyHelpers;
 

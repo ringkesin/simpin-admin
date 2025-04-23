@@ -5,7 +5,7 @@ namespace App\Livewire\Page\Master\Simulasi;
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 use App\Models\Master\AnggotaModels;
-use App\Models\Master\SimulasiPinjamanModel;
+use App\Models\Master\SimulasiPinjamanModels;
 use App\Traits\MyAlert;
 
 class SimulasiEdit extends Component
@@ -38,7 +38,7 @@ class SimulasiEdit extends Component
     }
 
     public function getData($id) {
-        $data = SimulasiPinjamanModel::find($id);
+        $data = SimulasiPinjamanModels::find($id);
         $this->loadData = $data;
         $this->tenor = $this->loadData['tenor'];
         $this->margin = $this->loadData['margin'];
@@ -60,7 +60,7 @@ class SimulasiEdit extends Component
         $redirect = route('master.simulasi.list');
 
         try {
-            $post = SimulasiPinjamanModel::where('id', $this->id)->update([
+            $post = SimulasiPinjamanModels::where('id', $this->id)->update([
                 'margin' => $this->margin,
                 'tahun_margin' => $this->tahun_margin,
                 'tenor' => $this->tenor
