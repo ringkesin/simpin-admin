@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Master\SimulasiPinjamanModel;
+use App\Models\Master\SimulasiPinjamanModels;
 
 class SimulasiPinjamanSeeder extends Seeder
 {
@@ -17,7 +17,7 @@ class SimulasiPinjamanSeeder extends Seeder
   public function run()
   {
       foreach ($this->data as $d) {
-        SimulasiPinjamanModel::create([
+        SimulasiPinjamanModels::create([
               "tenor" => $d['tenor'],
               "margin" => $d['margin'],
               "tahun_margin" => $d['tahun_margin']
