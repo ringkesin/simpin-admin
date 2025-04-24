@@ -26,18 +26,20 @@ class TabunganSaldoModels extends Model
      */
     protected $fillable = [
         'p_anggota_id',
+        'tahun',
+        'total_sd',
         'simpanan_pokok',
         'simpanan_wajib',
         'tabungan_sukarela',
         'tabungan_indir',
         'kompensasi_masa_kerja',
-        'tahun',
         'created_by',
         'updated_by',
         'deleted_by',
     ];
 
     protected $casts = [
+        'total_sd' => 'float',
         'simpanan_pokok' => 'float',
         'simpanan_wajib' => 'float',
         'tabungan_sukarela' => 'float',

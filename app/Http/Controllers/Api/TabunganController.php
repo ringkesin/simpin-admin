@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Master\AnggotaModels;
 use App\Models\Main\TabunganModels;
+use App\Models\Main\TabunganSaldoModels;
+use App\Models\Main\TabunganJurnalModels;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 
@@ -124,6 +127,112 @@ class TabunganController extends BaseController
 
             return $this->sendResponse($tabunganPeriod, 'Data berhasil digenerate.');
         } catch (\Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getSaldoTahunan(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'p_anggota_id' => 'required|integer|exists:p_anggota,p_anggota_id',
+                'tahun' => 'required|integer',
+            ],[
+                'p_anggota_id.required' => 'Anggota harus diisi',
+                'tahun.required' => 'Tahun harus diisi',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
+            }
+
+            $user = $request->user();
+            $isAnggota = $user->tokenCan('state:anggota');
+            $p_anggota_id = $user->anggota?->p_anggota_id;
+            
+            if ($isAnggota && (int) $request->p_anggota_id !== $p_anggota_id) {
+                return response()->json(['message' => 'Tidak diizinkan melihat data dengan anggota id = '.$request->p_anggota_id], 403);
+            }
+
+            $get = TabunganSaldoModels::where('p_anggota_id', $request->p_anggota_id)->where('tahun', $request->tahun)->first();
+            if( ! $get){
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+
+            $saldo = [
+                'tahun' => $get->tahun,
+                'total_saldo_sd' => $get->total_sd,
+                'detail' => [
+                    'saldo_sd_simpanan_pokok' => $get->simpanan_pokok,
+                    'saldo_sd_simpanan_wajib' => $get->simpanan_wajib,
+                    'saldo_sd_tabungan_sukarela' => $get->tabungan_sukarela,
+                    'saldo_sd_tabungan_indir' => $get->tabungan_indir,
+                    'saldo_sd_kompensasi_masa_kerja' => $get->kompensasi_masa_kerja,
+                ]
+            ];
+
+            return $this->sendResponse($saldo, 'Data Berhasil Ditampilkan');
+        } catch (Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getSaldoBulanan(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'p_anggota_id' => 'required|integer|exists:p_anggota,p_anggota_id',
+                'tahun' => 'required|integer',
+                'bulan' => 'required|integer',
+            ],[
+                'p_anggota_id.required' => 'Anggota harus diisi',
+                'tahun.required' => 'Tahun harus diisi',
+                'bulan.required' => 'Bulan harus diisi',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
+            }
+
+            $user = $request->user();
+            $isAnggota = $user->tokenCan('state:anggota');
+            $p_anggota_id = $user->anggota?->p_anggota_id;
+            
+            if ($isAnggota && (int) $request->p_anggota_id !== $p_anggota_id) {
+                return response()->json(['message' => 'Tidak diizinkan melihat data dengan anggota id = '.$request->p_anggota_id], 403);
+            }
+
+            $get = TabunganJurnalModels::with('jenisTabungan')->where('p_anggota_id', $request->p_anggota_id)
+                ->where('tahun', $request->tahun)
+                ->where('bulan', $request->bulan)
+                ->get();
+            if( ! $get){
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+
+            $saldo = [];
+            $totalBulanIni = 0;
+            $totalBulanIniSd = 0;
+            foreach($get as $g){
+                $saldo[] = [
+                    'jenis_tabungan' => $g->jenisTabungan->nama,
+                    'nilai_bulan_ini' => $g->nilai,
+                    'nilai_bulan_ini_sd' => $g->nilai_sd
+                ];
+                $totalBulanIni = $totalBulanIni + $g->nilai;
+                $totalBulanIniSd = $totalBulanIniSd + $g->nilai_sd;
+            }
+
+            return $this->sendResponse([
+                'bulan' => $request->bulan,
+                'tahun' => $request->tahun,
+                'total' => [
+                    'total_bulan_ini' => $totalBulanIni,
+                    'total_bulan_ini_sd' => $totalBulanIniSd,
+                ],
+                'detail' => $saldo
+            ], 'Data Berhasil Ditampilkan');
+        } catch (Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }

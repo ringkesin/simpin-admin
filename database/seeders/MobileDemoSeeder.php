@@ -90,6 +90,7 @@ class MobileDemoSeeder extends Seeder
                 't_tabungan_saldo_id' => strtolower(Str::ulid()),
                 'p_anggota_id' => 323,
                 'tahun' => 2024,
+                'total_sd' => 158164144,
                 'simpanan_pokok' => 13000000,
                 'simpanan_wajib' => 110450000,
                 'tabungan_sukarela' => 33384820,
