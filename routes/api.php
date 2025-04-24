@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\MasterAnggotaController;
 use App\Http\Controllers\Api\MasterJenisPinjamanController;
 use App\Http\Controllers\Api\MasterKeperluanPinjamanController;
 use App\Http\Controllers\Api\MasterStatusPengajuanPinjamanController;
+use App\Http\Controllers\Api\MasterJenisTabunganController;
 use App\Http\Controllers\Api\PinjamanController;
 use App\Http\Controllers\Api\TabunganController;
 use App\Http\Controllers\Api\TagihanController;
@@ -34,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/master/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);
     Route::get('/master/keperluan-pinjaman', [MasterKeperluanPinjamanController::class, 'getAll']);
     Route::get('/master/status-pengajuan-pinjaman', [MasterStatusPengajuanPinjamanController::class, 'getAll']);
+    Route::get('/master/jenis-tabungan', [MasterJenisTabunganController::class, 'getAll']);
     Route::post('/pinjaman/pengajuan', [PinjamanController::class, 'formPengajuan']);
     Route::post('/pinjaman/list', [PinjamanController::class, 'listPengajuan']);
     Route::get('/pinjaman/preview/{id}', [PinjamanController::class, 'getPengajuanById'])->where('id', '[0-9]+');
