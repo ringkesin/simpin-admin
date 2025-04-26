@@ -9,7 +9,8 @@ use App\Livewire\Page\Master\Anggota\AnggotaShow;
 use App\Livewire\Page\Master\Anggota\AnggotaEdit;
 use App\Livewire\Page\Main\Tabungan\TabunganList;
 use App\Livewire\Page\Main\Tabungan\TabunganCreate;
-use App\Livewire\Page\Main\Tabungan\TabunganShow;
+// use App\Livewire\Page\Main\Tabungan\TabunganShow;
+use App\Livewire\Page\Main\Tabungan\TabunganUpdate;
 use App\Livewire\Page\Main\Tabungan\TabunganEdit;
 use App\Livewire\Page\Main\Tabungan\TabunganImport;
 use App\Livewire\Page\Main\Tagihan\TagihanList;
@@ -74,10 +75,10 @@ Route::middleware([
     Route::prefix('main')->group(function () {
         Route::prefix('tabungan')->group(function () {
             Route::get('list', TabunganList::class)->name('main.tabungan.list');
-            Route::get('create', TabunganCreate::class)->name('main.tabungan.create');
-            Route::get('import', TabunganImport::class)->name('main.tabungan.import');
-            Route::get('show/{id}', TabunganShow::class)->name('main.tabungan.show');
-            Route::get('edit/{id}', TabunganEdit::class)->name('main.tabungan.edit');
+            // Route::get('create', TabunganCreate::class)->name('main.tabungan.create');
+            // Route::get('import', TabunganImport::class)->name('main.tabungan.import');
+            Route::get('update/{id}', TabunganUpdate::class)->name('main.tabungan.update');
+            // Route::get('edit/{id}', TabunganEdit::class)->name('main.tabungan.edit');
         });
         Route::prefix('tagihan')->group(function () {
             Route::get('list', TagihanList::class)->name('main.tagihan.list');

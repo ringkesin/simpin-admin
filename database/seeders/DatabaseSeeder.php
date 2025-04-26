@@ -31,7 +31,9 @@ class DatabaseSeeder extends Seeder
             SimulasiPinjamanSeeder::class,
             MasterUnitSeeder::class,
             MasterPinjamanKeperluanSeeder::class,
-            ContentTypeSeeder::class
+            ContentTypeSeeder::class,
+            MasterJenisTabunganSeeder::class,
+            MobileDemoSeeder::class
         ]);
     }
 }

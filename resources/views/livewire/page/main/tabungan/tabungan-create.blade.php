@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        <form wire:submit="saveInsert">
+        <form wire:submit="saveInsertV2">
             <div class="grid grid-cols-12 gap-10">
                 <!-- Kolom Kiri -->
                 <div class="col-span-12 md:col-span-6">
@@ -54,7 +54,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.select-single name="bulan" wire:model.lazy="bulan" class="w-full md:w-2/4" id="bulan">
+                            <x-form.select-single name="bulan" wire:model.lazy="bulan" class="w-full" id="bulan">
                                 <option value="">Pilih Bulan</option>
                                     @foreach ($this->listMonth() as $key => $value)
                                         <option value="{{ $key }}">{{ $value }}</option>
@@ -73,7 +73,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.select-single name="tahun" wire:model.lazy="tahun" class="w-full md:w-2/4" id="tahun">
+                            <x-form.select-single name="tahun" wire:model.lazy="tahun" class="w-full" id="tahun">
                                 <option value="">Pilih Tahun</option>
                                 @foreach($this->getYearRange(2) as $year)
                                     <option value="{{ $year }}">{{ $year }}</option>
@@ -84,7 +84,7 @@
                 </div>
             </div>
             <!----------------Tabungan Section------------------------>
-            <x-elements.header-form>Tabungan Detail</x-header-form>
+            <x-elements.header-form>Nilai Tabungan</x-header-form>
             <div class="grid grid-cols-12 gap-10">
                 <!-- Kolom Kiri -->
                 <div class="col-span-12 md:col-span-6">
@@ -158,11 +158,17 @@
                     </div>
                 </div>
             </div>
-            <x-elements.header-form></x-elements.header-form>
+            
+            <!----------------Keterangan Section------------------------>
+            <x-elements.header-form class='!mb-0 !border-white'>Keterangan</x-header-form>
+            <div class='mb-8'>
+                <x-form.textarea class="w-full" type="text" name="keterangan" wire:model.lazy="keterangan"/>
+            </div>
+                
             <div class="grid grid-cols-12 gap-10">
                 <div class="col-span-12">
                     <x-elements.button-submit wire:loading.attr="disabled" wire:confirm="Are you sure your data is correct?">
-                        <div wire:loading wire:target="saveInsert">
+                        <div wire:loading wire:target="saveInsertV2">
                             {{-- <svg class="w-5 h-5 mr-3 animate-spin" viewBox="0 0 24 24"> --}}
                                 {{-- <span class="sr-only">Loading Save Data</span> --}}
                             {{-- </svg> --}}
@@ -173,7 +179,7 @@
                                 Processing
                             </span>
                         </div>
-                        <div class='flex gap-x-1' wire:loading.remove wire:target="saveInsert">
+                        <div class='flex gap-x-1' wire:loading.remove wire:target="saveInsertV2">
                             <x-lucide-square-pen class="size-5"/>
                             <span class="xs:block">
                                 Save data

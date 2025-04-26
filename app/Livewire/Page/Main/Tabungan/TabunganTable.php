@@ -5,20 +5,20 @@ namespace App\Livewire\Page\Main\Tabungan;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use App\Models\Main\TabunganModels;
+use App\Models\Main\VTabunganSaldo;
 use App\Traits\MyHelpers;
 
 class TabunganTable extends DataTableComponent
 {
-    protected $model = TabunganModels::class;
+    protected $model = VTabunganSaldo::class;
 
     use MyHelpers;
 
     public function configure(): void
     {
-        $this->setPrimaryKey('t_tabungan_id')
+        $this->setPrimaryKey('p_anggota_id')
         ->setTableRowUrl(function($row) {
-            return route('main.tabungan.show', ['id' => $row->t_tabungan_id]);
+            return route('main.tabungan.update', ['id' => $row->p_anggota_id]);
         });
         $this->setComponentWrapperAttributes([
             'default' => true,
@@ -62,66 +62,43 @@ class TabunganTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("ID", "t_tabungan_id")
+            Column::make("ID", "p_anggota_id")
                 ->sortable()
                 ->searchable(),
-            Column::make("Nomor Anggota", "masterAnggota.nomor_anggota")
+            Column::make("Nomor Anggota", "nomor_anggota")
                 ->sortable()
                 ->searchable(),
-            Column::make("Nama", "masterAnggota.nama")
+            Column::make("Nama", "nama")
                 ->sortable()
                 ->searchable(),
-            Column::make("Bulan", "bulan")
+            Column::make("NIK", "nik")
                 ->sortable()
                 ->searchable(),
-            Column::make("Tahun", "tahun")
-                ->sortable()
+            Column::make("Total Tabungan", "total_tabungan_beautify")
+                ->sortable(function(Builder $query, string $direction) {
+                    return $query->orderBy('total_tabungan', $direction);
+                })
                 ->searchable(),
-            Column::make("Simpanan Pokok", "simpanan_pokok")
-                ->sortable()
-                ->format(function ($value, $column, $row) {
-                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
-                }),
-            Column::make("Simpanan Wajib", "simpanan_wajib")
-                ->sortable()
-                ->format(function ($value, $column, $row) {
-                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
-                }),
-            Column::make("Tabungan Sukarela", "tabungan_sukarela")
-                ->sortable()
-                ->format(function ($value, $column, $row) {
-                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
-                }),
-            Column::make("Tabungan Indir", "tabungan_indir")
-                ->sortable()
-                ->format(function ($value, $column, $row) {
-                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
-                }),
-            Column::make("Kompensasi Masa Kerja", "kompensasi_masa_kerja")
-                ->sortable()
-                ->format(function ($value, $column, $row) {
-                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
-                }),
         ];
     }
 
-    public function bulkActions(): array
-    {
-        return [
-            'delete' => 'Delete',
-        ];
-    }
+    // public function bulkActions(): array
+    // {
+    //     return [
+    //         'delete' => 'Delete',
+    //     ];
+    // }
 
     /**
      * Fungsi hapus data
      *
      */
-    public function delete()
-    {
-        foreach ($this->getSelected() as $id) {
-            TabunganModels::where('t_tabungan_id', $id)
-                ->delete();
-        }
-        $this->clearSelected();
-    }
+    // public function delete()
+    // {
+    //     foreach ($this->getSelected() as $id) {
+    //         TabunganModels::where('t_tabungan_id', $id)
+    //             ->delete();
+    //     }
+    //     $this->clearSelected();
+    // }
 }
