@@ -52,7 +52,7 @@ class PinjamanShow extends Component
         $this->p_status_pengajuan_id = $this->loadData['p_status_pengajuan_id'];
 
         $fileUrlDocKtp = null;
-        if (Storage::exists($this->loadData['doc_ktp'])) {
+        if ($this->loadData['doc_ktp'] && Storage::exists($this->loadData['doc_ktp'])) {
             $fileUrlDocKtp = URL::temporarySignedRoute(
                 'secure-file', // Route name
                 now()->addMinutes(1), // Expiration time
@@ -63,7 +63,7 @@ class PinjamanShow extends Component
         $this->loadData['doc_ktp_name'] = basename($this->loadData['doc_ktp']);
 
         $fileUrlSuamiIstri = null;
-        if (Storage::exists($this->loadData['doc_ktp_suami_istri'])) {
+        if ($this->loadData['doc_ktp_suami_istri'] && Storage::exists($this->loadData['doc_ktp_suami_istri'])) {
             $fileUrlSuamiIstri = URL::temporarySignedRoute(
                 'secure-file', // Route name
                 now()->addMinutes(1), // Expiration time
@@ -74,7 +74,7 @@ class PinjamanShow extends Component
         $this->loadData['doc_ktp_suami_istri_name'] = basename($this->loadData['doc_ktp_suami_istri']);
 
         $fileUrlKK = null;
-        if (Storage::exists($this->loadData['doc_kk'])) {
+        if ($this->loadData['doc_kk'] && Storage::exists($this->loadData['doc_kk'])) {
             $fileUrlKK = URL::temporarySignedRoute(
                 'secure-file', // Route name
                 now()->addMinutes(1), // Expiration time
@@ -85,7 +85,7 @@ class PinjamanShow extends Component
         $this->loadData['doc_kk_name'] = basename($this->loadData['doc_kk']);
 
         $fileUrlSlipGaji = null;
-        if (Storage::exists($this->loadData['doc_slip_gaji'])) {
+        if ($this->loadData['doc_slip_gaji'] && Storage::exists($this->loadData['doc_slip_gaji'])) {
             $fileUrlSlipGaji = URL::temporarySignedRoute(
                 'secure-file', // Route name
                 now()->addMinutes(1), // Expiration time
@@ -96,7 +96,7 @@ class PinjamanShow extends Component
         $this->loadData['doc_slip_gaji_name'] = basename($this->loadData['doc_slip_gaji']);
 
         $fileUrlIDCardPegawai = null;
-        if (Storage::exists($this->loadData['doc_kartu_anggota'])) {
+        if ($this->loadData['doc_kartu_anggota'] && Storage::exists($this->loadData['doc_kartu_anggota'])) {
             $fileUrlIDCardPegawai = URL::temporarySignedRoute(
                 'secure-file', // Route name
                 now()->addMinutes(1), // Expiration time

@@ -16,6 +16,8 @@
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
         <!-- Styles / Scripts -->
+        <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @livewireStyles
             @vite(['resources/css/app.css', 'resources/js/app.js'])

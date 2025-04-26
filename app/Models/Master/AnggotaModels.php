@@ -45,13 +45,13 @@ class AnggotaModels extends Model
         'p_unit_id'
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'valid_from' => 'date',
-            'valid_to' => 'date',
-        ];
-    }
+    // protected function casts(): array
+    // {
+    //     return [
+    //         'valid_from' => 'date',
+    //         'valid_to' => 'date',
+    //     ];
+    // }
 
     // protected $hidden = [
     //     'p_anggota_id'

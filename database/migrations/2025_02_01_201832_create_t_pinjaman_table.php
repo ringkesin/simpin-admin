@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('jenis_barang')->nullable()->comment('Diisi Jika Jenis Pinjaman Kredit Barang');
             $table->string('merk_type')->nullable()->comment('Diisi Jika Jenis Pinjaman Kredit Barang');
             $table->integer('tenor')->comment('Dalam Bulan');
+            $table->decimal('biaya_admin', 5, 2);
 
             $table->double('ra_jumlah_pinjaman', 15, 2);
             $table->double('ri_jumlah_pinjaman', 15, 2);
@@ -26,10 +27,10 @@ return new class extends Migration
             $table->string('jaminan')->nullable();
             $table->string('jaminan_keterangan')->nullable();
             $table->double('jaminan_perkiraan_nilai', 15, 2);
-            
+
             $table->string('no_rekening')->nullable();
             $table->string('bank')->nullable();
-            
+
             $table->string('doc_ktp')->nullable();
             $table->string('doc_ktp_suami_istri')->nullable();
             $table->string('doc_kk')->nullable();

@@ -55,6 +55,7 @@
                         @endif
                         <x-elements.detail label="Jumlah Pengajuan">{{ $this->setIfNull('Rp. '.$this->toRupiah($loadData['ra_jumlah_pinjaman']),'-') }}</x-elements.detail>
                         <x-elements.detail label="Tenor">{{ $this->setIfNull($loadData['tenor'],'-') }} Bulan</x-elements.detail>
+                        <x-elements.detail label="Biaya Admin">{{ $this->setIfNull($loadData['biaya_admin'],'-') }} %</x-elements.detail>
                     </div>
                     <div>
                         <x-elements.detail label="Jaminan">{{ $this->setIfNull($loadData['jaminan'],'-') }}</x-elements.detail>
@@ -68,7 +69,7 @@
             <div class="mt-5">
                 <x-elements.header-form>Dokumen Peminjam</x-header-form>
                 <div class="grid grid-cols-2">
-                    <div>
+                    {{-- <div>
                         <x-elements.detail label="KTP Pemohon">
                             <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_ktp_sec'] }}' target='_blank'>
                                 Preview <x-lucide-external-link class="w-4"/>
@@ -84,13 +85,13 @@
                                 Preview <x-lucide-external-link class="w-4"/>
                             </a>
                         </x-elements.detail>
-                    </div>
+                    </div> --}}
                     <div>
-                        <x-elements.detail label="ID Card Pegawai">
+                        {{-- <x-elements.detail label="ID Card Pegawai">
                             <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_id_card_pegawai'] }}' target='_blank'>
                                 Preview <x-lucide-external-link class="w-4"/>
                             </a>
-                        </x-elements.detail>
+                        </x-elements.detail> --}}
                         <x-elements.detail label="Slip Gaji Terakhir">
                             <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $loadData['doc_slip_gaji_sec'] }}' target='_blank'>
                                 Preview <x-lucide-external-link class="w-4"/>

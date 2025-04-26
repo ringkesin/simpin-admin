@@ -31,6 +31,7 @@ class PinjamanModels extends Model
         'jenis_barang',
         'merk_type',
         'tenor',
+        'biaya_admin',
         'ra_jumlah_pinjaman',
         'ri_jumlah_pinjaman',
         'jaminan',

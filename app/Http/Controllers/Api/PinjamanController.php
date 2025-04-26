@@ -29,10 +29,11 @@ class PinjamanController extends BaseController
                 'jaminan_perkiraan_nilai' => 'required|numeric',
                 'no_rekening' => 'required|numeric',
                 'bank' => 'required|string|max:255',
-                'doc_ktp' => 'required|file|mimes:jpg,png,pdf|max:2048',
-                'doc_ktp_suami_istri' => 'required|file|mimes:jpg,png,pdf|max:2048',
-                'doc_kk' => 'required|file|mimes:jpg,png,pdf|max:2048',
-                'doc_kartu_anggota' => 'required|file|mimes:jpg,png,pdf|max:2048',
+                'biaya_admin' => 'required',
+                'doc_ktp' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
+                'doc_ktp_suami_istri' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
+                'doc_kk' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
+                'doc_kartu_anggota' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
                 'doc_slip_gaji' => 'required|file|mimes:jpg,png,pdf|max:2048',
             ],[
                 'p_anggota_id.required' => 'Anggota harus diisi',
@@ -41,15 +42,16 @@ class PinjamanController extends BaseController
                 'jenis_barang.required' => 'Jenis Barang harus diisi',
                 'merk_type.required' => 'Merk / Tipe Barang harus diisi',
                 'tenor.required' => 'Tenor harus diisi',
+                'biaya_admin.required' => 'Biaya Admin harus diisi',
                 'ra_jumlah_pinjaman.required' => 'Jumlah Pengajuan Pinjaman harus diisi',
                 'jaminan.required' => 'Jaminan harus diisi',
                 'jaminan_perkiraan_nilai.required' => 'Perkiraan Nilai Jaminan harus diisi',
                 'no_rekening.required' => 'Nomor Rekening harus diisi',
                 'bank.required' => 'Bank harus diisi',
-                'doc_ktp' => 'File KTP Pemohon harus diupload',
-                'doc_ktp_suami_istri' => 'File KTP Suami / Istri harus diupload',
-                'doc_kk' => 'File KK harus diupload',
-                'doc_kartu_anggota' => 'File Kartu Anggota harus diupload',
+                // 'doc_ktp' => 'File KTP Pemohon harus diupload',
+                // 'doc_ktp_suami_istri' => 'File KTP Suami / Istri harus diupload',
+                // 'doc_kk' => 'File KK harus diupload',
+                // 'doc_kartu_anggota' => 'File Kartu Anggota harus diupload',
                 'doc_slip_gaji' => 'File Slip Gaji harus diupload',
             ]);
 
@@ -62,15 +64,15 @@ class PinjamanController extends BaseController
             $user = $request->user();
             $isAnggota = $user->tokenCan('state:anggota');
             $p_anggota_id = $user->anggota?->p_anggota_id;
-            
+
             if ($isAnggota && (int) $request->p_anggota_id !== $p_anggota_id) {
                 return response()->json(['message' => 'Tidak diizinkan input data dengan anggota id = '.$request->p_anggota_id], 403);
             }
 
-            $doc_ktp_path = $request->file('doc_ktp')->store('uploads/ktp', 'local');
-            $doc_doc_ktp_suami_istri_path = $request->file('doc_ktp_suami_istri')->store('uploads/ktp_suami_istri', 'local');
-            $doc_kk_path = $request->file('doc_kk')->store('uploads/kartu_keluarga', 'local');
-            $doc_kartu_anggota_path = $request->file('doc_kartu_anggota')->store('uploads/kartu_anggota', 'local');
+            $doc_ktp_path = $request->file('doc_ktp') ? $request->file('doc_ktp')->store('uploads/ktp', 'local') : NULL;
+            $doc_doc_ktp_suami_istri_path = $request->file('doc_doc_ktp_suami_istri_path') ? $request->file('doc_ktp_suami_istri')->store('uploads/ktp_suami_istri', 'local') : NULL;
+            $doc_kk_path = $request->file('doc_kk') ? $request->file('doc_kk')->store('uploads/kartu_keluarga', 'local') : NULL;
+            $doc_kartu_anggota_path = $request->file('doc_kartu_anggota') ? $request->file('doc_kartu_anggota')->store('uploads/kartu_anggota', 'local') : NULL;
             $doc_slip_gaji_path = $request->file('doc_slip_gaji')->store('uploads/slip_gaji', 'local');
 
             $pinjaman = PinjamanModels::create([
@@ -80,6 +82,7 @@ class PinjamanController extends BaseController
                 'jenis_barang' => ($request->p_jenis_pinjaman_id == 3) ? $request->jenis_barang : null,
                 'merk_type' => ($request->p_jenis_pinjaman_id == 3) ? $request->merk_type : null,
                 'tenor' => $request->tenor,
+                'biaya_admin' => $request->biaya_admin,
                 'ra_jumlah_pinjaman' => $request->ra_jumlah_pinjaman,
                 'ri_jumlah_pinjaman' => 0,
                 'jaminan' => $request->jaminan,
@@ -160,10 +163,10 @@ class PinjamanController extends BaseController
                 $keperluanIds = is_array($item->p_pinjaman_keperluan_ids)
                     ? $item->p_pinjaman_keperluan_ids
                     : json_decode($item->p_pinjaman_keperluan_ids, true);
-    
+
                 $item->pinjaman_keperluan_nama = PinjamanKeperluanModels::whereIn('p_pinjaman_keperluan_id', $keperluanIds)
                     ->pluck('keperluan');
-    
+
                 return $item;
             });
 
@@ -186,7 +189,7 @@ class PinjamanController extends BaseController
 
             if ($isAdmin) {
                 $data = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan', 'masterAnggota'])->find($id);
-            } 
+            }
             elseif ($isAnggota) {
                 $p_anggota_id = $user->anggota?->p_anggota_id;
                 if (!$p_anggota_id) {
@@ -200,7 +203,7 @@ class PinjamanController extends BaseController
                 return $this->sendError('Anda tidak memiliki akses.', [], 403);
             }
             //------------End Filter by Owner-------------------------------------//
-            
+
             if (!$data) {
                 return $this->sendError('Pinjaman tidak ditemukan atau tidak memiliki akses.', [], 404);
             }
@@ -229,7 +232,7 @@ class PinjamanController extends BaseController
         if (! $pinjaman) {
             return response()->json(['message' => 'Data pinjaman tidak ditemukan.'], 404);
         }
-        
+
         if ($isAnggota && $pinjaman->p_anggota_id !== $p_anggota_id) {
             return response()->json(['message' => 'Tidak diizinkan menghapus pinjaman ini.'], 403);
         }
@@ -242,7 +245,7 @@ class PinjamanController extends BaseController
         }
 
         $pinjaman->delete();
-    
+
         return $this->sendResponse([], 'Data pinjaman berhasil dihapus');
     }
 

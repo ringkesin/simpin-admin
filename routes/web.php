@@ -24,6 +24,10 @@ use App\Livewire\Page\Main\Shu\ShuCreate;
 use App\Livewire\Page\Main\Shu\ShuShow;
 use App\Livewire\Page\Main\Shu\ShuEdit;
 use App\Livewire\Page\Main\Shu\ShuImport;
+use App\Livewire\Page\Main\Konten\KontenList;
+use App\Livewire\Page\Main\Konten\KontenCreate;
+use App\Livewire\Page\Main\Konten\KontenShow;
+use App\Livewire\Page\Main\Konten\KontenEdit;
 use App\Livewire\Page\User\UserList;
 use App\Livewire\Page\User\UserEdit;
 use App\Livewire\Page\User\UserCreate;
@@ -92,6 +96,12 @@ Route::middleware([
         Route::prefix('pinjaman')->group(function () {
             Route::get('list', PinjamanList::class)->name('main.pinjaman.list');
             Route::get('show/{id}', PinjamanShow::class)->name('main.pinjaman.show');
+        });
+        Route::prefix('konten')->group(function () {
+            Route::get('list', KontenList::class)->name('main.konten.list');
+            Route::get('create', KontenCreate::class)->name('main.konten.create');
+            Route::get('show/{id}', KontenShow::class)->name('main.konten.show');
+            Route::get('edit/{id}', KontenEdit::class)->name('main.konten.edit');
         });
     });
 });

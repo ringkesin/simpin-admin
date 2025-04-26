@@ -73,6 +73,13 @@
                             </a>
                         </li>
 
+                        <li>
+                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'konten' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.konten.list')}}">
+                                <x-lucide-newspaper class="size-4"/>
+                                Konten
+                            </a>
+                        </li>
+
                         <li class="hs-accordion" id="master-accordion">
                             <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-slate-700 rounded-lg hover:bg-slate-100 focus:outline-none focus:bg-slate-100" aria-expanded="true" aria-controls="master-accordion-collapse-1">
                                 <x-lucide-database class="size-4"/>
