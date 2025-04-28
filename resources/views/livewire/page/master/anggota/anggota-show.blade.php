@@ -172,7 +172,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['valid_from']}}
+                            {{$loadData['valid_from'] ? date('Y-m-d', strtotime($this->loadData['valid_from'])) : '-'}}
                         </div>
                     </div>
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
@@ -182,7 +182,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$this->setIfNull($loadData['valid_to'], '-')}}
+                            {{$loadData['valid_to'] ? date('Y-m-d', strtotime($this->loadData['valid_to'])) : '-'}}
                         </div>
                     </div>
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
@@ -217,7 +217,7 @@
                         </div>
                         <div class="col-span-12 md:col-span-8">
                             <a class='inline-flex items-center text-blue-500 gap-x-1' href='{{ $attr['atribut_attachment'] }}' target='_blank'>
-                                {{ $attr['atribut_value'] }} <x-lucide-external-link class="w-4"/> 
+                                {{ $attr['atribut_value'] }} <x-lucide-external-link class="w-4"/>
                             </a>
                         </div>
                     </div>

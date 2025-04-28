@@ -56,8 +56,8 @@ class AnggotaEdit extends Component
         $this->alamat = $this->loadData['alamat'];
         $this->tgl_lahir = $this->loadData['tgl_lahir'];
         $this->tanggal_masuk = $this->loadData['tanggal_masuk'];
-        $this->valid_from = $this->loadData['valid_from'];
-        $this->valid_to = $this->loadData['valid_to'];
+        $this->valid_from = $this->loadData['valid_from'] ? date('Y-m-d', strtotime($this->loadData['valid_from'])) : NULL;
+        $this->valid_to = $this->loadData['valid_to'] ? date('Y-m-d', strtotime($this->loadData['valid_to'])) : NULL;
         $this->is_registered = $this->loadData['is_registered'];
     }
 
