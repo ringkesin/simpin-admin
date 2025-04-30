@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Master\AnggotaModels;
 use App\Models\Main\ShuModels;
@@ -110,6 +111,85 @@ class ShuController extends BaseController
                 }
             }
             return $this->sendResponse($shuPeriod, 'Data berhasil digenerate.');
+        } catch (\Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getByAnggotaGrid(Request $request)
+    {
+        $user = Auth::user();
+        $tokenAbilities = $user->currentAccessToken()->abilities;
+        $page = $request->page; // default page 1 jika tidak ada
+        $perPage = $request->perpage;
+        $offset = ($page - 1) * $perPage;
+        $data = $request->data;
+        // return $offset;
+
+        try {
+            $shuResult = [];
+            $total_shu = 0;
+            if (in_array('state:admin', $tokenAbilities)) {
+                if(!empty($data['p_anggota_id'])) {
+                    $result = ShuModels::where('p_anggota_id', $data['p_anggota_id'])
+                                            ->whereNull('deleted_at')
+                                            ->offset($offset)
+                                            ->limit($perPage)
+                                            ->get();
+                    // return $result;
+                    if(!empty($result)) {
+                        $totalShu = ShuModels::where('p_anggota_id', $data['p_anggota_id'])
+                                            ->whereNull('deleted_at')
+                                            ->sum('shu_diterima');
+                        $shuResult['total_shu'] = $totalShu;
+                        $shuResult['result'] = $result;
+                    } else {
+                        $shuResult['total_shu'] = $total_shu;
+                        $shuResult['result'] = $result;
+                    }
+                } else {
+                    $result = ShuModels::select('tahun', DB::raw('SUM(shu_diterima) as total_shu_diterima'))
+                                        ->whereNull('deleted_at')
+                                        ->groupBy('tahun')
+                                        ->orderByDesc('tahun')
+                                        ->offset($offset)
+                                        ->limit($perPage)
+                                        ->get();
+
+                    if(!empty($result)) {
+                        $totalShu = ShuModels::whereNull('deleted_at')
+                                                ->sum('shu_diterima');
+                        $shuResult['total_shu'] = $totalShu;
+                        $shuResult['result'] = $result;
+                    } else {
+                        $shuResult['total_shu'] = $total_shu;
+                        $shuResult['result'] = $result;
+                    }
+                }
+
+            } elseif (in_array('state:anggota', $tokenAbilities)) {
+                $anggota = AnggotaModels::where('user_id', $user->id)->first();
+
+                $result = ShuModels::where('p_anggota_id', $anggota['p_anggota_id'])
+                                    ->whereNull('deleted_at')
+                                    ->offset($offset)
+                                    ->limit($perPage)
+                                    ->get();
+
+                // return $result;
+                if(!empty($result)) {
+                    $totalShu = ShuModels::where('p_anggota_id', $anggota['p_anggota_id'])
+                                        ->whereNull('deleted_at')
+                                        ->sum('shu_diterima');
+
+                    $shuResult['total_shu'] = $totalShu;
+                    $shuResult['result'] = $result;
+                } else {
+                    $shuResult['total_shu'] = $total_shu;
+                    $shuResult['result'] = $result;
+                }
+            }
+            return $this->sendResponse($shuResult, 'Data berhasil digenerate.');
         } catch (\Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }

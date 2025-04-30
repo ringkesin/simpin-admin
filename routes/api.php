@@ -45,7 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tabungan/saldo/tahunan', [TabunganController::class, 'getSaldoTahunan']);
     Route::post('/tabungan/saldo/bulanan', [TabunganController::class, 'getSaldoBulanan']);
     Route::post('/tagihan', [TagihanController::class, 'getByAnggota']);
-    Route::post('/shu', [ShuController::class, 'getByAnggota']);
+    Route::prefix('/shu')->group(function () {
+        Route::post('', [ShuController::class, 'getByAnggota']);
+        Route::post('/grid', [ShuController::class, 'getByAnggotaGrid']);
+    });
     Route::prefix('/simulasi')->group(function () {
         Route::post('/pinjaman', [SimulasiPinjamanController::class, 'getSimulasi']);
         Route::post('/tenor', [SimulasiPinjamanController::class, 'getTenorSimulasi']);

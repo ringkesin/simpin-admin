@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\Master\AnggotaModels;
+use Livewire\WithPagination;
 
 class ShuModels extends Model
 {
     use HasFactory;
+    use WithPagination;
 
     protected $table = 't_shu';
 
