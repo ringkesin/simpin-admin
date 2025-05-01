@@ -17,76 +17,86 @@
                 </div>
             </div>
         </div>
-
-        <div class="flex items-center gap-4">
-            <div class="flex-none w-32">
-                <x-form.label for="tahun">
-                    Pilih Tahun <span class="text-red-500">*</span>
-                </x-form.label>
-            </div>
-            <div class="flex-auto w-64 md:flex-initial">
-                <x-form.select-single name="tahun" wire:model.lazy="tahun" class="w-full" id="tahun">
-                    <option value="">Pilih Tahun</option>
-                    @foreach($this->getYearRange(2) as $year)
-                        <option value="{{ $year }}">{{ $year }}</option>
-                    @endforeach
-                </x-form.select-single>
-            </div>
-        </div>
-
-        {{-- <div class='mt-6'>
-            <div class="flex flex-col">
-                <div class="-m-1.5 overflow-x-auto">
-                    <div class="p-1.5 min-w-full inline-block align-middle">
-                        <div class="overflow-hidden border rounded-lg shadow-xs border-slate-200">
-                            <table class="min-w-full divide-y divide-slate-200">
-                                <thead class="bg-slate-50">
-                                    <tr>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center text-slate-500" rowspan="2">Bulan</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-e-0 text-slate-500 border-slate-200" colspan="2">Simpanan Pokok</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-e-0 text-slate-500 border-slate-200" colspan="2">Simpanan Wajib</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-e-0 text-slate-500 border-slate-200" colspan="2">Tabungan Sukarela</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-e-0 text-slate-500 border-slate-200" colspan="2">Tabungan Indir</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-e-0 text-slate-500 border-slate-200" colspan="2">Kompensasi Masa Kerja</th>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai s.d.</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai s.d.</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai s.d.</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai s.d.</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai</th>
-                                        <th scope="col" class="px-3 py-2 text-sm font-normal text-center border border-t-0 border-b-0 text-slate-500 border-e-0 border-slate-200">Nilai s.d.</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                                    @foreach ($this->listMonth() as $key => $value)
-                                        <tr>
-                                            <td class="px-3 py-2 text-sm text-slate-500">{{ $value }}</th>
-                                            <td class="px-3 py-2 text-sm">
-                                                <input type="number" class="block w-full px-3 py-0.5 text-sm border-gray-200 rounded-lg focus:border-blue-600 focus:ring-blue-600 disabled:opacity-50 disabled:pointer-events-none">
-                                            </th>
-                                            <td class="px-3 py-2 text-sm">Nilai s.d.</th>
-                                            <td class="px-3 py-2 text-sm">Nilai</th>
-                                            <td class="px-3 py-2 text-sm">Nilai s.d.</th>
-                                            <td class="px-3 py-2 text-sm">Nilai</th>
-                                            <td class="px-3 py-2 text-sm">Nilai s.d.</th>
-                                            <td class="px-3 py-2 text-sm">Nilai</th>
-                                            <td class="px-3 py-2 text-sm">Nilai s.d.</th>
-                                            <td class="px-3 py-2 text-sm">Nilai</th>
-                                            <td class="px-3 py-2 text-sm">Nilai s.d.</th>
-                                        </tr>
+        
+        <form wire:submit="saveInsert">
+            <div class="grid grid-cols-12 gap-10 mb-2">
+                <div class="col-span-12 md:col-span-6">
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="uraian">
+                                Tanggal Transaksi <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <div class="col-span-12 md:col-span-8">
+                                <x-form.input class="w-full" type="datetime-local" name="tglTransaksi" wire:model.lazy="tglTransaksi"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="uraian">
+                                Pilih Tabungan <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <div class="col-span-12 md:col-span-8">
+                                {{-- <x-form.input class="w-full" type="number" name="jumlah" wire:model.lazy="jumlah"/> --}}
+                                <x-form.select-single name="jenisTabunganId" wire:model.lazy="jenisTabunganId" class="w-full">
+                                    <option value="">- Pilih -</option>
+                                    @foreach($dataJenisTabungan as $d)
+                                        <option value="{{ $d->p_jenis_tabungan_id }}">{{ $d->nama }}</option>
                                     @endforeach
-                                </tbody>
-                            </table>
+                                </x-form.select-single>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="jumlah">
+                                Jumlah <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <div class="col-span-12 md:col-span-8">
+                                <x-form.input class="w-full" type="number" name="jumlah" wire:model.lazy="jumlah" step="0.01" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid items-start grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="remarks">Catatan</x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <div class="col-span-12 md:col-span-8">
+                                <x-form.textarea class="w-full" type="text" name="remarks" wire:model.lazy="remarks"/>
+                            </div>
                         </div>
                     </div>
                 </div>
-              </div>
-        </div> --}}
+            </div>
+
+            <x-elements.button-submit wire:loading.attr="disabled" wire:confirm="Are you sure your data is correct?">
+                <div wire:loading wire:target="saveInsert">
+                    <span class="me-1 animate-spin inline-block size-3 border-[2px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
+                        <span class="sr-only">Processing.....</span>
+                    </span>
+                    <span class="xs:block">
+                        Processing
+                    </span>
+                </div>
+                <div class='flex gap-x-1' wire:loading.remove wire:target="saveInsert">
+                    <x-lucide-save class="size-5"/>
+                    <span class="xs:block">
+                        Save data
+                    </span>
+                </div>
+            </x-elements.button-submit>
+        </form>
         
+        <hr class='mt-6 mb-4' />
+        <h4 class='mb-4 text-base font-bold'>List Transaksi Tabungan</h4>
+        
+        <livewire:page.main.tabungan.tabungan-anggota-table />
     </div>
 </div>

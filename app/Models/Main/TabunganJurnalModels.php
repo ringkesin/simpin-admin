@@ -28,8 +28,7 @@ class TabunganJurnalModels extends Model
     protected $fillable = [
         'p_anggota_id',
         'p_jenis_tabungan_id',
-        'bulan',
-        'tahun',
+        'tgl_transaksi',
         'nilai',
         'nilai_sd',
         'catatan',
@@ -39,12 +38,11 @@ class TabunganJurnalModels extends Model
     ];
 
     protected $casts = [
+        'tgl_transaksi' => 'datetime',
         'nilai' => 'float',
         'nilai_sd' => 'float',
         'p_anggota_id' => 'integer',
         'p_jenis_tabungan_id' => 'integer',
-        'bulan' => 'integer',
-        'tahun' => 'integer'
     ];
 
     public function getNilaiFormattedAttribute()

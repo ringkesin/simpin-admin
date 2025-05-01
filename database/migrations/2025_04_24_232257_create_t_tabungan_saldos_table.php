@@ -14,19 +14,16 @@ return new class extends Migration
         Schema::create('t_tabungan_saldo', function (Blueprint $table) {
             $table->ulid('t_tabungan_saldo_id')->primary();
             $table->unsignedBigInteger('p_anggota_id');
+            $table->unsignedBigInteger('p_jenis_tabungan_id');
             $table->integer('tahun');
             $table->double('total_sd', 15, 2);
-            $table->double('simpanan_pokok', 15, 2);
-            $table->double('simpanan_wajib', 15, 2);
-            $table->double('tabungan_sukarela', 15, 2);
-            $table->double('tabungan_indir', 15, 2);
-            $table->double('kompensasi_masa_kerja', 15, 2);
             $table->timestamps($precision = 0);
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->unsignedInteger('created_by')->nullable();
             $table->unsignedInteger('updated_by')->nullable();
             $table->unsignedInteger('deleted_by')->nullable();
             $table->foreign('p_anggota_id')->references('p_anggota_id')->on('p_anggota')->onDelete('restrict');
+            $table->foreign('p_jenis_tabungan_id')->references('p_jenis_tabungan_id')->on('p_jenis_tabungan')->onDelete('restrict');
         });
     }
 
