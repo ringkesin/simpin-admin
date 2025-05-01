@@ -28,20 +28,36 @@ return new class extends Migration
             SELECT 
                 a.t_tabungan_jurnal_id,
                 a.created_at,
-                date_format(a.created_at, '%d-%b-%Y %H:%i:%s') AS created_at_beautify,
+
+                --date_format(a.created_at, '%d-%b-%Y %H:%i:%s') AS created_at_beautify,
+                to_char(a.created_at, 'DD FMMonth YYYY, HH24:MI:SS'::text) AS created_at_beautify,
+                
                 a.tgl_transaksi,
-                date_format(a.tgl_transaksi, '%d-%b-%Y %H:%i:%s') AS tgl_transaksi_beautify,
-                date_format(a.tgl_transaksi, '%c') AS bulan_transaksi,
-                date_format(a.tgl_transaksi, '%Y') AS tahun_transaksi,
+
+                --date_format(a.tgl_transaksi, '%d-%b-%Y %H:%i:%s') AS tgl_transaksi_beautify,
+                to_char(a.tgl_transaksi, 'DD FMMonth YYYY, HH24:MI:SS'::text) AS tgl_transaksi_beautify,
+
+                --date_format(a.tgl_transaksi, '%c') AS bulan_transaksi,
+                to_char(a.tgl_transaksi, 'MM'::text) AS bulan_transaksi,
+
+                --date_format(a.tgl_transaksi, '%Y') AS tahun_transaksi,
+                to_char(a.tgl_transaksi, 'YYYY'::text) AS tahun_transaksi,
+
                 a.p_anggota_id,
                 c.nama AS anggota_name,
                 c.nomor_anggota AS anggota_nomor,
                 a.p_jenis_tabungan_id,
                 b.nama AS jenis_tabungan,
                 a.nilai,
-                concat('Rp. ', REPLACE(format(a.nilai, 0), ',', '.')) AS nilai_beautify,
+                
+                --concat('Rp. ', REPLACE(format(a.nilai, 0), ',', '.')) AS nilai_beautify,
+                _beautify_money(a.nilai) AS nilai_beautify,
+                
                 a.nilai_sd,
-                concat('Rp. ', REPLACE(format(a.nilai_sd, 0), ',', '.')) AS nilai_sd_beautify,
+                
+                --concat('Rp. ', REPLACE(format(a.nilai_sd, 0), ',', '.')) AS nilai_sd_beautify,
+                _beautify_money(a.nilai_sd) AS nilai_sd_beautify,
+                
                 a.catatan
             FROM 
                 t_tabungan_jurnal a 

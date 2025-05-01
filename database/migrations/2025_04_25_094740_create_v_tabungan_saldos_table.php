@@ -40,11 +40,13 @@ return new class extends Migration
                 END AS total_tabungan,
                 CASE 
                     WHEN (
-                        SELECT concat('Rp. ', REPLACE(format(sum(b.total_sd), 0), ',', '.')) FROM t_tabungan_saldo b WHERE b.p_anggota_id = a.p_anggota_id GROUP BY b.tahun ORDER BY b.tahun DESC LIMIT 1
+                        --gunakan jika di mysql : SELECT concat('Rp. ', REPLACE(format(sum(b.total_sd), 0), ',', '.')) FROM t_tabungan_saldo b WHERE b.p_anggota_id = a.p_anggota_id GROUP BY b.tahun ORDER BY b.tahun DESC LIMIT 1
+                        SELECT _beautify_money(sum(b.total_sd)) FROM t_tabungan_saldo b WHERE b.p_anggota_id = a.p_anggota_id GROUP BY b.tahun ORDER BY b.tahun DESC LIMIT 1
                     ) IS NOT NULL THEN (
-                        SELECT concat('Rp. ', REPLACE(format(sum(b.total_sd), 0), ',', '.')) FROM t_tabungan_saldo b WHERE b.p_anggota_id = a.p_anggota_id GROUP BY b.tahun ORDER BY b.tahun DESC LIMIT 1
+                        --gunakan jika di mysql : SELECT concat('Rp. ', REPLACE(format(sum(b.total_sd), 0), ',', '.')) FROM t_tabungan_saldo b WHERE b.p_anggota_id = a.p_anggota_id GROUP BY b.tahun ORDER BY b.tahun DESC LIMIT 1
+                        SELECT _beautify_money(sum(b.total_sd)) FROM t_tabungan_saldo b WHERE b.p_anggota_id = a.p_anggota_id GROUP BY b.tahun ORDER BY b.tahun DESC LIMIT 1
                     )
-                    ELSE 0
+                    ELSE 0::text
                 END AS total_tabungan_beautify
             FROM  
                 p_anggota a 
