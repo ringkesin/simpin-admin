@@ -23,10 +23,10 @@ class ShuCreate extends Component
     #component input
     public $p_anggota_id;
     public $tahun;
-    public $shu_diterima;
-    public $shu_dibagi;
-    public $shu_ditabung;
-    public $shu_tahun_lalu;
+    public $shu_diterima = 0;
+    public $shu_dibagi = 0;
+    public $shu_ditabung = 0;
+    public $shu_tahun_lalu = 0;
 
     public function mount() {
         $this->titlePage = 'Tambah Shu Anggota';
