@@ -62,7 +62,7 @@ class TabunganUpdate extends Component
             ['link' => route('main.tabungan.update', ['id' => $this->id]), 'label' => 'Tabungan : '.$this->dataAnggota->nama]
         ];
 
-        $this->tglTransaksi = date('Y-m-d H:i');
+        $this->tglTransaksi = date('Y-m-d');
     }
 
     #[Computed]
@@ -78,7 +78,7 @@ class TabunganUpdate extends Component
     }
 
     public function saveInsert() {
-        $validated = $this->validate([
+        $this->validate([
             'tglTransaksi' => 'required',
             'jenisTabunganId' => 'required',
             'jumlah' => 'required|numeric',
@@ -91,32 +91,55 @@ class TabunganUpdate extends Component
         ]);
 
         try {
-            $post = TabunganJurnalModels::create([
+            DB::beginTransaction();
+
+            $lastAmount = 0;
+            $getLatest = TabunganJurnalModels::where('p_anggota_id', $this->id)->orderBy('tgl_transaksi', 'desc')->first();
+            if($getLatest){
+                $lastAmount = $getLatest->nilai_sd;
+            }
+            
+            TabunganJurnalModels::create([
                 'p_anggota_id' => $this->id,
                 'p_jenis_tabungan_id' => $this->jenisTabunganId,
-                'tgl_transaksi' => $this->tglTransaksi,
+                'tgl_transaksi' => $this->tglTransaksi.' '.date('H:i:s'),
                 'nilai' => $this->jumlah,
-                'nilai_sd' => $this->jumlah,
+                'nilai_sd' => ($lastAmount + $this->jumlah),
                 'remarks' => $this->remarks
             ]);
-            if($post) {
-                $redirect = route('main.tabungan.update', ['id' => $this->id]);
-                $this->sweetalert([
-                    'icon' => 'success',
-                    'confirmButtonText' => 'Okay',
-                    'showCancelButton' => false,
-                    'text' => 'Data Berhasil Disimpan !',
-                    'redirectUrl' => $redirect
-                ]);
+
+            $tahun = date('Y', strtotime($this->tglTransaksi));
+
+            $getLatestSaldo = TabunganSaldoModels::where('p_anggota_id', $this->id)
+                ->where('p_jenis_tabungan_id', $this->jenisTabunganId)
+                ->where('tahun', $tahun)
+                ->orderBy('created_at', 'desc')
+                ->first();
+            if($getLatestSaldo){
+                $getLatestSaldo->total_sd = $getLatestSaldo->total_sd + $this->jumlah;
+                $getLatestSaldo->save();
             } else {
-                $this->sweetalert([
-                    'icon' => 'warning',
-                    'confirmButtonText'  => 'Okay',
-                    'showCancelButton' => false,
-                    'text' => 'Data gagal di update, coba kembali.',
+                TabunganSaldoModels::create([
+                    'p_anggota_id' => $this->id,
+                    'p_jenis_tabungan_id' => $this->jenisTabunganId,
+                    'tahun' => $tahun,
+                    'total_sd' => $this->jumlah,
+                    'created_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
                 ]);
             }
+
+            DB::commit();
+            $redirect = route('main.tabungan.update', ['id' => $this->id]);
+            $this->sweetalert([
+                'icon' => 'success',
+                'confirmButtonText' => 'Okay',
+                'showCancelButton' => false,
+                'text' => 'Data Berhasil Disimpan !',
+                'redirectUrl' => $redirect
+            ]);
         } catch (QueryException $e) {
+            DB::rollBack();
             $this->sweetalert([
                 'icon' => 'error',
                 'confirmButtonText'  => 'Okay',

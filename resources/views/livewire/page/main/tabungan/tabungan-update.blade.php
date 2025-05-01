@@ -29,7 +29,7 @@
                         </div>
                         <div class="col-span-12 md:col-span-8">
                             <div class="col-span-12 md:col-span-8">
-                                <x-form.input class="w-full" type="datetime-local" name="tglTransaksi" wire:model.lazy="tglTransaksi"/>
+                                <x-form.input class="w-full" type="date" name="tglTransaksi" wire:model.lazy="tglTransaksi"/>
                             </div>
                         </div>
                     </div>
