@@ -21,6 +21,7 @@ class JenisTabunganModels extends Model
      */
     protected $fillable = [
         'nama',
+        'withdrawal',
         'created_at',
         'updated_at',
         'created_by',
