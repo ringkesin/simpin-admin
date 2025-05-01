@@ -167,8 +167,9 @@ class TabunganController extends BaseController
             foreach($get as $g){
                 $totalSaldo = $totalSaldo + $g->total_sd;
                 $detailSaldo[] = [
+                    'p_jenis_tabungan_id' => $g->p_jenis_tabungan_id,
                     'jenis_tabungan' => $g->jenisTabungan->nama,
-                    'saldo' => $g->total_sd
+                    'saldo_sd_bulan_ini' => $g->total_sd
                 ];
             }
 
@@ -234,7 +235,7 @@ class TabunganController extends BaseController
                     'p_jenis_tabungan_id' => $j->p_jenis_tabungan_id,
                     'jenis_tabungan' => $j->nama,
                     'saldo_bulan_ini' => $bulanIni,
-                    'saldo_bulan_ini_sd' => $sdBulanIni,
+                    'saldo_sd_bulan_ini' => $sdBulanIni,
                 ];
 
                 $totalBulanIni = $totalBulanIni + $bulanIni;
@@ -245,7 +246,7 @@ class TabunganController extends BaseController
                 'tahun' => $request->tahun,
                 'total' => [
                     'saldo_bulan_ini' => $totalBulanIni,
-                    'saldo_bulan_ini_sd' => $totalBulanIniSd,
+                    'saldo_sd_bulan_ini' => $totalBulanIniSd,
                 ],
                 'detail' => $saldo
             ], 'Data Berhasil Ditampilkan');
