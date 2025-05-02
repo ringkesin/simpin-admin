@@ -124,7 +124,6 @@ class ShuController extends BaseController
         $perPage = $request->perpage;
         $offset = ($page - 1) * $perPage;
         $data = $request->data;
-        // return $offset;
 
         try {
             $shuResult = [];
@@ -135,6 +134,7 @@ class ShuController extends BaseController
                                             ->whereNull('deleted_at')
                                             ->offset($offset)
                                             ->limit($perPage)
+                                            ->orderByDesc('tahun')
                                             ->get();
                     // return $result;
                     if(!empty($result)) {
@@ -174,6 +174,7 @@ class ShuController extends BaseController
                                     ->whereNull('deleted_at')
                                     ->offset($offset)
                                     ->limit($perPage)
+                                    ->orderByDesc('tahun')
                                     ->get();
 
                 // return $result;

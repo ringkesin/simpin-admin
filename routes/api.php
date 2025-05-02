@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/tenor', [SimulasiPinjamanController::class, 'getTenorSimulasi']);
     });
     Route::get('/konten', [KontenController::class, 'getAll']);
+    Route::post('/konten/grid', [KontenController::class, 'getGrid']);
     Route::get('/konten/{id}', [KontenController::class, 'getById']);
     Route::get('/konten/tipe/{tipe_content}', [KontenController::class, 'getActiveByTipe']);
 });
