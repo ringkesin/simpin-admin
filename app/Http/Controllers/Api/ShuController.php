@@ -120,12 +120,13 @@ class ShuController extends BaseController
     {
         $user = Auth::user();
         $tokenAbilities = $user->currentAccessToken()->abilities;
-        $page = $request->page; // default page 1 jika tidak ada
-        $perPage = $request->perpage;
-        $offset = ($page - 1) * $perPage;
-        $data = $request->data;
 
         try {
+            $page = $request->page; // default page 1 jika tidak ada
+            $perPage = $request->perpage;
+            $offset = ($page - 1) * $perPage;
+            $data = $request->data;
+
             $shuResult = [];
             $total_shu = 0;
             if (in_array('state:admin', $tokenAbilities)) {

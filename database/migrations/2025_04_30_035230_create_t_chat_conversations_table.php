@@ -15,7 +15,8 @@ return new class extends Migration
             $table->ulid('t_chat_conversations_id')->primary();
             $table->char('t_chat_id');
             $table->text('message_text');
-            $table->boolean('is_read');
+            $table->boolean('is_read_user');
+            $table->boolean('is_read_admin');
             $table->timestamps($precision = 0);
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->unsignedInteger('created_by')->nullable();

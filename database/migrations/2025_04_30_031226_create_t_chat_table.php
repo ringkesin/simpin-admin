@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('t_chat', function (Blueprint $table) {
-            $table->ulid('t_chat_id')->primary();
+            $table->uuid('t_chat_id')->primary()->default(DB::raw('uuid_generate_v4()'));
             $table->string('ticket_code');
-            $table->integer('p_chat_reference_table_id');
-            $table->string('transaction_id');
-            $table->integer('status');
+            $table->integer('p_chat_reference_table_id')->nullable();
+            $table->string('transaction_id')->nullable();
+            $table->text('subject')->nullable();
+            $table->integer('status')->default(0)->comment('0 = Open, 1 = Closed');
             $table->timestamps($precision = 0);
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->unsignedInteger('created_by')->nullable();

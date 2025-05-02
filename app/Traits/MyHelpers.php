@@ -83,4 +83,15 @@ trait MyHelpers
 
         return range($startYear, $endYear);
     }
+
+    function generateRandomCode($length = 5) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $code = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+
+        return $code;
+    }
 }

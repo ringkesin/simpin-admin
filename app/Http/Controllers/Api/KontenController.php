@@ -118,12 +118,12 @@ class KontenController extends BaseController
 
     public function getGrid(Request $request)
     {
-        $page = $request->page; // default page 1 jika tidak ada
-        $perPage = $request->perpage;
-        $offset = ($page - 1) * $perPage;
-        $data = $request->data;
-
         try {
+            $page = $request->page; // default page 1 jika tidak ada
+            $perPage = $request->perpage;
+            $offset = ($page - 1) * $perPage;
+            $data = $request->data;
+
             $today = Carbon::today();
             $allData = ContentModels::where('valid_from', '<=', $today)
                                     ->where(function ($query) use ($today) {
