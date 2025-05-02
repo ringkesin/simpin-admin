@@ -9,7 +9,10 @@ use App\Models\Master\AnggotaModels;
 use App\Models\Main\TabunganModels;
 use App\Models\Main\TabunganSaldoModels;
 use App\Models\Main\TabunganJurnalModels;
+use App\Models\Main\TabunganPengambilanModels;
+use App\Models\Master\JenisTabunganModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Exception;
 
 class TabunganController extends BaseController
@@ -154,21 +157,26 @@ class TabunganController extends BaseController
                 return response()->json(['message' => 'Tidak diizinkan melihat data dengan anggota id = '.$request->p_anggota_id], 403);
             }
 
-            $get = TabunganSaldoModels::where('p_anggota_id', $request->p_anggota_id)->where('tahun', $request->tahun)->first();
+            $get = TabunganSaldoModels::with('jenisTabungan')->where('p_anggota_id', $request->p_anggota_id)->where('tahun', $request->tahun)->get();
             if( ! $get){
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
 
+            $totalSaldo = 0;
+            $detailSaldo = [];
+            foreach($get as $g){
+                $totalSaldo = $totalSaldo + $g->total_sd;
+                $detailSaldo[] = [
+                    'p_jenis_tabungan_id' => $g->p_jenis_tabungan_id,
+                    'jenis_tabungan' => $g->jenisTabungan->nama,
+                    'saldo_sd_bulan_ini' => $g->total_sd
+                ];
+            }
+
             $saldo = [
-                'tahun' => $get->tahun,
-                'total_saldo_sd' => $get->total_sd,
-                'detail' => [
-                    'saldo_sd_simpanan_pokok' => $get->simpanan_pokok,
-                    'saldo_sd_simpanan_wajib' => $get->simpanan_wajib,
-                    'saldo_sd_tabungan_sukarela' => $get->tabungan_sukarela,
-                    'saldo_sd_tabungan_indir' => $get->tabungan_indir,
-                    'saldo_sd_kompensasi_masa_kerja' => $get->kompensasi_masa_kerja,
-                ]
+                'tahun' => $request->tahun,
+                'total_saldo_sd' => $totalSaldo,
+                'detail' => $detailSaldo
             ];
 
             return $this->sendResponse($saldo, 'Data Berhasil Ditampilkan');
@@ -201,39 +209,162 @@ class TabunganController extends BaseController
             if ($isAnggota && (int) $request->p_anggota_id !== $p_anggota_id) {
                 return response()->json(['message' => 'Tidak diizinkan melihat data dengan anggota id = '.$request->p_anggota_id], 403);
             }
-
-            $get = TabunganJurnalModels::with('jenisTabungan')->where('p_anggota_id', $request->p_anggota_id)
-                ->where('tahun', $request->tahun)
-                ->where('bulan', $request->bulan)
-                ->get();
-            if( ! $get){
-                return response()->json(['message' => 'Data tidak ditemukan'], 404);
-            }
-
+            
             $saldo = [];
             $totalBulanIni = 0;
             $totalBulanIniSd = 0;
-            foreach($get as $g){
-                $saldo[] = [
-                    'jenis_tabungan' => $g->jenisTabungan->nama,
-                    'nilai_bulan_ini' => $g->nilai,
-                    'nilai_bulan_ini_sd' => $g->nilai_sd
-                ];
-                $totalBulanIni = $totalBulanIni + $g->nilai;
-                $totalBulanIniSd = $totalBulanIniSd + $g->nilai_sd;
-            }
+            $jenisTabungan = JenisTabunganModels::all();
+            foreach($jenisTabungan as $j){
+                $bulanIni = TabunganJurnalModels::select(DB::raw('SUM(nilai) as total_nilai'))
+                    ->where('p_anggota_id', $request->p_anggota_id)
+                    ->where('p_jenis_tabungan_id', $j->p_jenis_tabungan_id)
+                    ->whereYear('tgl_transaksi', $request->tahun)
+                    ->whereMonth('tgl_transaksi', $request->bulan)
+                    ->first();
+                $bulanIni = $bulanIni->total_nilai ?? 0;
 
+                $sdBulanIni = TabunganJurnalModels::select(DB::raw('SUM(nilai) as total_nilai'))
+                    ->where('p_anggota_id', $request->p_anggota_id)
+                    ->where('p_jenis_tabungan_id', $j->p_jenis_tabungan_id)
+                    ->whereYear('tgl_transaksi', $request->tahun)
+                    ->whereMonth('tgl_transaksi', '<=', $request->bulan)
+                    ->first();
+                $sdBulanIni = $sdBulanIni->total_nilai ?? 0;
+                    
+                $saldo[] = [
+                    'p_jenis_tabungan_id' => $j->p_jenis_tabungan_id,
+                    'jenis_tabungan' => $j->nama,
+                    'saldo_bulan_ini' => $bulanIni,
+                    'saldo_sd_bulan_ini' => $sdBulanIni,
+                ];
+
+                $totalBulanIni = $totalBulanIni + $bulanIni;
+                $totalBulanIniSd = $totalBulanIniSd + $sdBulanIni;
+            }
             return $this->sendResponse([
                 'bulan' => $request->bulan,
                 'tahun' => $request->tahun,
                 'total' => [
-                    'total_bulan_ini' => $totalBulanIni,
-                    'total_bulan_ini_sd' => $totalBulanIniSd,
+                    'saldo_bulan_ini' => $totalBulanIni,
+                    'saldo_sd_bulan_ini' => $totalBulanIniSd,
                 ],
                 'detail' => $saldo
             ], 'Data Berhasil Ditampilkan');
         } catch (Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function formPengajuanPencairan(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'p_anggota_id' => 'required|integer|exists:p_anggota,p_anggota_id',
+                'p_jenis_tabungan_id' => 'required|integer|exists:p_jenis_tabungan,p_jenis_tabungan_id',
+                'jumlah_diambil' => 'required|numeric',
+                'rekening_bank' => 'required|string|max:200',
+                'rekening_no' => 'required|numeric',
+                'keterangan' => 'nullable|max:2024',
+            ],[
+                'p_anggota_id.required' => 'Anggota harus diisi',
+                'p_jenis_tabungan_id.required' => 'Jenis Tabungan harus diisi',
+                'jumlah_diambil.required' => 'Jumlah Diambil harus diisi',
+                'rekening_bank.required' => 'Rekening Bank harus diisi',
+                'rekening_no.required' => 'Nomor Rekening harus diisi',
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
+            }
+
+            $user = $request->user();
+            $isAnggota = $user->tokenCan('state:anggota');
+            $p_anggota_id = $user->anggota?->p_anggota_id;
+            if ($isAnggota && (int) $request->p_anggota_id !== $p_anggota_id) {
+                return response()->json(['message' => 'Tidak diizinkan melihat data dengan anggota id = '.$request->p_anggota_id], 403);
+            }
+
+            DB::beginTransaction();
+
+            $pengajuan_pencairan = TabunganPengambilanModels::create([
+                'p_anggota_id' => $request->p_anggota_id,
+                'p_jenis_tabungan_id' => $request->p_jenis_tabungan_id,
+                'tgl_pengajuan' => date('Y-m-d H:i:s'),
+                'jumlah_diambil' => $request->jumlah_diambil,
+                'rekening_no' => $request->rekening_no,
+                'rekening_bank' => $request->rekening_bank,
+                'status_pengambilan' => 'PENDING', //PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK, DIBATALKAN_ANGGOTA
+                'catatan_user' => $request->keterangan,
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
+            ]);
+
+            DB::commit();
+
+            return $this->sendResponse(['pengajuan_pencairan' => $pengajuan_pencairan], 'Pengajuan Pencairan Tabungan Berhasil Disubmit');
+        } catch (Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function listPengajuanPencairan(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $isAdmin = $user->tokenCan('state:admin');
+            $isAnggota = $user->tokenCan('state:anggota');
+
+            if($isAdmin){
+                $query = TabunganPengambilanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
+            }
+            if($isAnggota) {
+                $p_anggota_id = $user->anggota?->p_anggota_id;
+                if (!$p_anggota_id) {
+                    return $this->sendError('Data anggota tidak ditemukan.', [], 404);
+                }
+                $query = TabunganPengambilanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
+                    ->where('p_anggota_id', $p_anggota_id);
+            }
+
+            $listPengajuan = $query
+                ->orderBy('created_at', 'desc')
+                ->paginate(10)
+                ->through(fn ($item) => $item->makeHidden([
+                    'p_anggota_id','p_jenis_tabungan_id','deleted_at', 'created_by', 'updated_by','deleted_by',
+                ]));
+
+            return $this->sendResponse($listPengajuan, 'Daftar Pengajuan Pencairan Tabungan Berhasil Diambil');
+        } catch (\Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function batalkanPencairan(Request $request, $id)
+    {
+        $user = $request->user();
+        $isAnggota = $user->tokenCan('state:anggota');
+        $p_anggota_id = $user->anggota?->p_anggota_id;
+
+        $data = TabunganPengambilanModels::find($id);
+        if (! $data) {
+            return response()->json(['message' => 'Data pengajuan pencairan tabungan tidak ditemukan.'], 404);
+        }
+
+        if ($isAnggota && $data->p_anggota_id !== $p_anggota_id) {
+            return response()->json(['message' => 'Tidak diizinkan menghapus pencairan ini.'], 403);
+        }
+
+        if ($isAnggota){
+            if($data->status_pengambilan !== 'PENDING') //available status = 'PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK'
+            {
+                return response()->json(['message' => "Tidak diizinkan menghapus pengajuan ini, karena statusnya tidak lagi 'Pending'."], 403);
+            }
+        }
+
+        $user = $request->user();
+        $data->deleted_by = $user->id;
+        $data->save();
+        $data->delete();
+
+        return $this->sendResponse([], 'Data pengajuan pencairan tabungan berhasil dihapus');
     }
 }

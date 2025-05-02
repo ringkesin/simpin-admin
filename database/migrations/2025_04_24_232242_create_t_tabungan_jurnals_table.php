@@ -15,8 +15,7 @@ return new class extends Migration
             $table->ulid('t_tabungan_jurnal_id')->primary();
             $table->unsignedBigInteger('p_anggota_id');
             $table->unsignedBigInteger('p_jenis_tabungan_id');
-            $table->integer('bulan');
-            $table->integer('tahun');
+            $table->dateTime('tgl_transaksi', precision: 0);
             $table->double('nilai', 15, 2);
             $table->double('nilai_sd', 15, 2);
             $table->longText('catatan')->nullable();

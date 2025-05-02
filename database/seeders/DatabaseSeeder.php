@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             MasterPinjamanKeperluanSeeder::class,
             ContentTypeSeeder::class,
             MasterJenisTabunganSeeder::class,
-            MobileDemoSeeder::class
+            // MobileDemoSeeder::class
         ]);
     }
 }

@@ -13,18 +13,23 @@ class MasterJenisTabunganSeeder extends Seeder
      protected $data = [
         [
             'nama' => 'Simpanan Pokok',
+            'withdrawal' => 1,
         ],
         [
             'nama' => 'Simpanan Wajib',
+            'withdrawal' => 1,
         ],
         [
             'nama' => 'Tabungan Sukarela',
+            'withdrawal' => 1,
         ],
         [
             'nama' => 'Tabungan Indir',
+            'withdrawal' => 1,
         ],
         [
             'nama' => 'Kompensasi Masa Kerja',
+            'withdrawal' => 1,
         ]
     ];
 
@@ -33,7 +38,8 @@ class MasterJenisTabunganSeeder extends Seeder
     {
         foreach ($this->data as $d) {
             JenisTabunganModels::create([
-                "nama" => $d['nama']
+                "nama" => $d['nama'],
+                "withdrawal" => $d['withdrawal'],
             ]);
         }
     }

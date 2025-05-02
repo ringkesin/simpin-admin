@@ -11,17 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('t_tabungan_saldo', function (Blueprint $table) {
-            $table->ulid('t_tabungan_saldo_id')->primary();
+        Schema::create('t_tabungan_pengambilan', function (Blueprint $table) {
+            $table->ulid('t_tabungan_pengambilan_id')->primary();
             $table->unsignedBigInteger('p_anggota_id');
             $table->unsignedBigInteger('p_jenis_tabungan_id');
-            $table->integer('tahun');
-            $table->double('total_sd', 15, 2);
-            $table->timestamps($precision = 0);
+            $table->dateTime('tgl_pengajuan', precision: 0);
+            $table->double('jumlah_diambil', 15, 2);
+            $table->double('jumlah_disetujui', 15, 2)->nullable();
+            $table->string('rekening_no');
+            $table->string('rekening_bank');
+            $table->string('status_pengambilan')->comment('PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK');
+            $table->dateTime('tgl_pencairan', precision: 0)->nullable();
+            $table->longText('catatan_user')->nullable();
+            $table->longText('catatan_approver')->nullable();
+            $table->timestamps();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->unsignedInteger('created_by')->nullable();
             $table->unsignedInteger('updated_by')->nullable();
             $table->unsignedInteger('deleted_by')->nullable();
+            
             $table->foreign('p_anggota_id')->references('p_anggota_id')->on('p_anggota')->onDelete('restrict');
             $table->foreign('p_jenis_tabungan_id')->references('p_jenis_tabungan_id')->on('p_jenis_tabungan')->onDelete('restrict');
         });
@@ -32,6 +40,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('t_tabungan_saldo');
+        Schema::dropIfExists('t_tabungan_pengambilan');
     }
 };

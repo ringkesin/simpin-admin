@@ -4,21 +4,21 @@ namespace App\Models\Main;
 
 use App\Models\User;
 use App\Models\Master\AnggotaModels;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Master\JenisTabunganModels;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
-class TabunganSaldoModels extends Model
+class TabunganPengambilanModels extends Model
 {
     use HasFactory;
     use SoftDeletes;
     use HasUlids;
 
-    protected $table = 't_tabungan_saldo';
-    protected $primaryKey = 't_tabungan_saldo_id';
+    protected $table = 't_tabungan_pengambilan';
+    protected $primaryKey = 't_tabungan_pengambilan_id';
 
      /**
      * The attributes that are mass assignable.
@@ -28,23 +28,37 @@ class TabunganSaldoModels extends Model
     protected $fillable = [
         'p_anggota_id',
         'p_jenis_tabungan_id',
-        'tahun',
-        'total_sd',
+        'tgl_pengajuan',
+        'jumlah_diambil',
+        'jumlah_disetujui',
+        'rekening_no',
+        'rekening_bank',
+        'status_pengambilan',
+        'tgl_pencairan',
+        'catatan_user',
+        'catatan_approver',
         'created_by',
         'updated_by',
         'deleted_by',
     ];
 
     protected $casts = [
-        'total_sd' => 'float',
-        'p_jenis_tabungan_id' => 'integer',
         'p_anggota_id' => 'integer',
-        'tahun' => 'integer'
+        'p_jenis_tabungan_id' => 'integer',
+        'tgl_pengajuan' => 'datetime',
+        'jumlah_diambil' => 'float',
+        'jumlah_disetujui' => 'float',
+        'tgl_pencairan' => 'datetime',
     ];
 
     // public function getNilaiFormattedAttribute()
     // {
     //     return number_format($this->nilai, 2, ',', '.');
+    // }
+
+    // public function getNilaiSdFormattedAttribute()
+    // {
+    //     return number_format($this->nilai_sd, 2, ',', '.');
     // }
 
     public function updatedBy() : HasOne

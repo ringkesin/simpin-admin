@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('p_jenis_tabungan', function (Blueprint $table) {
             $table->bigIncrements('p_jenis_tabungan_id');
             $table->string('nama', 255);
+            $table->integer('withdrawal');
             $table->timestamps();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->unsignedInteger('created_by')->nullable();
