@@ -24,44 +24,14 @@ class ProfileAnggotaController extends BaseController
             $user = Auth::user();
             $tokenAbilities = $user->currentAccessToken()->abilities;
 
-            if (in_array('state:admin', $tokenAbilities)) {
-                $profile = User::find($user->id);
-            } elseif (in_array('state:anggota', $tokenAbilities)) {
+            if (in_array('state:admin', $tokenAbilities) || in_array('state:anggota', $tokenAbilities)) {
+                $userData = User::find($user->id);
                 $profile = AnggotaModels::with(['atribut','unit'])
                         ->where('user_id', $user->id)
                         ->first();
-                $profile->makeHidden([
-                    'valid_from',
-                    'valid_to',
-                    'p_jenis_kelamin_id',
-                    'p_company_id',
-                    'p_unit_id',
-                    'created_at',
-                    'updated_at',
-                    'deleted_at',
-                    'created_by',
-                    'updated_by',
-                    'deleted_by',
-                ]);
 
-                if( ! empty($profile->atribut)){
-                    $attribute = [];
-                    foreach($profile->atribut as $row) {
-                        $fileUrl = NULL;
-                        if ($row['atribut_attachment'] && Storage::exists($row['atribut_attachment'])) {
-                            $fileUrl = URL::temporarySignedRoute(
-                                'secure-file', // Route name
-                                now()->addMinutes(1), // Expiration time
-                                ['path' => $row['atribut_attachment']] // File path parameter
-                            );
-                        }
-                        $row['atribut_kode'] = $row->atribut_kode_beautify;
-                        $row['atribut_attachment'] = $fileUrl;
-                    }
-
-                    $profile->atribut->makeHidden([
-                        'p_anggota_atribut_id',
-                        'p_anggota_id',
+                if( ! empty($userData)){
+                    $userData->makeHidden([
                         'created_at',
                         'updated_at',
                         'deleted_at',
@@ -70,13 +40,14 @@ class ProfileAnggotaController extends BaseController
                         'deleted_by',
                     ]);
                 }
-                if( ! empty($profile->unit)){
-                    $profile->unit->makeHidden([
-                        'parent_id',
-                        'location',
-                        'longitude',
-                        'latitude',
-                        'is_project',
+
+                if( ! empty($profile)){
+                    $profile->makeHidden([
+                        'valid_from',
+                        'valid_to',
+                        'p_jenis_kelamin_id',
+                        'p_company_id',
+                        'p_unit_id',
                         'created_at',
                         'updated_at',
                         'deleted_at',
@@ -84,12 +55,54 @@ class ProfileAnggotaController extends BaseController
                         'updated_by',
                         'deleted_by',
                     ]);
+
+                    if( ! empty($profile->atribut)){
+                        $attribute = [];
+                        foreach($profile->atribut as $row) {
+                            $fileUrl = NULL;
+                            if ($row['atribut_attachment'] && Storage::exists($row['atribut_attachment'])) {
+                                $fileUrl = URL::temporarySignedRoute(
+                                    'secure-file', // Route name
+                                    now()->addMinutes(1), // Expiration time
+                                    ['path' => $row['atribut_attachment']] // File path parameter
+                                );
+                            }
+                            $row['atribut_kode'] = $row->atribut_kode_beautify;
+                            $row['atribut_attachment'] = $fileUrl;
+                        }
+
+                        $profile->atribut->makeHidden([
+                            'p_anggota_atribut_id',
+                            'p_anggota_id',
+                            'created_at',
+                            'updated_at',
+                            'deleted_at',
+                            'created_by',
+                            'updated_by',
+                            'deleted_by',
+                        ]);
+                    }
+                    if( ! empty($profile->unit)){
+                        $profile->unit->makeHidden([
+                            'parent_id',
+                            'location',
+                            'longitude',
+                            'latitude',
+                            'is_project',
+                            'created_at',
+                            'updated_at',
+                            'deleted_at',
+                            'created_by',
+                            'updated_by',
+                            'deleted_by',
+                        ]);
+                    }
                 }
             } else {
                 return $this->sendError('Access denied', ['error' => 'Anda tidak dapat mengakses data ini'], 401);
             }
 
-            return $this->sendResponse(['profile' => $profile], 'Data berhasil digenerate.');
+            return $this->sendResponse(['profile_user' => $userData,'profile_anggota' => $profile], 'Data berhasil digenerate.');
         } catch (\Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
