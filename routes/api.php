@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\TagihanController;
 use App\Http\Controllers\Api\ShuController;
 use App\Http\Controllers\Api\SimulasiPinjamanController;
 use App\Http\Controllers\Api\KontenController;
+use App\Http\Controllers\Api\ProfileAnggotaController;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
 
@@ -59,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/konten/grid', [KontenController::class, 'getGrid']);
     Route::get('/konten/{id}', [KontenController::class, 'getById']);
     Route::get('/konten/tipe/{tipe_content}', [KontenController::class, 'getActiveByTipe']);
+    Route::get('/profile', [ProfileAnggotaController::class, 'getProfile']);
 });
 
 Route::post('/anggota/register', [MasterAnggotaController::class, 'register']);
