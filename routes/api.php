@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pinjaman/list', [PinjamanController::class, 'listPengajuan']);
     Route::get('/pinjaman/preview/{id}', [PinjamanController::class, 'getPengajuanById'])->where('id', '[0-9]+');
     Route::delete('/pinjaman/delete/{id}', [PinjamanController::class, 'deletePengajuanById'])->where('id', '[0-9]+');
+    Route::get('/tabungan/mutasi/list', [TabunganController::class, 'getMutasi']);
     Route::post('/tabungan/saldo/tahunan', [TabunganController::class, 'getSaldoTahunan']);
     Route::post('/tabungan/saldo/bulanan', [TabunganController::class, 'getSaldoBulanan']);
     Route::post('/tabungan/pencairan/pengajuan', [TabunganController::class, 'formPengajuanPencairan']);

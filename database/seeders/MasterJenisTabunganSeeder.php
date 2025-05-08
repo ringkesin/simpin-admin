@@ -13,11 +13,11 @@ class MasterJenisTabunganSeeder extends Seeder
      protected $data = [
         [
             'nama' => 'Simpanan Pokok',
-            'withdrawal' => 1,
+            'withdrawal' => 0,
         ],
         [
             'nama' => 'Simpanan Wajib',
-            'withdrawal' => 1,
+            'withdrawal' => 0,
         ],
         [
             'nama' => 'Tabungan Sukarela',
@@ -25,11 +25,11 @@ class MasterJenisTabunganSeeder extends Seeder
         ],
         [
             'nama' => 'Tabungan Indir',
-            'withdrawal' => 1,
+            'withdrawal' => 0,
         ],
         [
             'nama' => 'Kompensasi Masa Kerja',
-            'withdrawal' => 1,
+            'withdrawal' => 0,
         ]
     ];
 

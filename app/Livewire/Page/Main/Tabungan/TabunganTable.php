@@ -70,10 +70,14 @@ class TabunganTable extends DataTableComponent
                 ->searchable(),
             Column::make("Nama", "nama")
                 ->sortable()
-                ->searchable(),
+                ->searchable(function($query, $searchTerm) {
+                    $query->orWhere('nama', 'ilike', "%{$searchTerm}%");
+                }),
             Column::make("NIK", "nik")
                 ->sortable()
-                ->searchable(),
+                ->searchable(function($query, $searchTerm) {
+                    $query->orWhere('nik', 'ilike', "%{$searchTerm}%");
+                }),
             Column::make("Total Tabungan", "total_tabungan_beautify")
                 ->sortable(function(Builder $query, string $direction) {
                     return $query->orderBy('total_tabungan', $direction);

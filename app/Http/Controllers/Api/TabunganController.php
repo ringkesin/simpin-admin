@@ -134,6 +134,38 @@ class TabunganController extends BaseController
         }
     }
 
+    public function getMutasi(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $isAdmin = $user->tokenCan('state:admin');
+            $isAnggota = $user->tokenCan('state:anggota');
+
+            if($isAdmin){
+                $query = TabunganJurnalModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
+            }
+            if($isAnggota) {
+                $p_anggota_id = $user->anggota?->p_anggota_id;
+                if (!$p_anggota_id) {
+                    return $this->sendError('Data anggota tidak ditemukan.', [], 404);
+                }
+                $query = TabunganJurnalModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
+                    ->where('p_anggota_id', $p_anggota_id);
+            }
+
+            $listPengajuan = $query
+                ->orderBy('tgl_transaksi', 'desc')
+                ->paginate(10)
+                ->through(fn ($item) => $item->makeHidden([
+                    'p_anggota_id','p_jenis_tabungan_id','updated_at','deleted_at', 'created_by', 'updated_by','deleted_by',
+                ]));
+
+            return $this->sendResponse($listPengajuan, 'Daftar Mutasi Tabungan Berhasil Diambil');
+        } catch (\Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function getSaldoTahunan(Request $request)
     {
         try {

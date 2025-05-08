@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('t_chat', function (Blueprint $table) {
-            $table->uuid('t_chat_id')->primary()->default(DB::raw('uuid_generate_v4()'));
+            $table->ulid('t_chat_id')->primary();
             $table->string('ticket_code');
             $table->integer('p_chat_reference_table_id')->nullable();
             $table->string('transaction_id')->nullable();
