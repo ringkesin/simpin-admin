@@ -27,8 +27,8 @@ class MasterAnggotaController extends BaseController
                 'tanggal_lahir' => ['required', Rule::date()->format('Y-m-d'),],
                 'alamat' => 'nullable|string|max:1024',
                 'p_unit_id' => 'required|integer',
-                'attachment_ktp' => 'required|file|mimes:jpg,png,pdf|max:2048',
-                'attachment_kartu_pegawai' => 'required|file|mimes:jpg,png,pdf|max:2048',
+                'attachment_ktp' => 'required|file|mimes:jpg,png|max:2048',
+                'attachment_kartu_pegawai' => 'required|file|mimes:jpg,png|max:2048',
             ],[
                 'nama.required' => 'Nama harus diisi',
                 'alamat_email.required' => 'Email harus diisi',

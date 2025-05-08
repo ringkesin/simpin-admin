@@ -56,6 +56,10 @@ class PinjamanModels extends Model
         'p_jenis_pinjaman_id' => 'integer',
         'p_status_pengajuan_id' => 'integer',
         'p_pinjaman_keperluan_ids' => 'array',
+        'ra_jumlah_pinjaman' => 'float',
+        'ri_jumlah_pinjaman' => 'float',
+        'jaminan_perkiraan_nilai' => 'float',
+        'biaya_admin' => 'float',
     ];
 
     public function updatedBy() : HasOne

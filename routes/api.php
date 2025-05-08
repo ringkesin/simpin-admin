@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/anggota/{p_anggota_id}', [MasterAnggotaController::class, 'getAnggotaById'])->where('id', '[0-9]+');
     Route::post('/file/get-link', [FileController::class, 'getLink']);
+    
     Route::prefix('/master')->group(function () {
         Route::get('/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);
         Route::get('/keperluan-pinjaman', [MasterKeperluanPinjamanController::class, 'getAll']);
@@ -43,30 +44,42 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/jenis-tabungan', [MasterJenisTabunganController::class, 'getAll']);
         Route::get('/chat-reference-table', [MasterChatReferenceTableController::class, 'getAll']);
     });
+
     Route::post('/pinjaman/pengajuan', [PinjamanController::class, 'formPengajuan']);
     Route::post('/pinjaman/list', [PinjamanController::class, 'listPengajuan']);
     Route::get('/pinjaman/preview/{id}', [PinjamanController::class, 'getPengajuanById'])->where('id', '[0-9]+');
     Route::delete('/pinjaman/delete/{id}', [PinjamanController::class, 'deletePengajuanById'])->where('id', '[0-9]+');
-    Route::get('/tabungan/mutasi/list', [TabunganController::class, 'getMutasi']);
-    Route::post('/tabungan/saldo/tahunan', [TabunganController::class, 'getSaldoTahunan']);
-    Route::post('/tabungan/saldo/bulanan', [TabunganController::class, 'getSaldoBulanan']);
-    Route::post('/tabungan/pencairan/pengajuan', [TabunganController::class, 'formPengajuanPencairan']);
-    Route::get('/tabungan/pencairan/pengajuan/list', [TabunganController::class, 'listPengajuanPencairan']);
-    Route::delete('/tabungan/pencairan/pembatalan/{id}', [TabunganController::class, 'batalkanPencairan'])->where('id', '[A-Za-z0-9]+');
+
+    Route::prefix('/tabungan')->group(function () {
+        Route::get('/mutasi/list', [TabunganController::class, 'getMutasi']);
+        Route::post('/saldo/tahunan', [TabunganController::class, 'getSaldoTahunan']);
+        Route::post('/saldo/bulanan', [TabunganController::class, 'getSaldoBulanan']);
+        Route::prefix('/pencairan')->group(function () {
+            Route::post('/pengajuan', [TabunganController::class, 'formPengajuanPencairan']);
+            Route::get('/pengajuan/list', [TabunganController::class, 'listPengajuanPencairan']);
+            Route::delete('/pembatalan/{id}', [TabunganController::class, 'batalkanPencairan'])->where('id', '[A-Za-z0-9]+');
+        });
+    });
+
     Route::post('/tagihan', [TagihanController::class, 'getByAnggota']);
+
     Route::prefix('/shu')->group(function () {
         Route::post('', [ShuController::class, 'getByAnggota']);
         Route::post('/grid', [ShuController::class, 'getByAnggotaGrid']);
     });
+
     Route::prefix('/simulasi')->group(function () {
         Route::post('/pinjaman', [SimulasiPinjamanController::class, 'getSimulasi']);
         Route::post('/tenor', [SimulasiPinjamanController::class, 'getTenorSimulasi']);
     });
+    
     Route::get('/konten', [KontenController::class, 'getAll']);
     Route::post('/konten/grid', [KontenController::class, 'getGrid']);
     Route::get('/konten/{id}', [KontenController::class, 'getById']);
     Route::get('/konten/tipe/{tipe_content}', [KontenController::class, 'getActiveByTipe']);
+
     Route::get('/profile', [ProfileAnggotaController::class, 'getProfile']);
+    Route::post('/profile', [ProfileAnggotaController::class, 'updateProfile']);
 
     Route::prefix('/chat')->group(function () {
         Route::post('/ticket/add', [ChatController::class, 'createTicket']);

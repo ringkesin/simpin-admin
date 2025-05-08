@@ -29,11 +29,11 @@ class PinjamanController extends BaseController
                 'jaminan_perkiraan_nilai' => 'required|numeric',
                 'no_rekening' => 'required|numeric',
                 'bank' => 'required|string|max:255',
-                'biaya_admin' => 'required',
-                'doc_ktp' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
-                'doc_ktp_suami_istri' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
-                'doc_kk' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
-                'doc_kartu_anggota' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
+                'biaya_admin' => 'required|numeric',
+                // 'doc_ktp' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
+                // 'doc_ktp_suami_istri' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
+                // 'doc_kk' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
+                // 'doc_kartu_anggota' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
                 'doc_slip_gaji' => 'required|file|mimes:jpg,png,pdf|max:2048',
             ],[
                 'p_anggota_id.required' => 'Anggota harus diisi',
@@ -69,10 +69,12 @@ class PinjamanController extends BaseController
                 return response()->json(['message' => 'Tidak diizinkan input data dengan anggota id = '.$request->p_anggota_id], 403);
             }
 
-            $doc_ktp_path = $request->file('doc_ktp') ? $request->file('doc_ktp')->store('uploads/ktp', 'local') : NULL;
-            $doc_doc_ktp_suami_istri_path = $request->file('doc_doc_ktp_suami_istri_path') ? $request->file('doc_ktp_suami_istri')->store('uploads/ktp_suami_istri', 'local') : NULL;
-            $doc_kk_path = $request->file('doc_kk') ? $request->file('doc_kk')->store('uploads/kartu_keluarga', 'local') : NULL;
-            $doc_kartu_anggota_path = $request->file('doc_kartu_anggota') ? $request->file('doc_kartu_anggota')->store('uploads/kartu_anggota', 'local') : NULL;
+            //cek kk, buku nikah
+
+            // $doc_ktp_path = $request->file('doc_ktp') ? $request->file('doc_ktp')->store('uploads/ktp', 'local') : NULL;
+            // $doc_doc_ktp_suami_istri_path = $request->file('doc_doc_ktp_suami_istri_path') ? $request->file('doc_ktp_suami_istri')->store('uploads/ktp_suami_istri', 'local') : NULL;
+            // $doc_kk_path = $request->file('doc_kk') ? $request->file('doc_kk')->store('uploads/kartu_keluarga', 'local') : NULL;
+            // $doc_kartu_anggota_path = $request->file('doc_kartu_anggota') ? $request->file('doc_kartu_anggota')->store('uploads/kartu_anggota', 'local') : NULL;
             $doc_slip_gaji_path = $request->file('doc_slip_gaji')->store('uploads/slip_gaji', 'local');
 
             $pinjaman = PinjamanModels::create([
@@ -90,10 +92,10 @@ class PinjamanController extends BaseController
                 'jaminan_perkiraan_nilai' => $request->jaminan_perkiraan_nilai,
                 'no_rekening' => $request->no_rekening,
                 'bank' => $request->bank,
-                'doc_ktp' => $doc_ktp_path,
-                'doc_ktp_suami_istri' => $doc_doc_ktp_suami_istri_path,
-                'doc_kk' => $doc_kk_path,
-                'doc_kartu_anggota' => $doc_kartu_anggota_path,
+                // 'doc_ktp' => $doc_ktp_path,
+                // 'doc_ktp_suami_istri' => $doc_doc_ktp_suami_istri_path,
+                // 'doc_kk' => $doc_kk_path,
+                // 'doc_kartu_anggota' => $doc_kartu_anggota_path,
                 'doc_slip_gaji' => $doc_slip_gaji_path,
                 'p_status_pengajuan_id' => 2, //pending
                 'created_by' => $user->id,
