@@ -38,6 +38,7 @@
         </div>
         <div class="mt-5">
             <x-elements.header-form>Detail Simulasi</x-header-form>
+            <x-elements.detail label="Jenis Pinjaman">{{$loadData['JenisPinjaman']['nama']}}</x-elements.detail>
             <x-elements.detail label="Tahun">{{$loadData['tahun_margin']}}</x-elements.detail>
             <x-elements.detail label="Tenor">{{$loadData['tenor']}} Bulan</x-elements.detail>
             <x-elements.detail label="Margin/Bunga">{{$loadData['margin']}}%</x-elements.detail>

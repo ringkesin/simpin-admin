@@ -65,6 +65,9 @@ class SimulasiTable extends DataTableComponent
         return [
             Column::make("ID", "id")
                 ->sortable(),
+            Column::make("Jenis Pinjaman", "jenisPinjaman.nama")
+                ->sortable()
+                ->searchable(),
             Column::make("Tahun", "tahun_margin")
                 ->sortable()
                 ->searchable(),

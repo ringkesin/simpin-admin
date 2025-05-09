@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+use App\Models\Master\JenisPinjamanModels;
+
 class SimulasiPinjamanModels extends Model
 {
     use HasFactory;
@@ -20,6 +22,7 @@ class SimulasiPinjamanModels extends Model
      * @var string[]
      */
     protected $fillable = [
+        'p_jenis_pinjaman_id',
         'tenor',
         'margin',
         'tahun_margin',
@@ -34,5 +37,10 @@ class SimulasiPinjamanModels extends Model
     public function createdBy(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'created_by');
+    }
+
+    public function jenisPinjaman(): HasOne
+    {
+        return $this->hasOne(JenisPinjamanModels::class, 'p_jenis_pinjaman_id', 'p_jenis_pinjaman_id');
     }
 }

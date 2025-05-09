@@ -23,6 +23,22 @@
             <div class="grid grid-cols-12 gap-10">
                 <!-- Kolom Kiri -->
                 <div class="col-span-12 md:col-span-6">
+                    <!-- Group Jenis Pinjaman -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="p_jenis_pinjaman_id">
+                                Jenis Pinjaman <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.select-single name="p_jenis_pinjaman_id" wire:model.lazy="p_jenis_pinjaman_id" class="w-full" id="p_jenis_pinjaman_id">
+                                <option value="">Pilih Jenis Pinjaman</option>
+                                    @foreach ($this->listJenisPinjaman as $list)
+                                        <option value="{{ $list->p_jenis_pinjaman_id }}">{{ $list->nama }}</option>
+                                    @endforeach
+                            </x-form.select-single>
+                        </div>
+                    </div>
                     <!-- Group Input Tahun -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -34,6 +50,9 @@
                             <x-form.input class="w-full" type="text" name="tahun_margin" wire:model.lazy="tahun_margin"/>
                         </div>
                     </div>
+                </div>
+                <!-- Kolom Kanan -->
+                <div class="col-span-12 md:col-span-6">
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="tenor">
@@ -44,9 +63,6 @@
                             <x-form.input class="w-full" type="number" id="tenor" name="tenor" :value="''" wire:model.lazy="tenor"/>
                         </div>
                     </div>
-                </div>
-                <!-- Kolom Kanan -->
-                <div class="col-span-12 md:col-span-6">
                     <!-- Group Input Margin -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">

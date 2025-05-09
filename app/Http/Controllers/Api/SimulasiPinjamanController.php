@@ -15,6 +15,7 @@ class SimulasiPinjamanController extends BaseController
     {
         try {
             $simulasi = SimulasiPinjamanModels::where('tahun_margin', $request->tahun)
+                                            ->where('p_jenis_pinjaman_id', $request->jenis_pinjaman_id)
                                             ->where('status', 'aktif')
                                             ->get();
             if(!empty($simulasi)) {
@@ -39,10 +40,12 @@ class SimulasiPinjamanController extends BaseController
     {
         try {
             $validator = Validator::make($request->all(), [
+                'jenis_pinjaman_id' => 'required',
                 'jumlah_pinjaman' => 'required|integer',
                 'tenor' => 'required|integer',
                 'tahun' => 'required|integer'
             ],[
+                'jenis_pinjaman_id.required' => 'Jenis Pinjaman harus diisi',
                 'jumlah_pinjaman.required' => 'Jumlah Pinjaman harus diisi',
                 'jumlah_pinjaman.integer' => 'Jumlah Pinjaman harus berupa angka',
                 'tenor.required' => 'Tenor harus berupa diisi',
@@ -55,6 +58,7 @@ class SimulasiPinjamanController extends BaseController
                 return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
             }
             $simulasi = SimulasiPinjamanModels::where('tenor', $request->tenor)
+                                            ->where('p_jenis_pinjaman_id', $request->jenis_pinjaman_id)
                                             ->where('tahun_margin', $request->tahun)
                                             ->where('status', 'aktif')
                                             ->first();

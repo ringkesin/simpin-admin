@@ -5,6 +5,7 @@ namespace App\Livewire\Page\Master\Simulasi;
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 use App\Models\Master\SimulasiPinjamanModels;
+use App\Models\Master\JenisPinjamanModels;
 use App\Traits\MyAlert;
 
 class SimulasiCreate extends Component
@@ -15,10 +16,13 @@ class SimulasiCreate extends Component
     public $titlePage;
     public $menuCode;
 
+    public $listJenisPinjaman;
+
     #component input
     public $margin;
     public $tahun_margin;
     public $tenor;
+    public $p_jenis_pinjaman_id;
 
     public function mount() {
         $this->titlePage = 'Tambah Simulasi Angsuran';
@@ -28,21 +32,31 @@ class SimulasiCreate extends Component
             ['link' => route('master.simulasi.list'), 'label' => 'Simulasi'],
             ['link' => route('master.simulasi.create'), 'label' => 'Create']
         ];
+        $this->loadJenisPinjaman();
+    }
+
+    public function loadJenisPinjaman()
+    {
+        $data = JenisPinjamanModels::get();
+        $this->listJenisPinjaman = $data;
     }
 
     public function saveInsert() {
         $validated = $this->validate([
+            'p_jenis_pinjaman_id' => 'required',
             'margin' => 'required',
             'tahun_margin' => 'required',
             'tenor' => 'required',
         ], [
-            'margin.required' => 'Bunga Masih kosong.',
-            'tahun_margin.required' => 'Tahun Bunga Kosong.',
-            'tenor.date' => 'Tenor kosong.',
+            'p_jenis_pinjaman_id.required' => 'Jenis Pinjaman Wajib Diisi',
+            'margin.required' => 'Bunga Masih Wajib Diisi.',
+            'tahun_margin.required' => 'Tahun Bunga Wajib Diisi.',
+            'tenor.date' => 'Tenor Wajib Diisi.',
         ]);
 
         try {
             $post = SimulasiPinjamanModels::create([
+                'p_jenis_pinjaman_id' => $this->p_jenis_pinjaman_id,
                 'margin' => $this->margin,
                 'tahun_margin' => $this->tahun_margin,
                 'tenor' => $this->tenor
