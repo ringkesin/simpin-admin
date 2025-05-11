@@ -65,6 +65,9 @@ class PinjamanTable extends DataTableComponent
             Column::make("ID", "t_pinjaman_id")
                 ->sortable()
                 ->searchable(),
+            Column::make("Nomor Pinjaman", "nomor_pinjaman")
+                ->sortable()
+                ->searchable(),
             Column::make("Nomor Anggota", "masterAnggota.nomor_anggota")
                 ->sortable()
                 ->searchable(),

@@ -78,6 +78,7 @@ class PinjamanController extends BaseController
             $doc_slip_gaji_path = $request->file('doc_slip_gaji')->store('uploads/slip_gaji', 'local');
 
             $pinjaman = PinjamanModels::create([
+                'nomor_pinjaman' => $this->generateNomorTransaksi(),
                 'p_anggota_id' => $request->p_anggota_id,
                 'p_jenis_pinjaman_id' => $request->p_jenis_pinjaman_id,
                 'p_pinjaman_keperluan_ids' => ($request->p_jenis_pinjaman_id == 3) ? [] : $request->p_pinjaman_keperluan_ids,
@@ -251,5 +252,38 @@ class PinjamanController extends BaseController
         return $this->sendResponse([], 'Data pinjaman berhasil dihapus');
     }
 
+    function generateNomorTransaksi()
+    {
+        $kode = 'PJ';
+        $bulan = date('n');
+        $tahun = date('Y');
+
+        // Konversi bulan ke romawi
+        $romawi = [
+            1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV',
+            5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII',
+            9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'
+        ];
+
+        // Ambil nomor terakhir dari bulan dan tahun ini
+        $last = PinjamanModels::whereMonth('created_at', $bulan)
+            ->whereYear('created_at', $tahun)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($last) {
+            // Ambil nomor urut dari string, misalnya "002/PJ/V/2025" → 2
+            $lastNomor = (int)substr($last->nomor_pinjaman, 0, 3);
+            $nextNomor = str_pad($lastNomor + 1, 3, '0', STR_PAD_LEFT);
+        } else {
+            $nextNomor = '001';
+        }
+
+        $inisialJenisPinjaman = $last->masterJenisPinjaman->kode_jenis_pinjaman;
+
+        // Gabungkan format akhir
+        $nomorBaru = $nextNomor . '/' . $kode . '/'. $inisialJenisPinjaman . '/' . $romawi[$bulan] . '/' . $tahun;
+        return $nomorBaru;
+    }
 
 }

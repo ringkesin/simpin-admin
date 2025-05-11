@@ -21,6 +21,7 @@ class JenisPinjamanModels extends Model
      */
     protected $fillable = [
         'nama',
+        'kode_jenis_pinjaman',
         'created_at',
         'updated_at'
     ];

@@ -8,12 +8,12 @@
         </div>
         <div>
             <div class="flex justify-end gap-3">
-                {{-- <div>
+                <div>
                     <x-elements.button :href="route('main.pinjaman.create')" button-type="{{ 'primary' }}" :type="'link'">
                         <x-lucide-plus class="size-3"/>
                         <span class="xs:block">Tambah </span>
                     </x-elements.button>
-                </div> --}}
+                </div>
             </div>
         </div>
     </div>

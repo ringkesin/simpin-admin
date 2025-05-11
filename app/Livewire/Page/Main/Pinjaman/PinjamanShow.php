@@ -15,6 +15,7 @@ use App\Models\Master\PinjamanKeperluanModels;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Livewire\Attributes\Computed;
 
 class PinjamanShow extends Component
 {
@@ -32,6 +33,7 @@ class PinjamanShow extends Component
     public $id;
     public $ri_jumlah_pinjaman;
     public $p_status_pengajuan_id;
+    public $biaya_admin;
 
     public function mount($id) {
         $this->titlePage = 'Detail Pinjaman Anggota';
@@ -50,6 +52,7 @@ class PinjamanShow extends Component
         $this->loadData = $data;
         $this->ri_jumlah_pinjaman = $this->loadData['ri_jumlah_pinjaman'];
         $this->p_status_pengajuan_id = $this->loadData['p_status_pengajuan_id'];
+        $this->biaya_admin = $this->loadData['biaya_admin'];
 
         $fileUrlDocKtp = null;
         if ($this->loadData['doc_ktp'] && Storage::exists($this->loadData['doc_ktp'])) {
@@ -146,19 +149,32 @@ class PinjamanShow extends Component
         return $data;
     }
 
+    // #[Computed]
+    public function totalDisetujui()
+    {
+        $pinjaman = $this->ri_jumlah_pinjaman ?? 0;
+        $admin = $this->biaya_admin ?? 0;
+
+        return $pinjaman + ($pinjaman * ($admin / 100));
+    }
+
     public function saveApproval() {
         $validated = $this->validate([
             'ri_jumlah_pinjaman' => 'required',
-            'p_status_pengajuan_id' => 'required'
+            'p_status_pengajuan_id' => 'required',
+            'biaya_admin' => 'required'
         ], [
             'ri_jumlah_pinjaman' => 'Jumlah Pinjaman yang Disetujui required',
-            'p_status_pengajuan_id.required' => 'Status Pengajuan required.'
+            'p_status_pengajuan_id.required' => 'Status Pengajuan required.',
+            'biaya_admin.required' => 'Biaya Admin required'
         ]);
 
         try {
             $post = PinjamanModels::where('t_pinjaman_id', $this->id)->update([
                 'ri_jumlah_pinjaman' => $this->ri_jumlah_pinjaman,
                 'p_status_pengajuan_id' => $this->p_status_pengajuan_id,
+                'biaya_admin' => $this->biaya_admin,
+                'updated_by' => Auth::id()
             ]);
 
             if($post) {

@@ -38,6 +38,7 @@
                 <x-elements.header-form>Detail Pinjaman</x-header-form>
                 <div class="grid grid-cols-2">
                     <div>
+                        <x-elements.detail label="Nomor Pinjaman">{{ $this->setIfNull($loadData['nomor_pinjaman'],'-') }}</x-elements.detail>
                         <x-elements.detail label="Jenis Pinjaman">{{ $this->setIfNull($loadData['master_jenis_pinjaman']['nama'],'-') }}</x-elements.detail>
                         @if($loadData['p_jenis_pinjaman_id'] <> 3)
                         <x-elements.detail label="Keperluan">
@@ -55,7 +56,6 @@
                         @endif
                         <x-elements.detail label="Jumlah Pengajuan">{{ $this->setIfNull('Rp. '.$this->toRupiah($loadData['ra_jumlah_pinjaman']),'-') }}</x-elements.detail>
                         <x-elements.detail label="Tenor">{{ $this->setIfNull($loadData['tenor'],'-') }} Bulan</x-elements.detail>
-                        <x-elements.detail label="Biaya Admin">{{ $this->setIfNull($loadData['biaya_admin'],'-') }} %</x-elements.detail>
                     </div>
                     <div>
                         <x-elements.detail label="Jaminan">{{ $this->setIfNull($loadData['jaminan'],'-') }}</x-elements.detail>
@@ -121,7 +121,27 @@
                                 Rp.
                             </div>
                             <div class="flex-initial w-64">
-                                <x-form.input class="w-full" type="number" name="ri_jumlah_pinjaman" wire:model="ri_jumlah_pinjaman"/>
+                                <x-form.input class="w-full" type="number" name="ri_jumlah_pinjaman" wire:model.lazy="ri_jumlah_pinjaman"/>
+                            </div>
+                        </div>
+                    </x-elements.detail>
+                    <x-elements.detail label="Biaya Admin (%)">
+                        <div class="flex gap-4">
+                            <div class="flex-initial w-20">
+                                <x-form.input class="w-full" type="text" name="biaya_admin" wire:model.lazy="biaya_admin"/>
+                            </div>
+                            <div class="flex-initial w-54">
+                                = Rp. {{ $this->toRupiah($ri_jumlah_pinjaman * ($biaya_admin / 100)) }}
+                            </div>
+                        </div>
+                    </x-elements.detail>
+                    <x-elements.detail label="Total Jumlah Disetujui + Biaya Admin">
+                        <div class="flex gap-4">
+                            <div class="flex-none w-8">
+                                Rp.
+                            </div>
+                            <div class="flex-initial w-64">
+                                {{ $this->toRupiah($this->totalDisetujui()) }}
                             </div>
                         </div>
                     </x-elements.detail>

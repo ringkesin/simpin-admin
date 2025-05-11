@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('t_pinjaman_id');
             $table->unsignedBigInteger('p_anggota_id');
             $table->unsignedBigInteger('p_jenis_pinjaman_id');
+            $table->string('nomor_pinjaman');
             $table->json('p_pinjaman_keperluan_ids')->nullable();
             $table->string('jenis_barang')->nullable()->comment('Diisi Jika Jenis Pinjaman Kredit Barang');
             $table->string('merk_type')->nullable()->comment('Diisi Jika Jenis Pinjaman Kredit Barang');
@@ -30,6 +31,8 @@ return new class extends Migration
 
             $table->string('no_rekening')->nullable();
             $table->string('bank')->nullable();
+
+            $table->string('nomor_pinjaman')->nullable();
 
             $table->string('doc_ktp')->nullable();
             $table->string('doc_ktp_suami_istri')->nullable();

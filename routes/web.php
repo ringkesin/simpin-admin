@@ -7,32 +7,40 @@ use App\Livewire\Page\Master\Anggota\AnggotaList;
 use App\Livewire\Page\Master\Anggota\AnggotaCreate;
 use App\Livewire\Page\Master\Anggota\AnggotaShow;
 use App\Livewire\Page\Master\Anggota\AnggotaEdit;
+
 use App\Livewire\Page\Main\Tabungan\TabunganList;
 use App\Livewire\Page\Main\Tabungan\TabunganCreate;
 // use App\Livewire\Page\Main\Tabungan\TabunganShow;
 use App\Livewire\Page\Main\Tabungan\TabunganUpdate;
 use App\Livewire\Page\Main\Tabungan\TabunganEdit;
 use App\Livewire\Page\Main\Tabungan\TabunganImport;
+
 use App\Livewire\Page\Main\Tagihan\TagihanList;
 use App\Livewire\Page\Main\Tagihan\TagihanCreate;
 use App\Livewire\Page\Main\Tagihan\TagihanShow;
 use App\Livewire\Page\Main\Tagihan\TagihanEdit;
 use App\Livewire\Page\Main\Tagihan\TagihanImport;
+
 use App\Livewire\Page\Main\Pinjaman\PinjamanList;
+use App\Livewire\Page\Main\Pinjaman\PinjamanCreate;
 use App\Livewire\Page\Main\Pinjaman\PinjamanShow;
+
 use App\Livewire\Page\Main\Shu\ShuList;
 use App\Livewire\Page\Main\Shu\ShuCreate;
 use App\Livewire\Page\Main\Shu\ShuShow;
 use App\Livewire\Page\Main\Shu\ShuEdit;
 use App\Livewire\Page\Main\Shu\ShuImport;
+
 use App\Livewire\Page\Main\Konten\KontenList;
 use App\Livewire\Page\Main\Konten\KontenCreate;
 use App\Livewire\Page\Main\Konten\KontenShow;
 use App\Livewire\Page\Main\Konten\KontenEdit;
+
 use App\Livewire\Page\User\UserList;
 use App\Livewire\Page\User\UserEdit;
 use App\Livewire\Page\User\UserCreate;
 use App\Livewire\Page\User\UserShow;
+
 use App\Livewire\Page\Master\Simulasi\SimulasiList;
 use App\Livewire\Page\Master\Simulasi\SimulasiShow;
 use App\Livewire\Page\Master\Simulasi\SimulasiCreate;
@@ -96,6 +104,7 @@ Route::middleware([
         });
         Route::prefix('pinjaman')->group(function () {
             Route::get('list', PinjamanList::class)->name('main.pinjaman.list');
+            Route::get('create', PinjamanCreate::class)->name('main.pinjaman.create');
             Route::get('show/{id}', PinjamanShow::class)->name('main.pinjaman.show');
         });
         Route::prefix('konten')->group(function () {
