@@ -14,6 +14,9 @@ use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
 use App\Models\Main\TagihanModels;
 use App\Models\Master\AnggotaModels;
+use App\Models\Master\StatusPembayaranModels;
+use App\Models\Master\MetodePembayaranModels;
+use App\Models\Main\PinjamanModels;
 use Livewire\WithFileUploads;
 
 class TagihanImport extends Component
@@ -72,16 +75,22 @@ class TagihanImport extends Component
         foreach ($rows as $row) {
             if (
                 !empty($row[0]) &&
-                !empty($row[1]) &&
-                !empty($row[2])
+                !empty($row[2]) &&
+                !empty($row[3])
                 ) {
                 $this->data[] = [
                     'nomor_anggota' => trim($row[0]),
-                    'bulan' => $row[1],
-                    'tahun' => $row[2],
-                    'uraian' => $row[3],
-                    'jumlah' => floatval($row[4]),
-                    'remarks' => $row[5]
+                    'nomor_pinjaman' => trim($row[1]),
+                    'bulan' => $row[2],
+                    'tahun' => $row[3],
+                    'uraian' => $row[4],
+                    'jumlah_tagihan' => floatval($row[5]),
+                    'remarks' => $row[6],
+                    'tgl_jatuh_tempo' => trim($row[7]),
+                    'status_pembayaran' => trim($row[8]),
+                    'tgl_dibayar' => trim($row[9]),
+                    'jumlah_dibayarkan' => floatval($row[10]),
+                    'metode_pembayaran' => $row[11]
                 ];
             }
         }
@@ -93,15 +102,39 @@ class TagihanImport extends Component
         try {
             foreach ($this->data as $dataLoop) {
                 $dataFind = AnggotaModels::where('nomor_anggota', $dataLoop['nomor_anggota'])->first();
-                if(isset($dataFind['p_anggota_id'])) {
-                    TagihanModels::create([
+                $dataPinjaman = NULL;
+                $statusFind = NULL;
+                $metodeFind = NULL;
+
+                if(isset($dataLoop['nomor_pinjaman'])) {
+                    $dataPinjaman = PinjamanModels::where('nomor_pinjaman', $dataLoop['nomor_pinjaman'])->first();
+                }
+
+                if(isset($dataLoop['status_pembayaran'])) {
+                    $statusFind = StatusPembayaranModels::where('status_code', $dataLoop['status_pembayaran'])->first();
+                }
+
+                if(isset($dataLoop['metode_pembayaran'])) {
+                    $metodeFind = MetodePembayaranModels::where('metode_code', $dataLoop['metode_pembayaran'])->first();
+                }
+
+                $payload = [
                         'p_anggota_id' => $dataFind['p_anggota_id'],
+                        't_pinjaman_id' => isset($dataPinjaman) ? $dataPinjaman['t_pinjaman_id'] : NULL,
                         'bulan' => $dataLoop['bulan'],
                         'tahun' => $dataLoop['tahun'],
                         'uraian' => $dataLoop['uraian'],
-                        'jumlah' => $dataLoop['jumlah'],
-                        'remarks' => $dataLoop['remarks']
-                    ]);
+                        'jumlah_tagihan' => $dataLoop['jumlah_tagihan'],
+                        'remarks' => $dataLoop['remarks'],
+                        'tgl_jatuh_tempo' => $dataLoop['tgl_jatuh_tempo'],
+                        'p_status_pembayaran_id' => isset($statusFind) ? $statusFind['p_status_pembayaran_id'] : NULL,
+                        'paid_at' => $dataLoop['tgl_dibayar'],
+                        'jumlah_pembayaran' => $dataLoop['jumlah_dibayarkan'],
+                        'p_metode_pembayaran_id' => isset($metodeFind) ? $metodeFind['p_metode_pembayaran_id'] : NULL
+                ];
+
+                if(isset($dataFind['p_anggota_id'])) {
+                    TagihanModels::create($payload);
                 }
             }
             // dd(route('main.tagihan.list'));
