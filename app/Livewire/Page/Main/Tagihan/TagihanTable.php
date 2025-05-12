@@ -62,9 +62,9 @@ class TagihanTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("ID", "t_tagihan_id")
-                ->sortable()
-                ->searchable(),
+            Column::make("Action", "t_tagihan_id")->format(function ($value, $row, $column) {
+                return view('livewire.page.main.tagihan.tagihan-action', ['row' => $row]);
+            }),
             Column::make("Nomor Anggota", "masterAnggota.nomor_anggota")
                 ->sortable()
                 ->searchable(),
@@ -79,7 +79,7 @@ class TagihanTable extends DataTableComponent
                 ->searchable(),
             Column::make("Uraian", "uraian")
                 ->sortable(),
-            Column::make("Jumlah", "jumlah")
+            Column::make("Jumlah", "jumlah_tagihan")
                 ->sortable()
                 ->format(function ($value, $column, $row) {
                     return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';

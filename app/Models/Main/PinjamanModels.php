@@ -40,6 +40,8 @@ class PinjamanModels extends Model
         'jaminan_perkiraan_nilai',
         'no_rekening',
         'bank',
+        'tgl_pencairan',
+        'tgl_pelunasan',
         'doc_ktp',
         'doc_ktp_suami_istri',
         'doc_kk',

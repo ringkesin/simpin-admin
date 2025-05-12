@@ -8,7 +8,10 @@ use Illuminate\Database\QueryException;
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
 use App\Models\Main\TagihanModels;
+use App\Models\Main\PinjamanModels;
 use App\Models\Master\AnggotaModels;
+use App\Models\Master\StatusPembayaranModels;
+use App\Models\Master\MetodePembayaranModels;
 
 class TagihanCreate extends Component
 {
@@ -19,6 +22,9 @@ class TagihanCreate extends Component
     public $titlePage;
     public $menuCode;
     public $loadData = [];
+    public $loadPinjaman = [];
+    public $loadStatusPembayaran = [];
+    public $loadMetodePembayaran = [];
 
     #component input
     public $p_anggota_id;
@@ -27,6 +33,12 @@ class TagihanCreate extends Component
     public $uraian;
     public $jumlah;
     public $remarks;
+    public $t_pinjaman_id;
+    public $tgl_jatuh_tempo;
+    public $p_status_pembayaran_id;
+    public $paid_at;
+    public $jumlah_pembayaran;
+    public $p_metode_pembayaran_id;
 
     public function mount() {
         $this->titlePage = 'Tambah Tagihan Anggota';
@@ -37,11 +49,36 @@ class TagihanCreate extends Component
             ['link' => route('main.tagihan.create'), 'label' => 'Create']
         ];
         $this->getData();
+        $this->getStatusPembayaran();
+        $this->getMetodePembayaran();
     }
 
     public function getData() {
         $data = AnggotaModels::all();
         $this->loadData = $data;
+    }
+
+    public function getStatusPembayaran() {
+        $data = StatusPembayaranModels::all();
+        $this->loadStatusPembayaran = $data;
+    }
+
+    public function getMetodePembayaran() {
+        $data = MetodePembayaranModels::all();
+        $this->loadMetodePembayaran = $data;
+    }
+
+    public function updatedPAnggotaId($value)
+    {
+        $this->getPinjaman($value);
+    }
+
+    public function getPinjaman($anggotaId) {
+        $data = PinjamanModels::where('p_anggota_id', $anggotaId)
+                                ->whereNull('deleted_at')
+                                ->whereIn('p_status_pengajuan_id', [5, 6, 7])
+                                ->get();
+        $this->loadPinjaman = $data;
     }
 
     public function saveInsert() {
@@ -51,12 +88,14 @@ class TagihanCreate extends Component
             'tahun' => 'required',
             'uraian' =>  'required',
             'jumlah' => 'required',
+            'p_status_pembayaran_id' => 'required'
         ], [
-            'p_anggota_id' => 'Nama Anggota required',
-            'bulan' => 'Bulan required',
+            'p_anggota_id' => 'Nama Anggota required.',
+            'bulan' => 'Bulan required.',
             'tahun.required' => 'Tahun required.',
             'uraian.required' => 'Uraian required.',
-            'jumlah.required' => 'Jumlah required.'
+            'jumlah.required' => 'Jumlah required.',
+            'p_status_pembayaran_id.required'=> 'Status Pembayaran required.'
         ]);
 
         try {
@@ -65,8 +104,14 @@ class TagihanCreate extends Component
                 'bulan' => $this->bulan,
                 'tahun' => $this->tahun,
                 'uraian' => $this->uraian,
-                'jumlah' => $this->jumlah,
-                'remarks' => $this->remarks
+                'jumlah_tagihan' => $this->jumlah,
+                'remarks' => $this->remarks,
+                't_pinjaman_id' => $this->t_pinjaman_id,
+                'tgl_jatuh_tempo' => $this->tgl_jatuh_tempo,
+                'p_status_pembayaran_id' => $this->p_status_pembayaran_id,
+                'paid_at' => $this->paid_at,
+                'jumlah_pembayaran' => $this->jumlah_pembayaran,
+                'p_metode_pembayaran_id' => $this->p_metode_pembayaran_id
             ]);
 
             if($post) {

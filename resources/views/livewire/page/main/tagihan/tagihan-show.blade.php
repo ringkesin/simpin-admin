@@ -29,11 +29,23 @@
             <x-elements.header-form>Detail Anggota</x-header-form>
             <x-elements.detail label="Nomor Anggota">{{ $this->setIfNull($loadData['masterAnggota']['nomor_anggota'], '-') }}</x-elements.detail>
             <x-elements.detail label="Nama Anggota">{{ $this->setIfNull($loadData['masterAnggota']['nama'],'-') }}</x-elements.detail>
-            <x-elements.header-form>Detail Tabungan</x-header-form>
+            <x-elements.header-form>Detail Tagihan</x-header-form>
             <x-elements.detail label="Periode">{{ $this->toMonth($loadData['bulan']) }} {{$loadData['tahun']}}</x-elements.detail>
             <x-elements.detail label="Uraian">{{ $this->setIfNull($loadData['uraian'], '-') }}</x-elements.detail>
-            <x-elements.detail label="Jumlah">{{ 'Rp. '.$this->toRupiah($loadData['jumlah']) }}</x-elements.detail>
+            <x-elements.detail label="Jumlah">{{ 'Rp. '.$this->toRupiah($loadData['jumlah_tagihan']) }}</x-elements.detail>
             <x-elements.detail label="Remarks">{{ $this->setIfNull($loadData['remarks'], '-') }}</x-elements.detail>
+            @if(isset($loadData['t_pinjaman_id']))
+            <x-elements.header-form>Detail Pinjaman</x-header-form>
+            <x-elements.detail label="Nomor Pinjaman">{{ $this->setIfNull($loadData['pinjamanAnggota']['nomor_pinjaman'], '-') }}</x-elements.detail>
+            <x-elements.detail label="Jenis Pinjaman">{{ $this->setIfNull($loadData['pinjamanAnggota']['masterJenisPinjaman']['nama'], '-') }}</x-elements.detail>
+            <x-elements.detail label="Jumlah Pinjaman">{{ 'Rp. '.$this->toRupiah($loadData['pinjamanAnggota']['ri_jumlah_pinjaman'], '-') }}</x-elements.detail>
+            @endif
+            <x-elements.header-form>Detail Pembayaran</x-header-form>
+            <x-elements.detail label="Tgl Jatuh Tempo">{{ $loadData['tgl_jatuh_tempo'] ? date('Y-m-d', strtotime($this->loadData['tgl_jatuh_tempo'])) : '-' }}</x-elements.detail>
+            <x-elements.detail label="Status Pembayaran">{{ $loadData['p_status_pembayaran_id'] ? $loadData['statusPembayaran']['status_name'] : '-' }}</x-elements.detail>
+            <x-elements.detail label="Tanggal Dibayar">{{ $loadData['paid_at'] ? date('Y-m-d', strtotime($this->loadData['paid_at'])) : '-' }}</x-elements.detail>
+            <x-elements.detail label="Jumlah Pembayaran">{{ 'Rp. '.$this->toRupiah($loadData['jumlah_pembayaran'], '-') }}</x-elements.detail>
+            <x-elements.detail label="Status Pembayaran">{{ $loadData['p_metode_pembayaran_id'] ? $loadData['metodePembayaran']['metode_name'] : '-' }}</x-elements.detail>
         </div>
     </div>
 </div>

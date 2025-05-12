@@ -3,10 +3,13 @@
 namespace App\Livewire\Page\Main\Tagihan;
 
 use Livewire\Component;
-use App\Models\Main\TagihanModels;
-use App\Models\Master\AnggotaModels;
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
+use App\Models\Main\TagihanModels;
+use App\Models\Main\PinjamanModels;
+use App\Models\Master\AnggotaModels;
+use App\Models\Master\StatusPembayaranModels;
+use App\Models\Master\MetodePembayaranModels;
 
 class TagihanEdit extends Component
 {
@@ -19,6 +22,9 @@ class TagihanEdit extends Component
 
     public $loadData = [];
     public $loadDataAnggota = [];
+    public $loadPinjaman = [];
+    public $loadStatusPembayaran = [];
+    public $loadMetodePembayaran = [];
 
     #component input
     public $id;
@@ -28,6 +34,12 @@ class TagihanEdit extends Component
     public $uraian;
     public $jumlah;
     public $remarks;
+    public $t_pinjaman_id;
+    public $tgl_jatuh_tempo;
+    public $p_status_pembayaran_id;
+    public $paid_at;
+    public $jumlah_pembayaran;
+    public $p_metode_pembayaran_id;
 
     public function mount($id) {
         $this->titlePage = 'Update Tagihan Anggota';
@@ -42,6 +54,8 @@ class TagihanEdit extends Component
         $this->id = $id;
         $this->getData($id);
         $this->getAnggota();
+        $this->getStatusPembayaran();
+        $this->getMetodePembayaran();
     }
 
     public function getData($id) {
@@ -51,13 +65,44 @@ class TagihanEdit extends Component
         $this->bulan = $this->loadData['bulan'];
         $this->tahun = $this->loadData['tahun'];
         $this->uraian = $this->loadData['uraian'];
-        $this->jumlah = $this->loadData['jumlah'];
+        $this->jumlah = $this->loadData['jumlah_tagihan'];
         $this->remarks = $this->loadData['remarks'];
+        $this->t_pinjaman_id = $this->loadData['t_pinjaman_id'];
+        $this->tgl_jatuh_tempo = $this->loadData['tgl_jatuh_tempo'];
+        $this->p_status_pembayaran_id = $this->loadData['p_status_pembayaran_id'];
+        $this->paid_at = $this->loadData['paid_at'];
+        $this->jumlah_pembayaran = $this->loadData['jumlah_pembayaran'];
+        $this->p_metode_pembayaran_id = $this->loadData['p_metode_pembayaran_id'];
+
+        $this->getPinjaman($this->p_anggota_id);
     }
 
     public function getAnggota() {
         $data = AnggotaModels::all();
         $this->loadDataAnggota = $data;
+    }
+
+    public function getStatusPembayaran() {
+        $data = StatusPembayaranModels::all();
+        $this->loadStatusPembayaran = $data;
+    }
+
+    public function getMetodePembayaran() {
+        $data = MetodePembayaranModels::all();
+        $this->loadMetodePembayaran = $data;
+    }
+
+    public function updatedPAnggotaId($value)
+    {
+        $this->getPinjaman($value);
+    }
+
+    public function getPinjaman($anggotaId) {
+        $data = PinjamanModels::where('p_anggota_id', $anggotaId)
+                                ->whereNull('deleted_at')
+                                ->whereIn('p_status_pengajuan_id', [5, 6, 7])
+                                ->get();
+        $this->loadPinjaman = $data;
     }
 
     public function saveUpdate() {
@@ -66,13 +111,15 @@ class TagihanEdit extends Component
             'bulan' => 'required',
             'tahun' => 'required',
             'uraian' =>  'required',
-            'jumlah' => 'required'
+            'jumlah' => 'required',
+            'p_status_pembayaran_id' => 'required'
         ], [
             'p_anggota_id' => 'Nama Anggota required',
             'bulan' => 'Bulan required',
             'tahun.required' => 'Tahun required.',
             'uraian.required' => 'Uraian required.',
-            'jumlah.required' => 'Jumlah required.'
+            'jumlah.required' => 'Jumlah required.',
+            'p_status_pembayaran_id.required'=> 'Status Pembayaran required.'
         ]);
 
         try {
@@ -81,8 +128,14 @@ class TagihanEdit extends Component
                 'bulan' => $this->bulan,
                 'tahun' => $this->tahun,
                 'uraian' => $this->uraian,
-                'jumlah' => $this->jumlah,
-                'remarks' => $this->remarks
+                'jumlah_tagihan' => $this->jumlah,
+                'remarks' => $this->remarks,
+                't_pinjaman_id' => $this->t_pinjaman_id,
+                'tgl_jatuh_tempo' => $this->tgl_jatuh_tempo,
+                'p_status_pembayaran_id' => $this->p_status_pembayaran_id,
+                'paid_at' => $this->paid_at,
+                'jumlah_pembayaran' => $this->jumlah_pembayaran,
+                'p_metode_pembayaran_id' => $this->p_metode_pembayaran_id
             ]);
 
             if($post) {

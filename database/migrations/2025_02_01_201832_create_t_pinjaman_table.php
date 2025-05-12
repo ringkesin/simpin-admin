@@ -32,7 +32,8 @@ return new class extends Migration
             $table->string('no_rekening')->nullable();
             $table->string('bank')->nullable();
 
-            $table->string('nomor_pinjaman')->nullable();
+            $table->date('tgl_pencairan')->nullable();
+            $table->date('tgl_pelunasan')->nullable();
 
             $table->string('doc_ktp')->nullable();
             $table->string('doc_ktp_suami_istri')->nullable();
@@ -41,6 +42,7 @@ return new class extends Migration
             $table->string('doc_slip_gaji')->nullable();
 
             $table->unsignedBigInteger('p_status_pengajuan_id');
+            $table->text('remarks')->nullable();
 
             $table->timestamps($precision = 0);
             $table->softDeletes($column = 'deleted_at', $precision = 0);

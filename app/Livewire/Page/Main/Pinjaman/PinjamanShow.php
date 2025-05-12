@@ -5,6 +5,7 @@ namespace App\Livewire\Page\Main\Pinjaman;
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
@@ -34,6 +35,9 @@ class PinjamanShow extends Component
     public $ri_jumlah_pinjaman;
     public $p_status_pengajuan_id;
     public $biaya_admin;
+    public $tgl_pencairan;
+    public $tgl_pelunasan;
+    public $remarks;
 
     public function mount($id) {
         $this->titlePage = 'Detail Pinjaman Anggota';
@@ -53,6 +57,9 @@ class PinjamanShow extends Component
         $this->ri_jumlah_pinjaman = $this->loadData['ri_jumlah_pinjaman'];
         $this->p_status_pengajuan_id = $this->loadData['p_status_pengajuan_id'];
         $this->biaya_admin = $this->loadData['biaya_admin'];
+        $this->tgl_pencairan = $this->loadData['tgl_pencairan'];
+        $this->tgl_pelunasan = $this->loadData['tgl_pelunasan'];
+        $this->remarks = $this->loadData['remarks'];
 
         $fileUrlDocKtp = null;
         if ($this->loadData['doc_ktp'] && Storage::exists($this->loadData['doc_ktp'])) {
@@ -174,6 +181,9 @@ class PinjamanShow extends Component
                 'ri_jumlah_pinjaman' => $this->ri_jumlah_pinjaman,
                 'p_status_pengajuan_id' => $this->p_status_pengajuan_id,
                 'biaya_admin' => $this->biaya_admin,
+                'remarks' => $this->remarks,
+                'tgl_pencairan' => $this->tgl_pencairan ? $this->tgl_pencairan : NULL,
+                'tgl_pelunasan' => $this->tgl_pelunasan ? $this->tgl_pelunasan : NULL,
                 'updated_by' => Auth::id()
             ]);
 

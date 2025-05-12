@@ -50,6 +50,9 @@ class PinjamanCreate extends Component
     public $doc_slip_gaji;
     public $ri_jumlah_pinjaman = 0;
     public $p_status_pengajuan_id = 2;
+    public $remarks;
+    public $tgl_pencairan;
+    public $tgl_pelunasan;
 
     public function mount() {
         $this->titlePage = 'Tambah Pinjaman';
@@ -151,7 +154,7 @@ class PinjamanCreate extends Component
             $doc_slip_gaji_path = $this->doc_slip_gaji->store('uploads/slip_gaji', 'local');
 
             $pinjaman = PinjamanModels::create([
-                'nomor_pinjaman' => $this->generateNomorTransaksi(),
+                'nomor_pinjaman' => $this->generateNomorTransaksi($this->p_jenis_pinjaman_id),
                 'p_anggota_id' => $this->p_anggota_id,
                 'p_jenis_pinjaman_id' => $this->p_jenis_pinjaman_id,
                 'p_pinjaman_keperluan_ids' => ($this->p_jenis_pinjaman_id == 3) ? '' : $this->p_pinjaman_keperluan_ids,
@@ -166,12 +169,15 @@ class PinjamanCreate extends Component
                 'jaminan_perkiraan_nilai' => $this->jaminan_perkiraan_nilai,
                 'no_rekening' => $this->no_rekening,
                 'bank' => $this->bank,
+                'tgl_pencairan' => $this->tgl_pencairan,
+                'tgl_pelunasan' => $this->tgl_pelunasan,
                 // 'doc_ktp' => $doc_ktp_path,
                 // 'doc_ktp_suami_istri' => $doc_doc_ktp_suami_istri_path,
                 // 'doc_kk' => $doc_kk_path,
                 // 'doc_kartu_anggota' => $doc_kartu_anggota_path,
                 'doc_slip_gaji' => $doc_slip_gaji_path,
                 'p_status_pengajuan_id' => 2, //pending
+                'remarks' => $this->remarks,
                 'created_by' => Auth::id(),
                 'updated_by' => Auth::id()
             ]);
@@ -212,7 +218,7 @@ class PinjamanCreate extends Component
         }
     }
 
-    function generateNomorTransaksi()
+    function generateNomorTransaksi($jenisPinjaman)
     {
         $kode = 'PJ';
         $bulan = date('n');
@@ -239,7 +245,10 @@ class PinjamanCreate extends Component
             $nextNomor = '001';
         }
 
-        $inisialJenisPinjaman = $last->masterJenisPinjaman->kode_jenis_pinjaman;
+         $getJenis = JenisPinjamanModels::where('p_jenis_pinjaman_id', $jenisPinjaman)
+                                        ->first();
+
+        $inisialJenisPinjaman = $getJenis->kode_jenis_pinjaman;
 
         // Gabungkan format akhir
         $nomorBaru = $nextNomor . '/' . $kode . '/'. $inisialJenisPinjaman . '/' . $romawi[$bulan] . '/' . $tahun;

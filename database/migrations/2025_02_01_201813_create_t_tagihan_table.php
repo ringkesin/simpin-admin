@@ -12,13 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('t_tagihan', function (Blueprint $table) {
-            $table->bigIncrements('t_tagihan_id');
+            $table->ulid('t_tagihan_id')->primary();
             $table->unsignedBigInteger('p_anggota_id');
+            $table->unsignedBigInteger('t_pinjaman_id');
             $table->mediumText('uraian');
-            $table->double('jumlah', 15, 2);
+            $table->double('jumlah_tagihan', 15, 2);
             $table->mediumText('remarks')->nullable();
             $table->integer('bulan');
             $table->integer('tahun');
+            $table->date('tgl_jatuh_tempo')->nullable();
+            $table->integer('p_status_pembayaran_id');
+            $table->date('paid_at')->nullable();
+            $table->double('jumlah_pembayaran', 15, 2)->nullable();
+            $table->integer('p_metode_pembayaran_id')->nullable();
             $table->timestamps($precision = 0);
             $table->softDeletes($column = 'deleted_at', $precision = 0);
             $table->unsignedInteger('created_by')->nullable();

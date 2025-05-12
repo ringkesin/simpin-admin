@@ -88,6 +88,22 @@
             <div class="grid grid-cols-12 gap-10">
                 <!-- Kolom Kiri -->
                 <div class="col-span-12 md:col-span-6">
+                    <!-- Group Relasi Pinjaman  -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="t_pinjaman_id">
+                                Relasi Pinjaman
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.select-single name="t_pinjaman_id" wire:model.lazy="t_pinjaman_id" class="w-full" id="t_pinjaman_id">
+                                <option value="">Pilih Pinjaman</option>
+                                @foreach($this->loadPinjaman as $pinjaman)
+                                    <option value="{{ $pinjaman['t_pinjaman_id'] }}">{{ $pinjaman['nomor_pinjaman'] }}</option>
+                                @endforeach
+                            </x-form.select-single>
+                        </div>
+                    </div>
                     <!-- Group Simpanan Pokok -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -128,6 +144,85 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <!----------------Detail Pembayaran Section------------------------>
+            <x-elements.header-form>Detail Pembayaran</x-header-form>
+            <div class="grid grid-cols-12 gap-10">
+                <!-- Kolom Kiri -->
+                <div class="col-span-12 md:col-span-6">
+                    <!-- Group Tanggal Jatuh Tempo  -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="tgl_jatuh_tempo">
+                                Tanggal Jatuh Tempo
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.input class="w-full" type="date" name="tgl_jatuh_tempo" wire:model.lazy="tgl_jatuh_tempo"/>
+                        </div>
+                    </div>
+                    <!-- Group Status Pembayaran -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="p_status_pembayaran_id">
+                                Status Pembayaran <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.select-single name="p_status_pembayaran_id" wire:model.lazy="p_status_pembayaran_id" class="w-full" id="p_status_pembayaran_id">
+                                <option value="">Pilih Status Pembayaran</option>
+                                @foreach($this->loadStatusPembayaran as $statsPem)
+                                    <option value="{{ $statsPem['p_status_pembayaran_id'] }}">{{ $statsPem['status_code'] }} - {{ $statsPem['status_name'] }}</option>
+                                @endforeach
+                            </x-form.select-single>
+                        </div>
+                    </div>
+                </div>
+                @if($p_status_pembayaran_id == 2)
+                <!-- Kolom Kanan -->
+                <div class="col-span-12 md:col-span-6">
+                    <!-- Group Tanggal Dibayar  -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="paid_at">
+                                Tanggal Dibayar
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.input class="w-full" type="date" name="paid_at" wire:model.lazy="paid_at"/>
+                        </div>
+                    </div>
+                    <!-- Group Jumlah Dibayarkan -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="jumlah_pembayaran">
+                                Jumlah Dibayarkan
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <div class="col-span-12 md:col-span-8">
+                                <x-form.input class="w-full" type="number" name="jumlah_pembayaran" wire:model.lazy="jumlah_pembayaran"/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Group Metode Pembayaran -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="p_metode_pembayaran_id">
+                                Metode Pembayaran
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.select-single name="p_metode_pembayaran_id" wire:model.lazy="p_metode_pembayaran_id" class="w-full" id="p_metode_pembayaran_id">
+                                <option value="">Pilih Metode Pembayaran</option>
+                                @foreach($this->loadMetodePembayaran as $methodPem)
+                                    <option value="{{ $methodPem['p_metode_pembayaran_id'] }}">{{ $methodPem['metode_code'] }} - {{ $methodPem['metode_name'] }}</option>
+                                @endforeach
+                            </x-form.select-single>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
             <x-elements.header-form></x-elements.header-form>
             <div class="grid grid-cols-12 gap-10">

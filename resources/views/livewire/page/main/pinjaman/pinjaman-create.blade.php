@@ -279,10 +279,31 @@
                         @endforeach
                 </x-form.select-single>
             </x-elements.detail>
+            <x-elements.detail label="Catatan">
+                <div class="flex gap-4">
+                    <div class="flex-initial w-full md:w-72">
+                        <x-form.textarea class="w-full" type="text" name="remarks" wire:model.lazy="remarks"/>
+                    </div>
+                </div>
+            </x-elements.detail>
+            <x-elements.detail label="Tanggal Pencairan">
+                <div class="flex gap-4">
+                    <div class="flex-initial w-full md:w-72">
+                        <x-form.input class="w-full" type="date" name="tgl_pencairan" wire:model.lazy="tgl_pencairan"/>
+                    </div>
+                </div>
+            </x-elements.detail>
+            <x-elements.detail label="Tanggal Pelunasan">
+                <div class="flex gap-4">
+                    <div class="flex-initial w-full md:w-72">
+                        <x-form.input class="w-full" type="date" name="tgl_pelunasan" wire:model.lazy="tgl_pelunasan"/>
+                    </div>
+                </div>
+            </x-elements.detail>
             <div class="grid grid-cols-12 gap-10 mt-6">
                 <div class="col-span-12">
                     <x-elements.button-submit wire:loading.attr="disabled" wire:confirm="Are you sure your data is correct?">
-                        <div wire:loading wire:target="saveApproval">
+                        <div wire:loading wire:target="saveInsert">
                             {{-- <svg class="w-5 h-5 mr-3 animate-spin" viewBox="0 0 24 24"> --}}
                                 {{-- <span class="sr-only">Loading Save Data</span> --}}
                             {{-- </svg> --}}
@@ -293,7 +314,7 @@
                                 Processing
                             </span>
                         </div>
-                        <div class='flex gap-x-1' wire:loading.remove wire:target="saveApproval">
+                        <div class='flex gap-x-1' wire:loading.remove wire:target="saveInsert">
                             <x-lucide-save class="size-5"/>
                             <span class="xs:block">
                                 Save data
