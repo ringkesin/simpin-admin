@@ -23,9 +23,12 @@ class TagihanController extends BaseController
                                             ->where('bulan', $request->bulan)
                                             ->where('tahun', $request->tahun)
                                             ->whereNull('deleted_at')
-                                            ->sum('jumlah');
+                                            ->sum('jumlah_tagihan');
 
-                    $tagihanPeriod = TagihanModels::where('p_anggota_id', $request->p_anggota_id)
+                    $tagihanPeriod = TagihanModels::with('pinjamanAnggota')
+                                                ->with('statusPembayaran')
+                                                ->with('metodePembayaran')
+                                                ->where('p_anggota_id', $request->p_anggota_id)
                                                 ->where('bulan', $request->bulan)
                                                 ->where('tahun', $request->tahun)
                                                 ->whereNull('deleted_at')
@@ -43,7 +46,7 @@ class TagihanController extends BaseController
                     $tagihanSum = TagihanModels::where('bulan', $request->bulan)
                                             ->where('tahun', $request->tahun)
                                             ->whereNull('deleted_at')
-                                            ->sum('jumlah');
+                                            ->sum('jumlah_tagihan');
 
                     $tagihanPeriod = [];
                 }
@@ -53,9 +56,12 @@ class TagihanController extends BaseController
                                         ->where('bulan', $request->bulan)
                                         ->where('tahun', $request->tahun)
                                         ->whereNull('deleted_at')
-                                        ->sum('jumlah');
+                                        ->sum('jumlah_tagihan');
 
-                $tagihanPeriod = TagihanModels::where('p_anggota_id', $anggota->p_anggota_id)
+                $tagihanPeriod = TagihanModels::with('pinjamanAnggota')
+                                            ->with('statusPembayaran')
+                                            ->with('metodePembayaran')
+                                            ->where('p_anggota_id', $anggota->p_anggota_id)
                                             ->where('bulan', $request->bulan)
                                             ->where('tahun', $request->tahun)
                                             ->whereNull('deleted_at')
@@ -74,5 +80,10 @@ class TagihanController extends BaseController
         } catch (\Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function getByNomorPinjaman(Request $request)
+    {
+
     }
 }

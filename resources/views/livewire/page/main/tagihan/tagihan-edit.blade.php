@@ -92,7 +92,7 @@
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="t_pinjaman_id">
-                                Relasi Pinjaman
+                                Relasi Pinjaman <span class="text-red-500">*</span>
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">

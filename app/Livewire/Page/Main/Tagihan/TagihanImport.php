@@ -4,6 +4,7 @@ namespace App\Livewire\Page\Main\Tagihan;
 
 use Livewire\Component;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TagihanTemplateExport;
@@ -100,6 +101,7 @@ class TagihanImport extends Component
     {
         // Simpan data ke database (contoh)
         try {
+            DB::beginTransaction();
             foreach ($this->data as $dataLoop) {
                 $dataFind = AnggotaModels::where('nomor_anggota', $dataLoop['nomor_anggota'])->first();
                 $dataPinjaman = NULL;
@@ -137,6 +139,7 @@ class TagihanImport extends Component
                     TagihanModels::create($payload);
                 }
             }
+            DB::commit();
             // dd(route('main.tagihan.list'));
             $redirect = route('main.tagihan.list');
             return $this->sweetalert([
@@ -147,6 +150,7 @@ class TagihanImport extends Component
                 'redirectUrl' => $redirect
             ]);
         } catch (QueryException $e) {
+            DB::rollBack();
             $textError = '';
             if($e->errorInfo[1] == 1062) {
                 $textError = 'Data gagal di update karena duplikat data, coba kembali.';

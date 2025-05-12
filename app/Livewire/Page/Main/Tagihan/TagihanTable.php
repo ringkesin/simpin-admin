@@ -16,10 +16,10 @@ class TagihanTable extends DataTableComponent
 
     public function configure(): void
     {
-        $this->setPrimaryKey('t_tagihan_id')
-        ->setTableRowUrl(function($row) {
-            return route('main.tagihan.show', ['id' => $row->t_tagihan_id]);
-        });
+        $this->setPrimaryKey('t_tagihan_id');
+        // ->setTableRowUrl(function($row) {
+        //     return route('main.tagihan.show', ['id' => $row->t_tagihan_id]);
+        // });
         $this->setComponentWrapperAttributes([
             'default' => true,
             'class' => 'rounded-none',
@@ -69,6 +69,9 @@ class TagihanTable extends DataTableComponent
                 ->sortable()
                 ->searchable(),
             Column::make("Nama", "masterAnggota.nama")
+                ->sortable()
+                ->searchable(),
+            Column::make("Nomor Pinjaman", "pinjamanAnggota.nomor_pinjaman")
                 ->sortable()
                 ->searchable(),
             Column::make("Bulan", "bulan")
