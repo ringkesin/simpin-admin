@@ -42,6 +42,7 @@
             <x-elements.detail label="Tahun">{{$loadData['tahun_margin']}}</x-elements.detail>
             <x-elements.detail label="Tenor">{{$loadData['tenor']}} Bulan</x-elements.detail>
             <x-elements.detail label="Margin/Bunga">{{$loadData['margin']}}%</x-elements.detail>
+            <x-elements.detail label="Biaya Admin">{{$loadData['biaya_admin']}}%</x-elements.detail>
         </div>
     </div>
 </div>

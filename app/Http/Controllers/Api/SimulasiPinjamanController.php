@@ -64,6 +64,7 @@ class SimulasiPinjamanController extends BaseController
                                             ->first();
 
             $jumlah_pinjaman = $request->jumlah_pinjaman;
+            $biaya_admin_rp = (float)($jumlah_pinjaman * ($simulasi->biaya_admin / 100));
 
             if(!empty($simulasi)) {
                 $margin = $simulasi->margin;
@@ -73,6 +74,8 @@ class SimulasiPinjamanController extends BaseController
                     'tahun' => $simulasi->tahun_margin,
                     'tenor' => $simulasi->tenor,
                     'margin' => (float)$margin,
+                    'biaya_admin' => (float)$simulasi->biaya_admin,
+                    'biaya_admin_rp' => (float)$biaya_admin_rp,
                     'angsuran' => (float) number_format($angsuran, 2, '.', '')
                 ];
             } else {

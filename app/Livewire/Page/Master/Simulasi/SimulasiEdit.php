@@ -24,6 +24,7 @@ class SimulasiEdit extends Component
     public $margin;
     public $tahun_margin;
     public $p_jenis_pinjaman_id;
+    public $biaya_admin;
 
     public function mount($id) {
         $this->titlePage = 'Update Simulasi Angsuran';
@@ -53,7 +54,7 @@ class SimulasiEdit extends Component
         $this->tenor = $this->loadData['tenor'];
         $this->margin = $this->loadData['margin'];
         $this->tahun_margin = $this->loadData['tahun_margin'];
-
+        $this->biaya_admin = $this->loadData['biaya_admin'];
     }
 
     public function saveUpdate() {
@@ -62,11 +63,13 @@ class SimulasiEdit extends Component
             'margin' => 'required',
             'tahun_margin' => 'required',
             'tenor' => 'required',
+            'biaya_admin' => 'required'
         ], [
             'p_jenis_pinjaman_id.required' => 'Jenis Pinjaman Wajib Diisi',
             'margin.required' => 'Bunga Masih Wajib Diisi.',
             'tahun_margin.required' => 'Tahun Bunga Wajib Diisi.',
             'tenor.date' => 'Tenor Wajib Diisi.',
+            'biaya_admin.required' => 'Biaya Admin Wajib Diisi.'
         ]);
 
         $redirect = route('master.simulasi.list');
@@ -76,7 +79,8 @@ class SimulasiEdit extends Component
                 'p_jenis_pinjaman_id' => $this->p_jenis_pinjaman_id,
                 'margin' => $this->margin,
                 'tahun_margin' => $this->tahun_margin,
-                'tenor' => $this->tenor
+                'tenor' => $this->tenor,
+                'biaya_admin' => $this->biaya_admin
             ]);
 
             if($post) {

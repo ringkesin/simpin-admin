@@ -74,6 +74,17 @@
                             <x-form.input class="w-full" type="text" name="margin" wire:model.lazy="margin"/>
                         </div>
                     </div>
+                    <!-- Group Input Biaya Admin -->
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="margin">
+                                Biaya Admin (%) <span class="text-red-500">*</span>
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            <x-form.input class="w-full" type="text" name="biaya_admin" wire:model.lazy="biaya_admin"/>
+                        </div>
+                    </div>
                 </div>
             </div>
             <x-elements.button-submit class="mt-5" wire:loading.attr="disabled" wire:confirm="Are you sure your data is correct?">

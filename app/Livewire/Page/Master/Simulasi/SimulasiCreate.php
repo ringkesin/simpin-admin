@@ -23,6 +23,7 @@ class SimulasiCreate extends Component
     public $tahun_margin;
     public $tenor;
     public $p_jenis_pinjaman_id;
+    public $biaya_admin = 1.5;
 
     public function mount() {
         $this->titlePage = 'Tambah Simulasi Angsuran';
@@ -47,11 +48,13 @@ class SimulasiCreate extends Component
             'margin' => 'required',
             'tahun_margin' => 'required',
             'tenor' => 'required',
+            'biaya_admin' => 'required'
         ], [
             'p_jenis_pinjaman_id.required' => 'Jenis Pinjaman Wajib Diisi',
             'margin.required' => 'Bunga Masih Wajib Diisi.',
             'tahun_margin.required' => 'Tahun Bunga Wajib Diisi.',
             'tenor.date' => 'Tenor Wajib Diisi.',
+            'biaya_admin.required' => 'Biaya Admin Wajib Diisi.'
         ]);
 
         try {
@@ -59,7 +62,8 @@ class SimulasiCreate extends Component
                 'p_jenis_pinjaman_id' => $this->p_jenis_pinjaman_id,
                 'margin' => $this->margin,
                 'tahun_margin' => $this->tahun_margin,
-                'tenor' => $this->tenor
+                'tenor' => $this->tenor,
+                'biaya_admin' => $this->biaya_admin
             ]);
 
             if($post) {

@@ -26,7 +26,8 @@ class SimulasiPinjamanModels extends Model
         'tenor',
         'margin',
         'tahun_margin',
-        'status'
+        'status',
+        'biaya_admin'
     ];
 
     public function updatedBy() : HasOne

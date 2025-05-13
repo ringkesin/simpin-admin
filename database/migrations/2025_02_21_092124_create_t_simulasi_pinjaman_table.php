@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('p_jenis_pinjaman_id');
             $table->integer('tenor');
             $table->decimal('margin', 5, 2);
+            $table->decimal('biaya_admin', 5, 2);
             // $table->double('angsuran', 15, 2);
             $table->integer('tahun_margin');
             $table->enum('status', ['aktif', 'tidak'])->default('aktif');
