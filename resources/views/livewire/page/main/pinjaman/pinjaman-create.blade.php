@@ -251,6 +251,16 @@
                     </div>
                 </div>
             </x-elements.detail>
+            <x-elements.detail label="Margin (%)" required="true">
+                <div class="flex gap-4">
+                    <div class="flex-initial w-20">
+                        <x-form.input class="w-full" type="text" name="margin" wire:model.lazy="margin"/>
+                    </div>
+                    <div class="flex-initial w-54">
+                        = Rp. {{ $this->toRupiah($ri_jumlah_pinjaman * ($margin / 100)) }}
+                    </div>
+                </div>
+            </x-elements.detail>
             <x-elements.detail label="Biaya Admin (%)" required="true">
                 <div class="flex gap-4">
                     <div class="flex-initial w-20">
@@ -261,7 +271,7 @@
                     </div>
                 </div>
             </x-elements.detail>
-            <x-elements.detail label="Total Jumlah Disetujui + Biaya Admin">
+            <x-elements.detail label="Total Jumlah Disetujui + Margin">
                 <div class="flex gap-4">
                     <div class="flex-none w-8">
                         Rp.

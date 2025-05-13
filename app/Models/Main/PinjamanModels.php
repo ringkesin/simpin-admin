@@ -33,6 +33,7 @@ class PinjamanModels extends Model
         'merk_type',
         'tenor',
         'biaya_admin',
+        'margin',
         'ra_jumlah_pinjaman',
         'ri_jumlah_pinjaman',
         'jaminan',

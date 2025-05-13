@@ -53,6 +53,7 @@ class PinjamanCreate extends Component
     public $remarks;
     public $tgl_pencairan;
     public $tgl_pelunasan;
+    public $margin = 0;
 
     public function mount() {
         $this->titlePage = 'Tambah Pinjaman';
@@ -102,9 +103,9 @@ class PinjamanCreate extends Component
     public function totalDisetujui()
     {
         $pinjaman = $this->ri_jumlah_pinjaman ?? 0;
-        $admin = $this->biaya_admin ?? 0;
+        $margin = $this->margin ?? 0;
 
-        return $pinjaman + ($pinjaman * ($admin / 100));
+        return $pinjaman + ($pinjaman * ($margin / 100));
     }
 
     public function saveInsert() {
@@ -123,6 +124,7 @@ class PinjamanCreate extends Component
             'no_rekening' => 'required|numeric',
             'bank' => 'required|string|max:255',
             'biaya_admin' => 'required|numeric',
+            'margin' => 'required|numeric',
             // 'doc_ktp' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
             // 'doc_ktp_suami_istri' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
             // 'doc_kk' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
@@ -162,6 +164,7 @@ class PinjamanCreate extends Component
                 'merk_type' => ($this->p_jenis_pinjaman_id == 3) ? $this->merk_type : null,
                 'tenor' => $this->tenor,
                 'biaya_admin' => $this->biaya_admin,
+                'margin' => $this->margin,
                 'ra_jumlah_pinjaman' => $this->ra_jumlah_pinjaman,
                 'ri_jumlah_pinjaman' => 0,
                 'jaminan' => $this->jaminan,

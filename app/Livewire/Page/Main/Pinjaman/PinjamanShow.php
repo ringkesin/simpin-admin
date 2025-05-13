@@ -38,6 +38,7 @@ class PinjamanShow extends Component
     public $tgl_pencairan;
     public $tgl_pelunasan;
     public $remarks;
+    public $margin = 0;
 
     public function mount($id) {
         $this->titlePage = 'Detail Pinjaman Anggota';
@@ -160,20 +161,22 @@ class PinjamanShow extends Component
     public function totalDisetujui()
     {
         $pinjaman = $this->ri_jumlah_pinjaman ?? 0;
-        $admin = $this->biaya_admin ?? 0;
+        $margin = $this->margin ?? 0;
 
-        return $pinjaman + ($pinjaman * ($admin / 100));
+        return $pinjaman + ($pinjaman * ($margin / 100));
     }
 
     public function saveApproval() {
         $validated = $this->validate([
             'ri_jumlah_pinjaman' => 'required',
             'p_status_pengajuan_id' => 'required',
-            'biaya_admin' => 'required'
+            'biaya_admin' => 'required|numeric',
+            'margin' => 'required|numeric'
         ], [
             'ri_jumlah_pinjaman' => 'Jumlah Pinjaman yang Disetujui required',
             'p_status_pengajuan_id.required' => 'Status Pengajuan required.',
-            'biaya_admin.required' => 'Biaya Admin required'
+            'biaya_admin.required' => 'Biaya Admin required',
+            'margin.required' => 'Margin required'
         ]);
 
         try {
@@ -181,6 +184,7 @@ class PinjamanShow extends Component
                 'ri_jumlah_pinjaman' => $this->ri_jumlah_pinjaman,
                 'p_status_pengajuan_id' => $this->p_status_pengajuan_id,
                 'biaya_admin' => $this->biaya_admin,
+                'margin' => $this->margin,
                 'remarks' => $this->remarks,
                 'tgl_pencairan' => $this->tgl_pencairan ? $this->tgl_pencairan : NULL,
                 'tgl_pelunasan' => $this->tgl_pelunasan ? $this->tgl_pelunasan : NULL,

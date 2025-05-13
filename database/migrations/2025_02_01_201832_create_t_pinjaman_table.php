@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('no_rekening')->nullable();
             $table->string('bank')->nullable();
 
+            $table->decimal('margin', 5, 2);
             $table->date('tgl_pencairan')->nullable();
             $table->date('tgl_pelunasan')->nullable();
 

@@ -169,6 +169,10 @@ class PinjamanController extends BaseController
 
                 $item->pinjaman_keperluan_nama = PinjamanKeperluanModels::whereIn('p_pinjaman_keperluan_id', $keperluanIds)
                     ->pluck('keperluan');
+                $pinjamans = $item->ri_jumlah_pinjaman ?? 0;
+                $margin = $item->margin ?? 0;
+
+                $item->estimasi_cicilan_bulanan = $pinjamans + ($pinjamans * ($margin / 100));
 
                 return $item;
             });
@@ -217,6 +221,11 @@ class PinjamanController extends BaseController
 
             $data->pinjaman_keperluan_nama = PinjamanKeperluanModels::whereIn('p_pinjaman_keperluan_id', $keperluanIds)
                 ->pluck('keperluan');
+
+            $pinjaman = $data->ri_jumlah_pinjaman ?? 0;
+            $margin = $data->margin ?? 0;
+
+            $data->estimasi_cicilan_bulanan = $pinjaman + ($pinjaman * ($margin / 100));
 
             return $this->sendResponse($data, 'Data pinjaman berhasil digenerate');
         } catch (\Exception $e) {
