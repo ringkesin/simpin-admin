@@ -18,43 +18,50 @@ class TagihanController extends BaseController
 
         try {
             if (in_array('state:admin', $tokenAbilities)) {
-                if(!empty($request->p_anggota_id)) {
-                    $tagihanSum = TagihanModels::where('p_anggota_id', $request->p_anggota_id)
-                                            ->where('bulan', $request->bulan)
-                                            ->where('tahun', $request->tahun)
+                $tagihanSum = TagihanModels::when($request->p_anggota_id, function ($query, $p_anggota_id) {
+                                            $query->where('p_anggota_id', $p_anggota_id);
+                                        })
+                                        ->when($request->bulan, function ($query, $bulan) {
+                                            $query->where('bulan', $bulan);
+                                        })
+                                        ->when($request->tahun, function ($query, $tahun) {
+                                            $query->where('tahun', $tahun);
+                                        })
+                                        ->whereNull('deleted_at')
+                                        ->sum('jumlah_tagihan');
+
+                $tagihanPeriod = TagihanModels::with('pinjamanAnggota')
+                                            ->with('statusPembayaran')
+                                            ->with('metodePembayaran')
+                                            ->when($request->p_anggota_id, function ($query, $p_anggota_id) {
+                                                $query->where('p_anggota_id', $p_anggota_id);
+                                            })
+                                            ->when($request->bulan, function ($query, $bulan) {
+                                                $query->where('bulan', $bulan);
+                                            })
+                                            ->when($request->tahun, function ($query, $tahun) {
+                                                $query->where('tahun', $tahun);
+                                            })
                                             ->whereNull('deleted_at')
-                                            ->sum('jumlah_tagihan');
+                                            ->get();
 
-                    $tagihanPeriod = TagihanModels::with('pinjamanAnggota')
-                                                ->with('statusPembayaran')
-                                                ->with('metodePembayaran')
-                                                ->where('p_anggota_id', $request->p_anggota_id)
-                                                ->where('bulan', $request->bulan)
-                                                ->where('tahun', $request->tahun)
-                                                ->whereNull('deleted_at')
-                                                ->get();
-
-                    $tagihanPeriod->makeHidden([
-                        'created_at',
-                        'updated_at',
-                        'deleted_at',
-                        'created_by',
-                        'updated_by',
-                        'deleted_by',
-                    ]);
-                } else {
-                    $tagihanSum = TagihanModels::where('bulan', $request->bulan)
-                                            ->where('tahun', $request->tahun)
-                                            ->whereNull('deleted_at')
-                                            ->sum('jumlah_tagihan');
-
-                    $tagihanPeriod = [];
-                }
+                $tagihanPeriod->makeHidden([
+                    'created_at',
+                    'updated_at',
+                    'deleted_at',
+                    'created_by',
+                    'updated_by',
+                    'deleted_by',
+                ]);
             } elseif (in_array('state:anggota', $tokenAbilities)) {
                 $anggota = AnggotaModels::where('user_id', $user->id)->first();
                 $tagihanSum = TagihanModels::where('p_anggota_id', $anggota->p_anggota_id)
-                                        ->where('bulan', $request->bulan)
-                                        ->where('tahun', $request->tahun)
+                                         ->when($request->bulan, function ($query, $bulan) {
+                                            $query->where('bulan', $bulan);
+                                        })
+                                        ->when($request->tahun, function ($query, $tahun) {
+                                            $query->where('tahun', $tahun);
+                                        })
                                         ->whereNull('deleted_at')
                                         ->sum('jumlah_tagihan');
 
@@ -62,8 +69,12 @@ class TagihanController extends BaseController
                                             ->with('statusPembayaran')
                                             ->with('metodePembayaran')
                                             ->where('p_anggota_id', $anggota->p_anggota_id)
-                                            ->where('bulan', $request->bulan)
-                                            ->where('tahun', $request->tahun)
+                                            ->when($request->bulan, function ($query, $bulan) {
+                                                $query->where('bulan', $bulan);
+                                            })
+                                            ->when($request->tahun, function ($query, $tahun) {
+                                                $query->where('tahun', $tahun);
+                                            })
                                             ->whereNull('deleted_at')
                                             ->get();
 
@@ -84,6 +95,90 @@ class TagihanController extends BaseController
 
     public function getByNomorPinjaman(Request $request)
     {
+        $user = Auth::user();
+        $tokenAbilities = $user->currentAccessToken()->abilities;
 
+        try {
+            if (in_array('state:admin', $tokenAbilities)) {
+                $tagihanSum = TagihanModels::whereHas('pinjamanAnggota', function ($query) use ($request) {
+                                                $query->where('nomor_pinjaman', $request->nomor_pinjaman);
+                                            })
+                                            ->when($request->bulan, function ($query, $bulan) {
+                                                $query->where('bulan', $bulan);
+                                            })
+                                            ->when($request->tahun, function ($query, $tahun) {
+                                                $query->where('tahun', $tahun);
+                                            })
+                                            ->whereNull('deleted_at')
+                                            ->sum('jumlah_tagihan');
+
+                    $tagihanPeriod = TagihanModels::with('pinjamanAnggota')
+                                                ->with('statusPembayaran')
+                                                ->with('metodePembayaran')
+                                                ->whereHas('pinjamanAnggota', function ($query) use ($request) {
+                                                    $query->where('nomor_pinjaman', $request->nomor_pinjaman);
+                                                })
+                                                ->when($request->bulan, function ($query, $bulan) {
+                                                    $query->where('bulan', $bulan);
+                                                })
+                                                ->when($request->tahun, function ($query, $tahun) {
+                                                    $query->where('tahun', $tahun);
+                                                })
+                                                ->whereNull('deleted_at')
+                                                ->get();
+
+                    $tagihanPeriod->makeHidden([
+                        'created_at',
+                        'updated_at',
+                        'deleted_at',
+                        'created_by',
+                        'updated_by',
+                        'deleted_by',
+                    ]);
+            } elseif (in_array('state:anggota', $tokenAbilities)) {
+                $anggota = AnggotaModels::where('user_id', $user->id)->first();
+                $tagihanSum = TagihanModels::where('p_anggota_id', $anggota->p_anggota_id)
+                                        ->whereHas('pinjamanAnggota', function ($query) use ($request) {
+                                            $query->where('nomor_pinjaman', $request->nomor_pinjaman);
+                                        })
+                                        ->when($request->bulan, function ($query, $bulan) {
+                                            $query->where('bulan', $bulan);
+                                        })
+                                        ->when($request->tahun, function ($query, $tahun) {
+                                            $query->where('tahun', $tahun);
+                                        })
+                                        ->whereNull('deleted_at')
+                                        ->sum('jumlah_tagihan');
+
+                $tagihanPeriod = TagihanModels::with('pinjamanAnggota')
+                                            ->with('statusPembayaran')
+                                            ->with('metodePembayaran')
+                                            ->where('p_anggota_id', $anggota->p_anggota_id)
+                                            ->whereHas('pinjamanAnggota', function ($query) use ($request) {
+                                                $query->where('nomor_pinjaman', $request->nomor_pinjaman);
+                                            })
+                                            ->when($request->bulan, function ($query, $bulan) {
+                                                $query->where('bulan', $bulan);
+                                            })
+                                            ->when($request->tahun, function ($query, $tahun) {
+                                                $query->where('tahun', $tahun);
+                                            })
+                                            ->whereNull('deleted_at')
+                                            ->get();
+
+                $tagihanPeriod->makeHidden([
+                    'created_at',
+                    'updated_at',
+                    'deleted_at',
+                    'created_by',
+                    'updated_by',
+                    'deleted_by',
+                ]);
+            }
+
+            return $this->sendResponse(['total_tagihan' => $tagihanSum ,'tagihan' => $tagihanPeriod], 'Data berhasil digenerate.');
+        } catch (\Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
     }
 }

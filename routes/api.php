@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/anggota/{p_anggota_id}', [MasterAnggotaController::class, 'getAnggotaById'])->where('id', '[0-9]+');
     Route::post('/file/get-link', [FileController::class, 'getLink']);
-    
+
     Route::prefix('/master')->group(function () {
         Route::get('/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);
         Route::get('/keperluan-pinjaman', [MasterKeperluanPinjamanController::class, 'getAll']);
@@ -61,7 +61,10 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::post('/tagihan', [TagihanController::class, 'getByAnggota']);
+    Route::prefix('/tagihan')->group(function () {
+        Route::post('/anggota', [TagihanController::class, 'getByAnggota']);
+        Route::post('/pinjaman', [TagihanController::class, 'getByNomorPinjaman']);
+    });
 
     Route::prefix('/shu')->group(function () {
         Route::post('', [ShuController::class, 'getByAnggota']);
@@ -72,7 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/pinjaman', [SimulasiPinjamanController::class, 'getSimulasi']);
         Route::post('/tenor', [SimulasiPinjamanController::class, 'getTenorSimulasi']);
     });
-    
+
     Route::get('/konten', [KontenController::class, 'getAll']);
     Route::post('/konten/grid', [KontenController::class, 'getGrid']);
     Route::get('/konten/{id}', [KontenController::class, 'getById']);
