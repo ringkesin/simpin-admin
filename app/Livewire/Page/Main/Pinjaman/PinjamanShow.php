@@ -13,6 +13,7 @@ use App\Models\Main\PinjamanModels;
 use App\Models\Master\StatusPengajuanModels;
 use App\Models\Master\AnggotaAtributModels;
 use App\Models\Master\PinjamanKeperluanModels;
+use App\Models\Master\SimulasiPinjamanModels;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -39,6 +40,7 @@ class PinjamanShow extends Component
     public $tgl_pelunasan;
     public $remarks;
     public $margin = 0;
+    public $tenor;
 
     public function mount($id) {
         $this->titlePage = 'Detail Pinjaman Anggota';
@@ -61,6 +63,7 @@ class PinjamanShow extends Component
         $this->tgl_pencairan = $this->loadData['tgl_pencairan'];
         $this->tgl_pelunasan = $this->loadData['tgl_pelunasan'];
         $this->remarks = $this->loadData['remarks'];
+        $this->tenor = $this->loadData['tenor'];
 
         $fileUrlDocKtp = null;
         if ($this->loadData['doc_ktp'] && Storage::exists($this->loadData['doc_ktp'])) {
@@ -115,6 +118,19 @@ class PinjamanShow extends Component
             );
         }
         $this->loadData['doc_id_card_pegawai'] = $fileUrlIDCardPegawai;
+
+        if($this->loadData['margin'] == 0) {
+            $tanggal = $this->loadData['created_at'];
+            $tahun = date('Y', strtotime($tanggal)); // Output: 2025
+            $marginSimulasi = SimulasiPinjamanModels::where('status', 'aktif')
+                                                    ->where('tahun_margin', $tahun)
+                                                    ->where('p_jenis_pinjaman_id', $this->loadData['p_jenis_pinjaman_id'])
+                                                    ->where('tenor', $this->loadData['tenor'])
+                                                    ->first();
+            if($marginSimulasi) {
+                $this->margin = (float)$marginSimulasi->margin;
+            }
+        }
 
         $attribute = [];
         foreach($this->loadData['p_pinjaman_keperluan_ids'] as $d){
@@ -171,12 +187,14 @@ class PinjamanShow extends Component
             'ri_jumlah_pinjaman' => 'required',
             'p_status_pengajuan_id' => 'required',
             'biaya_admin' => 'required|numeric',
-            'margin' => 'required|numeric'
+            'margin' => 'required|numeric',
+            'tenor' => 'required|numeric'
         ], [
             'ri_jumlah_pinjaman' => 'Jumlah Pinjaman yang Disetujui required',
             'p_status_pengajuan_id.required' => 'Status Pengajuan required.',
             'biaya_admin.required' => 'Biaya Admin required',
-            'margin.required' => 'Margin required'
+            'margin.required' => 'Margin required',
+            'tenor.required' => 'Tenor required'
         ]);
 
         try {
@@ -185,6 +203,7 @@ class PinjamanShow extends Component
                 'p_status_pengajuan_id' => $this->p_status_pengajuan_id,
                 'biaya_admin' => $this->biaya_admin,
                 'margin' => $this->margin,
+                'tenor' => $this->tenor,
                 'remarks' => $this->remarks,
                 'tgl_pencairan' => $this->tgl_pencairan ? $this->tgl_pencairan : NULL,
                 'tgl_pelunasan' => $this->tgl_pelunasan ? $this->tgl_pelunasan : NULL,

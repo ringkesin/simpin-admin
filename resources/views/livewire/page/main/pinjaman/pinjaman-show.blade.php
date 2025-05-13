@@ -125,6 +125,16 @@
                             </div>
                         </div>
                     </x-elements.detail>
+                    <x-elements.detail label="Tenor Disetujui" required="true">
+                        <div class="flex gap-4">
+                            <div class="flex-initial w-20">
+                                <x-form.input class="w-full" type="number" name="tenor" wire:model.lazy="tenor"/>
+                            </div>
+                            <div class="flex-initial w-54">
+                                Bulan
+                            </div>
+                        </div>
+                    </x-elements.detail>
                     <x-elements.detail label="Margin (%)" required="true">
                         <div class="flex gap-4">
                             <div class="flex-initial w-20">
