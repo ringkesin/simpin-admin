@@ -102,62 +102,48 @@ class TagihanImport extends Component
         // Simpan data ke database (contoh)
         try {
             DB::beginTransaction();
+
             foreach ($this->data as $dataLoop) {
-                $dataFind = AnggotaModels::where('nomor_anggota', $dataLoop['nomor_anggota'])->first();
-                $dataPinjaman = NULL;
-                $statusFind = NULL;
-                $metodeFind = NULL;
-
-                if(isset($dataLoop['nomor_pinjaman'])) {
-                    $dataPinjaman = PinjamanModels::where('nomor_pinjaman', $dataLoop['nomor_pinjaman'])->first();
-                }
-
-                if(isset($dataLoop['status_pembayaran'])) {
-                    $statusFind = StatusPembayaranModels::where('status_code', $dataLoop['status_pembayaran'])->first();
-                }
-
-                if(isset($dataLoop['metode_pembayaran'])) {
-                    $metodeFind = MetodePembayaranModels::where('metode_code', $dataLoop['metode_pembayaran'])->first();
-                }
+                $dataFind = AnggotaModels::where('nomor_anggota', $dataLoop['nomor_anggota'])->firstOrFail();
+                $dataPinjaman = PinjamanModels::where('nomor_pinjaman', $dataLoop['nomor_pinjaman'] ?? null)->first();
+                $statusFind = StatusPembayaranModels::where('status_code', $dataLoop['status_pembayaran'] ?? null)->first();
+                $metodeFind = MetodePembayaranModels::where('metode_code', $dataLoop['metode_pembayaran'] ?? null)->first();
 
                 $payload = [
-                        'p_anggota_id' => $dataFind['p_anggota_id'],
-                        't_pinjaman_id' => isset($dataPinjaman) ? $dataPinjaman['t_pinjaman_id'] : NULL,
-                        'bulan' => $dataLoop['bulan'],
-                        'tahun' => $dataLoop['tahun'],
-                        'uraian' => $dataLoop['uraian'],
-                        'jumlah_tagihan' => $dataLoop['jumlah_tagihan'],
-                        'remarks' => $dataLoop['remarks'],
-                        'tgl_jatuh_tempo' => $dataLoop['tgl_jatuh_tempo'],
-                        'p_status_pembayaran_id' => isset($statusFind) ? $statusFind['p_status_pembayaran_id'] : NULL,
-                        'paid_at' => $dataLoop['tgl_dibayar'],
-                        'jumlah_pembayaran' => $dataLoop['jumlah_dibayarkan'],
-                        'p_metode_pembayaran_id' => isset($metodeFind) ? $metodeFind['p_metode_pembayaran_id'] : NULL
+                    'p_anggota_id' => $dataFind->p_anggota_id,
+                    't_pinjaman_id' => $dataPinjaman?->t_pinjaman_id,
+                    'bulan' => $dataLoop['bulan'],
+                    'tahun' => $dataLoop['tahun'],
+                    'uraian' => $dataLoop['uraian'],
+                    'jumlah_tagihan' => $dataLoop['jumlah_tagihan'],
+                    'remarks' => $dataLoop['remarks'],
+                    'tgl_jatuh_tempo' => $dataLoop['tgl_jatuh_tempo'],
+                    'p_status_pembayaran_id' => $statusFind?->p_status_pembayaran_id,
+                    'paid_at' => $dataLoop['tgl_dibayar'],
+                    'jumlah_pembayaran' => $dataLoop['jumlah_dibayarkan'],
+                    'p_metode_pembayaran_id' => $metodeFind?->p_metode_pembayaran_id,
                 ];
 
-                if(isset($dataFind['p_anggota_id'])) {
-                    TagihanModels::create($payload);
-                }
+                TagihanModels::create($payload);
             }
+
             DB::commit();
-            // dd(route('main.tagihan.list'));
-            $redirect = route('main.tagihan.list');
+
             return $this->sweetalert([
                 'icon' => 'success',
                 'confirmButtonText' => 'Okay',
                 'showCancelButton' => false,
                 'text' => 'Data Berhasil Disimpan !',
-                'redirectUrl' => $redirect
+                'redirectUrl' => route('main.tagihan.list'),
             ]);
+
         } catch (QueryException $e) {
             DB::rollBack();
-            $textError = '';
-            if($e->errorInfo[1] == 1062) {
-                $textError = 'Data gagal di update karena duplikat data, coba kembali.';
-            } else {
-                $textError = 'Data gagal di update, coba kembali.';
-            }
-            $this->sweetalert([
+            $textError = $e->errorInfo[1] == 1062
+                ? 'Data gagal di update karena duplikat data, coba kembali.'
+                : 'Data gagal di update, coba kembali.';
+
+            return $this->sweetalert([
                 'icon' => 'error',
                 'confirmButtonText'  => 'Okay',
                 'showCancelButton' => false,
