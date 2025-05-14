@@ -115,7 +115,7 @@ class ProfileAnggotaController extends BaseController
                 'nomor_hp' => 'nullable|string|max:15|unique:p_anggota,mobile',
                 'alamat' => 'nullable|string|max:1024',
                 'tgl_lahir' => ['nullable', Rule::date()->format('Y-m-d'),],
-                'profile_photo' => 'nullable|image|mimes:jpg,png|max:2048',
+                // 'profile_photo' => 'nullable|image|mimes:jpg,png|max:2048',
             ],[
                 'p_anggota_id.required' => 'Anggota harus diisi',
                 'alamat_email.email' => 'Alamat email tidak valid',
@@ -134,17 +134,17 @@ class ProfileAnggotaController extends BaseController
             }
 
             DB::beginTransaction();
-            
+
             $data = User::with(['anggota:nomor_anggota,nama,nik,email,mobile,alamat,tgl_lahir'])->find($user->id);
             $data->email = $request->alamat_email ?? $data->email;
             $data->mobile = $request->nomor_hp ?? $data->mobile;
-            if($request->file('profile_photo')){
-                if($data->profile_photo_path !== 'avatar/blank-avatar.png'){
-                    Storage::disk('public')->delete($data->profile_photo_path);
-                }
-                $path = $request->file('profile_photo')->store('avatar', 'public');
-                $data->profile_photo_path = $path;
-            }
+            // if($request->file('profile_photo')){
+            //     if($data->profile_photo_path !== 'avatar/blank-avatar.png'){
+            //         Storage::disk('public')->delete($data->profile_photo_path);
+            //     }
+            //     $path = $request->file('profile_photo')->store('avatar', 'public');
+            //     $data->profile_photo_path = $path;
+            // }
             $data->anggota->email = $request->alamat_email ?? $data->anggota->email;
             $data->anggota->mobile = $request->nomor_hp ?? $data->anggota->mobile;
             $data->anggota->alamat = $request->alamat ?? $data->anggota->alamat;
@@ -167,6 +167,56 @@ class ProfileAnggotaController extends BaseController
             DB::commit();
 
             return $this->sendResponse(['update_profile' => $data], 'Update Profile Berhasil');
+        } catch (Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updateProfilePhoto(Request $request) {
+        try {
+            $validator = Validator::make($request->all(), [
+                'profile_photo' => 'required|image|mimes:jpg,png|max:2048',
+            ],[
+                'profile_photo.required' => 'Photo Profile harus diisi',
+                'profile_photo.image' => 'Photo Profile harus berupa image',
+                'profile_photo.mimes' => 'Photo Profile harus berformat jpg atau png',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
+            }
+
+            $user = Auth::user();
+
+            DB::beginTransaction();
+
+            $data = User::find($user->id);
+
+            if($request->file('profile_photo')){
+                if($data->profile_photo_path !== 'avatar/blank-avatar.png'){
+                    Storage::disk('public')->delete($data->profile_photo_path);
+                }
+                $path = $request->file('profile_photo')->store('avatar', 'public');
+                $data->profile_photo_path = $path;
+            }
+
+            $data->save();
+
+            $data->makeHidden([
+                'email_verified_at',
+                'remarks',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+                'created_by',
+                'updated_by',
+                'deleted_by',
+                'two_factor_confirmed_at',
+            ]);
+
+            DB::commit();
+
+            return $this->sendResponse(['update_photo_profile' => $data], 'Update Photo Profile Berhasil');
         } catch (Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }

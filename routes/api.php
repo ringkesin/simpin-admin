@@ -83,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/profile', [ProfileAnggotaController::class, 'getProfile']);
     Route::post('/profile', [ProfileAnggotaController::class, 'updateProfile']);
+    Route::post('/profile/update-photo', [ProfileAnggotaController::class, 'updateProfilePhoto']);
 
     Route::prefix('/chat')->group(function () {
         Route::post('/ticket/add', [ChatController::class, 'createTicket']);
