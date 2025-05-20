@@ -105,7 +105,7 @@ class KontenEdit extends Component
             ]);
 
             if($post) {
-                $redirect = route('main.konten.show', ['id' => $post]);
+                $redirect = route('main.konten.show', ['id' => $this->id]);
                 $this->sweetalert([
                     'icon' => 'success',
                     'confirmButtonText' => 'Okay',
