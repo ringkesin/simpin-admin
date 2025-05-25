@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Page;
 
+use App\Traits\MyHelpers;
 use Livewire\Component;
 use App\Models\Master\AnggotaModels;
 use App\Models\Main\PinjamanModels;
@@ -9,9 +10,12 @@ use App\Models\Rbac\RoleUserModel;
 
 class Dashboard extends Component
 {
+    use MyHelpers;
+
     public $breadcrumb;
     public $titlePage;
     public $menuCode;
+    public $chartData;
 
     public function mount() {
         $this->titlePage = 'Dashboard';
@@ -19,6 +23,7 @@ class Dashboard extends Component
         $this->breadcrumb = [
             ['link' => null, 'label' => 'Dashboard']
         ];
+        $this->chartPinjamanActive();
     }
 
     public function anggotaCount() {
@@ -52,6 +57,29 @@ class Dashboard extends Component
         return $user;
     }
 
+    public function chartPinjamanActive() {
+        $data = PinjamanModels::selectRaw('EXTRACT(MONTH FROM created_at) as bulan, COUNT(*) as total')
+                                ->whereYear('created_at', now()->year)
+                                ->whereIn('p_status_pengajuan_id', [5, 6, 7])
+                                ->groupByRaw('EXTRACT(MONTH FROM created_at)')
+                                ->orderByRaw('EXTRACT(MONTH FROM created_at)')
+                                ->pluck('total', 'bulan')
+                                ->toArray();
+
+        $bulanLabels = [];
+        $jumlahPinjaman = [];
+
+        foreach (range(1, 12) as $i) {
+            $bulanLabels[] = date("F", mktime(0, 0, 0, $i, 10));
+            $jumlahPinjaman[] = $data[$i] ?? 0;
+        }
+
+        $this->chartData = [
+            'labels' => $bulanLabels,
+            'data' => $jumlahPinjaman,
+        ];
+    }
+
     public function pinjamanPendingCount() {
         $pinjamanCount = PinjamanModels::whereIn('p_status_pengajuan_id', [2, 4])
                                     ->count();
@@ -73,9 +101,23 @@ class Dashboard extends Component
         return $pinjamanCount;
     }
 
-    public function pinjamanDoneCount() {
-        $pinjamanCount = PinjamanModels::whereIn('p_status_pengajuan_id', [8])
-                                    ->count();
+    public function pinjamanPendingTotal() {
+        $pinjamanCount = PinjamanModels::whereIn('p_status_pengajuan_id', [2,4])
+                                    ->sum('ra_jumlah_pinjaman');
+
+        return $pinjamanCount;
+    }
+
+    public function pinjamanAktifTotal() {
+        $pinjamanCount = PinjamanModels::whereIn('p_status_pengajuan_id', [5, 6, 7])
+                                    ->sum('ri_jumlah_pinjaman');
+
+        return $pinjamanCount;
+    }
+
+    public function pinjamanOverdueTotal() {
+        $pinjamanCount = PinjamanModels::whereIn('p_status_pengajuan_id', [7])
+                                    ->sum('ri_jumlah_pinjaman');
 
         return $pinjamanCount;
     }
