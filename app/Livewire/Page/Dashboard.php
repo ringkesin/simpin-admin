@@ -58,11 +58,10 @@ class Dashboard extends Component
     }
 
     public function chartPinjamanActive() {
-        $data = PinjamanModels::selectRaw('EXTRACT(MONTH FROM created_at) as bulan, COUNT(*) as total')
-                                ->whereYear('created_at', now()->year)
-                                ->whereIn('p_status_pengajuan_id', [5, 6, 7])
-                                ->groupByRaw('EXTRACT(MONTH FROM created_at)')
-                                ->orderByRaw('EXTRACT(MONTH FROM created_at)')
+        $data = PinjamanModels::selectRaw('EXTRACT(MONTH FROM tgl_pencairan) as bulan, COUNT(*) as total')
+                                ->whereYear('tgl_pencairan', now()->year)
+                                ->groupByRaw('EXTRACT(MONTH FROM tgl_pencairan)')
+                                ->orderByRaw('EXTRACT(MONTH FROM tgl_pencairan)')
                                 ->pluck('total', 'bulan')
                                 ->toArray();
 

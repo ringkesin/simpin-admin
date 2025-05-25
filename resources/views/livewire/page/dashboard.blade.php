@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="px-5 py-5 bg-white rounded-lg shadow-lg md:col-span-3 shadow-slate-300/50">
-            <h2 class="font-bold">Grafik Pinjaman Aktif</h2>
+            <h2 class="font-bold">Grafik Pencairan Pinjaman</h2>
             <div
                 x-data="{
                     chart: null,
@@ -70,7 +70,7 @@
                                     legend: { display: false },
                                     title: {
                                         display: true,
-                                        text: 'Jumlah Pinjaman Aktif Tiap Bulan Tahun {{ now()->year }}'
+                                        text: 'Jumlah Pencairan Pinjaman Tiap Bulan Tahun {{ now()->year }}'
                                     }
                                 },
                                 scales: {
