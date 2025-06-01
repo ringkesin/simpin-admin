@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TagihanTemplateExport;
 use PhpOffice\PhpSpreadsheet\IOFactory; // ✅ Impor ini!
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use App\Exports\TagihanExport;
 
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
@@ -32,20 +33,33 @@ class TagihanImport extends Component
 
     public $files;
     public $data;
+    public $bulan;
+    public $tahun;
 
     public function mount() {
-        $this->titlePage = 'Import Tagihan Anggota';
+        $this->titlePage = 'Import & Export Tagihan Anggota';
         $this->menuCode = 'tagihan';
         $this->breadcrumb = [
             ['link' => null, 'label' => 'Tagihan'],
             ['link' => route('main.tagihan.list'), 'label' => 'List'],
-            ['link' => route('main.tagihan.import'), 'label' => 'Import']
+            ['link' => route('main.tagihan.import'), 'label' => 'Import & Export']
         ];
     }
 
     public function downloadTemplate()
     {
         return Excel::download(new TagihanTemplateExport, 'template_tagihan.xlsx');
+    }
+
+    public function exportTagihan()
+    {
+        $this->validate([
+            'bulan' => 'required',
+            'tahun' => 'required|digits:4',
+        ]);
+
+        // return redirect()->route('export.tagihan.download');
+        return Excel::download(new TagihanExport($this->bulan, $this->tahun), 'tagihan_'. $this->bulan .'-' . $this->tahun . '.xlsx');
     }
 
     public function updatedFiles()
@@ -75,23 +89,24 @@ class TagihanImport extends Component
 
         foreach ($rows as $row) {
             if (
-                !empty($row[0]) &&
-                !empty($row[2]) &&
-                !empty($row[3])
+                !empty($row[1]) &&
+                !empty($row[3]) &&
+                !empty($row[4])
                 ) {
                 $this->data[] = [
-                    'nomor_anggota' => trim($row[0]),
-                    'nomor_pinjaman' => trim($row[1]),
-                    'bulan' => $row[2],
-                    'tahun' => $row[3],
-                    'uraian' => $row[4],
-                    'jumlah_tagihan' => floatval($row[5]),
-                    'remarks' => $row[6],
-                    'tgl_jatuh_tempo' => trim($row[7]),
-                    'status_pembayaran' => trim($row[8]),
-                    'tgl_dibayar' => trim($row[9]),
-                    'jumlah_dibayarkan' => floatval($row[10]),
-                    'metode_pembayaran' => $row[11]
+                    't_tagihan_id' => $row[0],
+                    'nomor_anggota' => trim($row[1]),
+                    'nomor_pinjaman' => trim($row[2]),
+                    'bulan' => $row[3],
+                    'tahun' => $row[4],
+                    'uraian' => $row[5],
+                    'jumlah_tagihan' => floatval($row[6]),
+                    'remarks' => $row[7],
+                    'tgl_jatuh_tempo' => trim($row[8]),
+                    'status_pembayaran' => trim($row[9]),
+                    'tgl_dibayar' => trim($row[10]),
+                    'jumlah_dibayarkan' => floatval($row[11]),
+                    'metode_pembayaran' => $row[12]
                 ];
             }
         }
@@ -117,14 +132,22 @@ class TagihanImport extends Component
                     'uraian' => $dataLoop['uraian'],
                     'jumlah_tagihan' => $dataLoop['jumlah_tagihan'],
                     'remarks' => $dataLoop['remarks'],
-                    'tgl_jatuh_tempo' => $dataLoop['tgl_jatuh_tempo'],
+                    'tgl_jatuh_tempo' => $dataLoop['tgl_jatuh_tempo'] ? $dataLoop['tgl_jatuh_tempo'] : NULL,
                     'p_status_pembayaran_id' => $statusFind?->p_status_pembayaran_id,
-                    'paid_at' => $dataLoop['tgl_dibayar'],
-                    'jumlah_pembayaran' => $dataLoop['jumlah_dibayarkan'],
+                    'paid_at' => $dataLoop['tgl_dibayar'] ? $dataLoop['tgl_dibayar'] : NULL,
+                    'jumlah_pembayaran' => $dataLoop['jumlah_dibayarkan'] ? $dataLoop['jumlah_dibayarkan'] : NULL,
                     'p_metode_pembayaran_id' => $metodeFind?->p_metode_pembayaran_id,
                 ];
 
-                TagihanModels::create($payload);
+                if(!empty($dataLoop['t_tagihan_id'])) {
+                    // dd($payload);
+                    TagihanModels::where('t_tagihan_id', $dataLoop['t_tagihan_id'])->update(
+                        $payload
+                    );
+                } else {
+                    TagihanModels::create($payload);
+                }
+
             }
 
             DB::commit();
@@ -138,6 +161,7 @@ class TagihanImport extends Component
             ]);
 
         } catch (QueryException $e) {
+            dd($e);
             DB::rollBack();
             $textError = $e->errorInfo[1] == 1062
                 ? 'Data gagal di update karena duplikat data, coba kembali.'

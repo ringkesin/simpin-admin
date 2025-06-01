@@ -17,7 +17,7 @@
                 <div>
                     <x-elements.button wire:navigate :href="route('main.tagihan.import')" button-type="{{ 'primary' }}" :type="'link'">
                         <x-lucide-folder-input class="size-3"/>
-                        <span class="xs:block">Import </span>
+                        <span class="xs:block">Import & Export </span>
                     </x-elements.button>
                 </div>
             </div>
