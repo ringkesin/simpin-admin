@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Main\PinjamanModels;
 use App\Models\Master\PinjamanKeperluanModels;
+use App\Models\Master\JenisPinjamanModels;
 use Exception;
 
 class PinjamanController extends BaseController
@@ -78,7 +79,7 @@ class PinjamanController extends BaseController
             $doc_slip_gaji_path = $request->file('doc_slip_gaji')->store('uploads/slip_gaji', 'local');
 
             $pinjaman = PinjamanModels::create([
-                'nomor_pinjaman' => $this->generateNomorTransaksi(),
+                'nomor_pinjaman' => $this->generateNomorTransaksi($request->p_jenis_pinjaman_id),
                 'p_anggota_id' => $request->p_anggota_id,
                 'p_jenis_pinjaman_id' => $request->p_jenis_pinjaman_id,
                 'p_pinjaman_keperluan_ids' => ($request->p_jenis_pinjaman_id == 3) ? [] : $request->p_pinjaman_keperluan_ids,
@@ -261,7 +262,7 @@ class PinjamanController extends BaseController
         return $this->sendResponse([], 'Data pinjaman berhasil dihapus');
     }
 
-    function generateNomorTransaksi()
+    function generateNomorTransaksi($jenisPinjamanId)
     {
         $kode = 'PJ';
         $bulan = date('n');
@@ -284,11 +285,12 @@ class PinjamanController extends BaseController
             // Ambil nomor urut dari string, misalnya "002/PJ/V/2025" → 2
             $lastNomor = (int)substr($last->nomor_pinjaman, 0, 3);
             $nextNomor = str_pad($lastNomor + 1, 3, '0', STR_PAD_LEFT);
+            $inisialJenisPinjaman = $last->masterJenisPinjaman->kode_jenis_pinjaman;
         } else {
             $nextNomor = '001';
+            $jenisPinjamanIds = JenisPinjamanModels::find($jenisPinjamanId);
+            $inisialJenisPinjaman = $jenisPinjamanIds['kode_jenis_pinjaman'];
         }
-
-        $inisialJenisPinjaman = $last->masterJenisPinjaman->kode_jenis_pinjaman;
 
         // Gabungkan format akhir
         $nomorBaru = $nextNomor . '/' . $kode . '/'. $inisialJenisPinjaman . '/' . $romawi[$bulan] . '/' . $tahun;
