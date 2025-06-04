@@ -182,7 +182,8 @@ class ChatController extends BaseController
             $user = Auth::user();
             $tokenAbilities = $user->currentAccessToken()->abilities;
 
-            $getMessages = ChatConversationsModels::where('t_chat_id', $chatid)
+            $getMessages = ChatConversationsModels::with(['createdBy'])
+                                                ->where('t_chat_id', $chatid)
                                                 ->orderByDesc('created_at')
                                                 ->get();
 
