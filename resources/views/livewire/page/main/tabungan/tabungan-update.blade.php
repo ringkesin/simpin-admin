@@ -6,18 +6,19 @@
             </h1>
         </div>
     </div>
+    <x-elements.button wire:navigate :href="route('main.tabungan.list')" :variant="'success'" :style="'outlined'" :type="'link'" class='mb-6'>
+        <x-lucide-arrow-left class="size-5"/>
+        <span class="xs:block">Back to list page</span>
+    </x-button>
+    
+    <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200 mb-6">
+        <h4 class='mb-6 text-lg font-bold'>Saldo Tabungan</h4>
+        <hr class='mb-6' />
+        @livewire('page.main.tabungan.tabungan-anggota-saldo-table', ['p_anggota_id' => $id])
+    </div>
     <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200">
-        <div class='px-4 py-4 mb-6 border rounded bg-slate-50 border-slate-200'>
-            <div class="flex justify-between gap-2">
-                <div>
-                    <x-elements.button wire:navigate :href="route('main.tabungan.list')" :variant="'success'" :style="'outlined'" :type="'link'">
-                        <x-lucide-arrow-left class="size-5"/>
-                        <span class="xs:block">Back to list page</span>
-                    </x-button>
-                </div>
-            </div>
-        </div>
-        
+        <h4 class='mb-6 text-lg font-bold'>Mutasi Tabungan</h4>
+        <hr class='mb-6' />
         <form wire:submit="saveInsert">
             <div class="grid grid-cols-12 gap-10 mb-2">
                 <div class="col-span-12 md:col-span-6">
@@ -94,9 +95,8 @@
             </x-elements.button-submit>
         </form>
         
-        <hr class='mt-6 mb-4' />
-        <h4 class='mb-4 text-base font-bold'>List Transaksi Tabungan</h4>
+        <hr class='mt-8 mb-6' />
         
-        <livewire:page.main.tabungan.tabungan-anggota-table />
+        @livewire('page.main.tabungan.tabungan-anggota-table', ['p_anggota_id' => $id])
     </div>
 </div>
