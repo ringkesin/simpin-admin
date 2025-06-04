@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Models\Main\ChatModels;
+use App\Models\User;
 
 class ChatConversationsModels extends Model
 {
