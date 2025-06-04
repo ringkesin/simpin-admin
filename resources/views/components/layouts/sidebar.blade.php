@@ -48,14 +48,14 @@
                         <li>
                             <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tabungan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.tabungan.list')}}">
                                 <x-lucide-landmark class="size-4"/>
-                                Tabungan
+                                Tabungan Anggota
                             </a>
                         </li>
 
                         <li>
-                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tagihan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.tagihan.list')}}">
-                                <x-lucide-credit-card class="size-4"/>
-                                Tagihan
+                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pencairan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.pencairan.list')}}">
+                                <x-lucide-landmark class="size-4"/>
+                                Pencairan Tabungan
                             </a>
                         </li>
 
@@ -63,6 +63,13 @@
                             <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pinjaman' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.pinjaman.list')}}">
                                 <x-lucide-banknote class="size-4"/>
                                 Pinjaman
+                            </a>
+                        </li>
+
+                        <li>
+                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'tagihan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.tagihan.list')}}">
+                                <x-lucide-credit-card class="size-4"/>
+                                Tagihan
                             </a>
                         </li>
 
