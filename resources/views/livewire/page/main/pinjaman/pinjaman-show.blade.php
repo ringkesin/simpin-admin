@@ -171,7 +171,7 @@
                                 Rp.
                             </div>
                             <div class="flex-initial w-64">
-                                {{ $this->toRupiah($this->totalDisetujui() / $tenor) }}
+                                {{ $this->toRupiah(round($this->totalDisetujui() / $tenor)) }}
                             </div>
                         </div>
                     </x-elements.detail>
