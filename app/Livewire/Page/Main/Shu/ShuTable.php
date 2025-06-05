@@ -79,16 +79,16 @@ class ShuTable extends DataTableComponent
                 ->format(function ($value, $column, $row) {
                     return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
                 }),
-            Column::make("SHU Dibagi", "shu_dibagi")
-                ->sortable()
-                ->format(function ($value, $column, $row) {
-                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
-                }),
-            Column::make("SHU Ditabung", "shu_ditabung")
-                ->sortable()
-                ->format(function ($value, $column, $row) {
-                    return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
-                }),
+            // Column::make("SHU Dibagi", "shu_dibagi")
+            //     ->sortable()
+            //     ->format(function ($value, $column, $row) {
+            //         return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
+            //     }),
+            // Column::make("SHU Ditabung", "shu_ditabung")
+            //     ->sortable()
+            //     ->format(function ($value, $column, $row) {
+            //         return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
+            //     }),
         ];
     }
 

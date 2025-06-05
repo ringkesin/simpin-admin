@@ -97,7 +97,7 @@ class ShuEdit extends Component
                 ]);
 
                 if($post) {
-                    $redirect = route('main.shu.show', ['id' => $post]);
+                    $redirect = route('main.shu.show', ['id' => $this->id]);
                     $this->sweetalert([
                         'icon' => 'success',
                         'confirmButtonText' => 'Okay',

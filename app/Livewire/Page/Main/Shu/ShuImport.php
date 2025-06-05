@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ShuTemplateExport;
 use PhpOffice\PhpSpreadsheet\IOFactory; // ✅ Impor ini!
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use App\Exports\ShuExport;
 
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
@@ -28,20 +29,31 @@ class ShuImport extends Component
 
     public $files;
     public $data;
+    public $tahun;
 
     public function mount() {
-        $this->titlePage = 'Import SHU Anggota';
+        $this->titlePage = 'Import & Export  SHU Anggota';
         $this->menuCode = 'shu';
         $this->breadcrumb = [
             ['link' => null, 'label' => 'SHU'],
             ['link' => route('main.shu.list'), 'label' => 'List'],
-            ['link' => route('main.shu.import'), 'label' => 'Import']
+            ['link' => route('main.shu.import'), 'label' => 'Import & Export']
         ];
     }
 
     public function downloadTemplate()
     {
         return Excel::download(new ShuTemplateExport, 'template_shu.xlsx');
+    }
+
+    public function exportSHU()
+    {
+        $this->validate([
+            'tahun' => 'required|digits:4',
+        ]);
+
+        // return redirect()->route('export.tagihan.download');
+        return Excel::download(new ShuExport($this->tahun), 'shu_'. $this->tahun . '.xlsx');
     }
 
     public function updatedFiles()
@@ -78,9 +90,9 @@ class ShuImport extends Component
                     'nomor_anggota' => trim($row[0]),
                     'tahun' => $row[1],
                     'shu_diterima' => floatval($row[2]),
-                    'shu_dibagi' => floatval($row[3]),
-                    'shu_ditabung' => floatval($row[4]),
-                    'shu_tahun_lalu' => floatval($row[4])
+                    // 'shu_dibagi' => floatval($row[3]),
+                    // 'shu_ditabung' => floatval($row[4]),
+                    // 'shu_tahun_lalu' => floatval($row[4])
                 ];
             }
         }
@@ -103,10 +115,14 @@ class ShuImport extends Component
                             'p_anggota_id' => $dataFind['p_anggota_id'],
                             'tahun' => $dataLoop['tahun'],
                             'shu_diterima' => $dataLoop['shu_diterima'],
-                            'shu_dibagi' => $dataLoop['shu_dibagi'],
-                            'shu_ditabung' => $dataLoop['shu_ditabung'],
-                            'shu_tahun_lalu' => $dataLoop['shu_tahun_lalu']
+                            'shu_dibagi' => 0,
+                            'shu_ditabung' => 0,
+                            'shu_tahun_lalu' => 0
                         ]);
+                    } else {
+                        ShuModels::where('p_anggota_id', $dataFind['p_anggota_id'])
+                                ->where('tahun', $dataLoop['tahun'])
+                                ->update(['shu_diterima' => $dataLoop['shu_diterima']]);
                     }
                 }
             }

@@ -84,7 +84,7 @@
                     </div>
                 </div>
                 <!-- Kolom Tengah -->
-                <div class="col-span-12 md:col-span-6">
+                <div class="hidden col-span-12 md:col-span-6">
                     <!-- Group SHU Dibagi -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -100,7 +100,7 @@
                     </div>
                 </div>
                 <!-- Kolom Kanan -->
-                <div class="col-span-12 md:col-span-6">
+                <div class="hidden col-span-12 md:col-span-6">
                     <!-- Group SHU Ditabung -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
@@ -116,7 +116,7 @@
                     </div>
                 </div>
                 <!-- Kolom Kanan -->
-                <div class="col-span-12 md:col-span-6">
+                <div class="hidden col-span-12 md:col-span-6">
                     <!-- Group SHU Tahun Lalu -->
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
