@@ -59,6 +59,7 @@ class PinjamanShow extends Component
         $this->loadData = $data;
         $this->ri_jumlah_pinjaman = $this->loadData['ri_jumlah_pinjaman'];
         $this->p_status_pengajuan_id = $this->loadData['p_status_pengajuan_id'];
+        $this->margin = $this->loadData['margin'];
         $this->biaya_admin = $this->loadData['biaya_admin'];
         $this->tgl_pencairan = $this->loadData['tgl_pencairan'];
         $this->tgl_pelunasan = $this->loadData['tgl_pelunasan'];
@@ -182,6 +183,18 @@ class PinjamanShow extends Component
         return $pinjaman + ($pinjaman * ($margin / 100));
     }
 
+    public function calculateInstallments() {
+        $ri_pinjaman = $this->ri_jumlah_pinjaman ?? 0;
+        $margin = $this->margin ?? 0;
+        $biaya_admin = $this->biaya_admin ?? 0;
+
+        $calTenor = $ri_pinjaman / $this->tenor;
+        $calMargin = $ri_pinjaman * ($margin / 100) / $this->tenor;
+        $calAdmin = $ri_pinjaman * ($biaya_admin / 100) / $this->tenor;
+
+        return $calTenor + $calMargin + $calAdmin;
+    }
+
     public function saveApproval() {
         $validated = $this->validate([
             'ri_jumlah_pinjaman' => 'required',
@@ -196,6 +209,8 @@ class PinjamanShow extends Component
             'margin.required' => 'Margin required',
             'tenor.required' => 'Tenor required'
         ]);
+
+        dd($this->margin);
 
         try {
             $post = PinjamanModels::where('t_pinjaman_id', $this->id)->update([

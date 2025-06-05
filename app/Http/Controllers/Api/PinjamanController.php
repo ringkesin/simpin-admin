@@ -170,10 +170,17 @@ class PinjamanController extends BaseController
 
                 $item->pinjaman_keperluan_nama = PinjamanKeperluanModels::whereIn('p_pinjaman_keperluan_id', $keperluanIds)
                     ->pluck('keperluan');
+                // $pinjamans = $item->ri_jumlah_pinjaman ?? 0;
+                // $margin = $item->margin ?? 0;
+
+                // $item->estimasi_cicilan_bulanan = round($pinjamans + ($pinjamans * ($margin / 100)));
+
                 $pinjamans = $item->ri_jumlah_pinjaman ?? 0;
                 $margin = $item->margin ?? 0;
+                $biaya_admin = $item->biaya_admin ?? 0;
+                $tenor = $item->tenor ?? 0;
 
-                $item->estimasi_cicilan_bulanan = round($pinjamans + ($pinjamans * ($margin / 100)));
+                $item->estimasi_cicilan_bulanan = round($this->calculateInstallments($pinjamans, $margin, $biaya_admin, $tenor));
 
                 return $item;
             });
@@ -225,8 +232,11 @@ class PinjamanController extends BaseController
 
             $pinjaman = $data->ri_jumlah_pinjaman ?? 0;
             $margin = $data->margin ?? 0;
+            $biaya_admin = $data->biaya_admin ?? 0;
+            $tenor = $data->tenor ?? 0;
 
-            $data->estimasi_cicilan_bulanan = round($pinjaman + ($pinjaman * ($margin / 100)));
+            // $data->estimasi_cicilan_bulanan = round($pinjaman + ($pinjaman * ($margin / 100)));
+            $data->estimasi_cicilan_bulanan = round($this->calculateInstallments($pinjaman, $margin, $biaya_admin, $tenor));
 
             return $this->sendResponse($data, 'Data pinjaman berhasil digenerate');
         } catch (\Exception $e) {
@@ -295,6 +305,18 @@ class PinjamanController extends BaseController
         // Gabungkan format akhir
         $nomorBaru = $nextNomor . '/' . $kode . '/'. $inisialJenisPinjaman . '/' . $romawi[$bulan] . '/' . $tahun;
         return $nomorBaru;
+    }
+
+    public function calculateInstallments($ri_pinjaman, $margin, $biaya_admin, $tenor) {
+        $ri_pinjaman = $ri_pinjaman ?? 0;
+        $margin = $margin ?? 0;
+        $biaya_admin = $biaya_admin ?? 0;
+
+        $calTenor = $ri_pinjaman / $tenor;
+        $calMargin = $ri_pinjaman * ($margin / 100) / $tenor;
+        $calAdmin = $ri_pinjaman * ($biaya_admin / 100) / $tenor;
+
+        return $calTenor + $calMargin + $calAdmin;
     }
 
 }
