@@ -20,7 +20,7 @@ class MasterJenisPinjamanSeeder extends Seeder
             'nama' => 'Pinjaman Khusus',
         ],
         [
-            'nama' => 'Pinjaman Barang',
+            'nama' => 'Pinjaman Jasa Usaha (JU)',
         ]
     ];
 
