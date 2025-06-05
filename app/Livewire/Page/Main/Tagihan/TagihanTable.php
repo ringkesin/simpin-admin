@@ -89,6 +89,12 @@ class TagihanTable extends DataTableComponent
                 ->format(function ($value, $column, $row) {
                     return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
                 }),
+            Column::make("Status Pembayaran", "statusPembayaran.status_name")
+                ->sortable()
+                ->searchable()
+                ->format(function ($value, $column, $row) {
+                    return $value == 'Unpaid' ? '<span class="p-1.5 text-xs font-semibold text-white rounded-xl bg-rose-500">'.$value.'</span>' :  '<span class="p-1.5 text-xs font-semibold text-white bg-green-500 rounded-xl">'.$value.'</span>';
+                })->html(),
         ];
     }
 
@@ -97,7 +103,7 @@ class TagihanTable extends DataTableComponent
         return TagihanModels::query()
             ->orderBy('tahun', 'desc')           // Urutan pertama
             ->orderBy('bulan', 'desc')
-            ->orderBy('t_tagihan.p_anggota_id', 'asc');     // Urutan kedua
+            ->orderBy('masterAnggota.nomor_anggota', 'asc');     // Urutan kedua
     }
 
     public function bulkActions(): array

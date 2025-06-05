@@ -161,7 +161,6 @@ class TagihanImport extends Component
             ]);
 
         } catch (QueryException $e) {
-            dd($e);
             DB::rollBack();
             $textError = $e->errorInfo[1] == 1062
                 ? 'Data gagal di update karena duplikat data, coba kembali.'

@@ -93,7 +93,7 @@ class PinjamanTable extends DataTableComponent
                 ->sortable()
                 ->searchable()
                 ->format(function ($value, $column, $row) {
-                    return $value == 'Pending' ? '<span class="text-sm font-semibold text-white px-1.5 bg-blue-500 rounded-full">'.$value.'</span>' : ($value == 'Approve' ? '<span class="text-sm font-semibold text-white px-1.5 bg-green-500 rounded-full">'.$value.'</span>' : '<span class="text-sm font-semibold text-white px-1.5 bg-rose-500 rounded-full">'.$value.'</span>');
+                    return $value == 'Pending' ? '<span class="text-xs font-semibold text-white p-1.5 bg-blue-500 rounded-xl">'.$value.'</span>' : ($value == 'Approve' ? '<span class="text-xs font-semibold text-white p-1.5 bg-green-500 rounded-xl">'.$value.'</span>' : '<span class="text-sm font-semibold text-white px-1.5 bg-rose-500 rounded-full">'.$value.'</span>');
                 })->html(),
         ];
     }
@@ -102,7 +102,7 @@ class PinjamanTable extends DataTableComponent
     {
         return PinjamanModels::query()
             ->orderBy('created_at', 'desc')           // Urutan pertama
-            ->orderBy('t_pinjaman.p_anggota_id', 'asc');     // Urutan kedua
+            ->orderBy('masterAnggota.nomor_anggota', 'asc');     // Urutan kedua
     }
 
     public function bulkActions(): array

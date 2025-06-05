@@ -71,20 +71,29 @@ class AnggotaTable extends DataTableComponent
             Column::make("Valid Dari", "valid_from")
                 ->sortable(),
             Column::make("Valid Sampai", "valid_to")
-                ->sortable(),
+                ->sortable()
+                ->format(function ($value, $column, $row) {
+                    return empty($value) ? '-' : $value;
+                })->html(),
             Column::make("Anggota ?", "is_registered")
                 ->sortable()
                 ->searchable()
                 ->format(function ($value, $column, $row) {
-                    return empty($value) ? '<span class="text-sm font-semibold text-white px-1.5 bg-blue-500 rounded-full">Belum</span>' :  '<span class="text-sm font-semibold text-white px-1.5 bg-green-500 rounded-full">Sudah</span>';
+                    return empty($value) ? '<span class="text-xs font-semibold text-white p-1.5 bg-blue-500 rounded-xl">Belum</span>' :  '<span class="text-xs font-semibold text-white p-1.5 bg-green-500 rounded-xl">Sudah</span>';
                 })->html(),
             Column::make("Terdaftar di User", "user_id")
                 ->sortable()
                 ->searchable()
                 ->format(function ($value, $column, $row) {
-                    return empty($value) ? '<span class="text-sm font-semibold text-white px-1.5 bg-blue-500 rounded-full">Belum</span>' :  '<span class="text-sm font-semibold text-white px-1.5 bg-green-500 rounded-full">Sudah</span>';
+                    return empty($value) ? '<span class="text-xs font-semibold text-white p-1.5 bg-blue-500 rounded-xl">Belum</span>' :  '<span class="text-xs font-semibold text-white p-1.5 bg-green-500 rounded-xl">Sudah</span>';
                 })->html(),
         ];
+    }
+
+    public function builder(): Builder
+    {
+        return AnggotaModels::query()
+            ->orderBy('nomor_anggota', 'asc');
     }
 
     // public function bulkActions(): array

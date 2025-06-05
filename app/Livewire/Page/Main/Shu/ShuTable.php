@@ -95,7 +95,7 @@ class ShuTable extends DataTableComponent
     {
         return ShuModels::query()
             ->orderBy('tahun', 'desc')           // Urutan pertama
-            ->orderBy('t_shu.p_anggota_id', 'asc');     // Urutan kedua
+            ->orderBy('masterAnggota.nomor_anggota', 'asc');     // Urutan kedua
     }
 
     public function bulkActions(): array
