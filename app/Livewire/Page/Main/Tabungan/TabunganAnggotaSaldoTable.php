@@ -5,21 +5,19 @@ namespace App\Livewire\Page\Main\Tabungan;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use App\Models\Main\VTabunganSaldo;
+use App\Models\Main\VTabunganSaldoPerYear;
 use App\Traits\MyHelpers;
 
-class TabunganTable extends DataTableComponent
+class TabunganAnggotaSaldoTable extends DataTableComponent
 {
-    protected $model = VTabunganSaldo::class;
+    protected $model = VTabunganSaldoPerYear::class;
+    public $p_anggota_id;
 
     use MyHelpers;
 
     public function configure(): void
     {
-        $this->setPrimaryKey('p_anggota_id')
-        ->setTableRowUrl(function($row) {
-            return route('main.tabungan.update', ['id' => $row->p_anggota_id]);
-        });
+        $this->setPrimaryKey('t_tabungan_saldo_id');
         $this->setComponentWrapperAttributes([
             'default' => true,
             'class' => 'rounded-none',
@@ -55,54 +53,37 @@ class TabunganTable extends DataTableComponent
 
         $this->setHideBulkActionsWhenEmptyEnabled();
 
-        $this->setPerPageAccepted([10, 25, 50, 100]);
+        $this->setPerPageAccepted([5, 10, 25, 50, 100]);
+        $this->setPerPage(5);
         $this->getPerPageDisplayedItemCount();
     }
 
     public function columns(): array
     {
         return [
-            Column::make("ID", "p_anggota_id")
+            Column::make("Tahun", "tahun")
                 ->sortable()
                 ->searchable(),
-            Column::make("Nomor Anggota", "nomor_anggota")
-                ->sortable()
-                ->searchable(),
-            Column::make("Nama", "nama")
+            Column::make("Jenis Tabungan", "nama")
                 ->sortable()
                 ->searchable(function($query, $searchTerm) {
                     $query->orWhere('nama', 'ilike', "%{$searchTerm}%");
                 }),
-            Column::make("NIK", "nik")
-                ->sortable()
-                ->searchable(function($query, $searchTerm) {
-                    $query->orWhere('nik', 'ilike', "%{$searchTerm}%");
-                }),
-            Column::make("Total Tabungan s.d", "total_tabungan_beautify")
+            Column::make("Total s.d Tahun", "total_sd_beautify")
                 ->sortable(function(Builder $query, string $direction) {
-                    return $query->orderBy('total_tabungan', $direction);
+                    return $query->orderBy('total_sd', $direction);
                 })
-                ->searchable(),
+                ->searchable()
+                ->footer(function($rows) {
+                    return 'Total : ' . number_format($rows->sum('total_sd'), 2, ',', '.');
+                }),
         ];
     }
 
-    // public function bulkActions(): array
-    // {
-    //     return [
-    //         'delete' => 'Delete',
-    //     ];
-    // }
-
-    /**
-     * Fungsi hapus data
-     *
-     */
-    // public function delete()
-    // {
-    //     foreach ($this->getSelected() as $id) {
-    //         TabunganModels::where('t_tabungan_id', $id)
-    //             ->delete();
-    //     }
-    //     $this->clearSelected();
-    // }
+    public function builder(): Builder
+    {
+        return VTabunganSaldoPerYear::query()
+            ->where('p_anggota_id', $this->p_anggota_id)
+            ->select();
+    }
 }

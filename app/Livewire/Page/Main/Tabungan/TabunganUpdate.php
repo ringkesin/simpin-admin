@@ -8,12 +8,9 @@ use Illuminate\Support\Facades\DB;
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
 use Livewire\Attributes\Computed;
-use App\Models\Main\TabunganModels;
 use App\Models\Master\AnggotaModels;
 use App\Models\Master\JenisTabunganModels;
 use App\Models\Main\TabunganJurnalModels;
-use App\Models\Main\TabunganSaldoModels;
-use Illuminate\Support\Facades\Auth;
 
 class TabunganUpdate extends Component
 {
@@ -90,44 +87,24 @@ class TabunganUpdate extends Component
             'remarks.required' => 'Catatan harus diisi.',
         ]);
 
+        $tahun = date('Y', strtotime($this->tglTransaksi));
+
         try {
             DB::beginTransaction();
 
-            $lastAmount = 0;
-            $getLatest = TabunganJurnalModels::where('p_anggota_id', $this->id)->orderBy('tgl_transaksi', 'desc')->first();
-            if($getLatest){
-                $lastAmount = $getLatest->nilai_sd;
-            }
-            
             TabunganJurnalModels::create([
                 'p_anggota_id' => $this->id,
                 'p_jenis_tabungan_id' => $this->jenisTabunganId,
                 'tgl_transaksi' => $this->tglTransaksi.' '.date('H:i:s'),
                 'nilai' => $this->jumlah,
-                'nilai_sd' => ($lastAmount + $this->jumlah),
-                'remarks' => $this->remarks
+                'nilai_sd' => 0,
+                'catatan' => $this->remarks
             ]);
 
-            $tahun = date('Y', strtotime($this->tglTransaksi));
-
-            $getLatestSaldo = TabunganSaldoModels::where('p_anggota_id', $this->id)
-                ->where('p_jenis_tabungan_id', $this->jenisTabunganId)
-                ->where('tahun', $tahun)
-                ->orderBy('created_at', 'desc')
-                ->first();
-            if($getLatestSaldo){
-                $getLatestSaldo->total_sd = $getLatestSaldo->total_sd + $this->jumlah;
-                $getLatestSaldo->save();
-            } else {
-                TabunganSaldoModels::create([
-                    'p_anggota_id' => $this->id,
-                    'p_jenis_tabungan_id' => $this->jenisTabunganId,
-                    'tahun' => $tahun,
-                    'total_sd' => $this->jumlah,
-                    'created_by' => Auth::id(),
-                    'updated_by' => Auth::id(),
-                ]);
-            }
+            DB::select('SELECT _tabungan_recalculate(:p_anggota_id, :tahun)', [
+                'p_anggota_id' => $this->id,
+                'tahun' => $tahun,
+            ]);
 
             DB::commit();
             $redirect = route('main.tabungan.update', ['id' => $this->id]);

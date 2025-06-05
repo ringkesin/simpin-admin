@@ -15,6 +15,9 @@ use App\Livewire\Page\Main\Tabungan\TabunganUpdate;
 use App\Livewire\Page\Main\Tabungan\TabunganEdit;
 use App\Livewire\Page\Main\Tabungan\TabunganImport;
 
+use App\Livewire\Page\Main\Pencairan\PencairanTabunganList;
+use App\Livewire\Page\Main\Pencairan\PencairanTabunganApproval;
+
 use App\Livewire\Page\Main\Tagihan\TagihanList;
 use App\Livewire\Page\Main\Tagihan\TagihanCreate;
 use App\Livewire\Page\Main\Tagihan\TagihanShow;
@@ -86,7 +89,10 @@ Route::middleware([
             // Route::get('create', TabunganCreate::class)->name('main.tabungan.create');
             // Route::get('import', TabunganImport::class)->name('main.tabungan.import');
             Route::get('update/{id}', TabunganUpdate::class)->name('main.tabungan.update');
-            // Route::get('edit/{id}', TabunganEdit::class)->name('main.tabungan.edit');
+        });
+        Route::prefix('pencairan')->group(function () {
+            Route::get('list', PencairanTabunganList::class)->name('main.pencairan.list');
+            Route::get('approval/{id}', PencairanTabunganApproval::class)->name('main.pencairan.approval');
         });
         Route::prefix('tagihan')->group(function () {
             Route::get('list', TagihanList::class)->name('main.tagihan.list');

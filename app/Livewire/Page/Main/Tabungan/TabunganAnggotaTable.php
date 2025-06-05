@@ -6,20 +6,23 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Main\VTabunganJurnal;
+use App\Models\Main\TabunganJurnalModels;
 use App\Traits\MyHelpers;
+use Illuminate\Support\Facades\DB;
 
 class TabunganAnggotaTable extends DataTableComponent
 {
     protected $model = VTabunganJurnal::class;
+    public $p_anggota_id;
 
     use MyHelpers;
 
     public function configure(): void
     {
-        $this->setPrimaryKey('p_anggota_id')
-        ->setTableRowUrl(function($row) {
-            return route('main.tabungan.update', ['id' => $row->p_anggota_id]);
-        });
+        $this->setPrimaryKey('t_tabungan_jurnal_id');
+        // ->setTableRowUrl(function($row) {
+            // return route('main.tabungan.update', ['id' => $row->t_tabungan_jurnal_id]);
+        // });
         $this->setComponentWrapperAttributes([
             'default' => true,
             'class' => 'rounded-none',
@@ -62,25 +65,39 @@ class TabunganAnggotaTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("ID", "p_anggota_id")
-                ->sortable()
-                ->searchable(),
+            Column::make("ID", "t_tabungan_jurnal_id")
+                ->hideIf(true),
             Column::make("Tgl. Transaksi", "tgl_transaksi_beautify")
                 ->sortable()
-                ->searchable(),
-            Column::make("Tabungan", "jenis_tabungan")
+                ->searchable(function($query, $searchTerm) {
+                    $query->orWhere('tgl_transaksi_beautify', 'ilike', "%{$searchTerm}%");
+                }),
+            Column::make("Jenis Tabungan", "jenis_tabungan")
                 ->sortable()
-                ->searchable(),
+                ->searchable(function($query, $searchTerm) {
+                    $query->orWhere('jenis_tabungan', 'ilike', "%{$searchTerm}%");
+                }),
             Column::make("Total", "nilai_beautify")
                 ->sortable(function(Builder $query, string $direction) {
                     return $query->orderBy('nilai', $direction);
                 })
                 ->searchable(),
-            Column::make("Total s.d.", "nilai_sd_beautify")
+            Column::make("Total s.d. Tgl Transaksi", "nilai_sd_beautify")
                 ->sortable(function(Builder $query, string $direction) {
                     return $query->orderBy('nilai_sd', $direction);
                 })
                 ->searchable(),
+            Column::make("Remarks", "catatan")
+                ->sortable()
+                ->searchable(function($query, $searchTerm) {
+                    $query->orWhere('catatan', 'ilike', "%{$searchTerm}%");
+                }),
+            Column::make("Tgl. Diinput", "created_at_beautify")
+                ->sortable()
+                ->searchable(function($query, $searchTerm) {
+                    $query->orWhere('created_at_beautify', 'ilike', "%{$searchTerm}%");
+                }),
+            
             
             // Column::make("Total", "nilai")
             //     ->sortable(function(Builder $query, string $direction) {
@@ -102,23 +119,35 @@ class TabunganAnggotaTable extends DataTableComponent
         ];
     }
 
-    // public function bulkActions(): array
-    // {
-    //     return [
-    //         'delete' => 'Delete',
-    //     ];
-    // }
+    public function bulkActions(): array
+    {
+        return [
+            'delete' => 'Delete',
+        ];
+    }
 
     /**
      * Fungsi hapus data
      *
      */
-    // public function delete()
-    // {
-    //     foreach ($this->getSelected() as $id) {
-    //         TabunganModels::where('t_tabungan_id', $id)
-    //             ->delete();
-    //     }
-    //     $this->clearSelected();
-    // }
+    public function delete()
+    {
+        $data = TabunganJurnalModels::whereIn('t_tabungan_jurnal_id', $this->getSelected())->orderBy('tgl_transaksi', 'asc')->first()->toArray();
+        $tahun = date('Y', strtotime($data['tgl_transaksi']));
+        
+        TabunganJurnalModels::whereIn('t_tabungan_jurnal_id', $this->getSelected())->delete();
+
+        DB::select('SELECT _tabungan_recalculate(:p_anggota_id, :tahun)', [
+            'p_anggota_id' => $this->p_anggota_id,
+            'tahun' => $tahun,
+        ]);
+        $this->clearSelected();
+    }
+
+    public function builder(): Builder
+    {
+        return VTabunganJurnal::query()
+            ->where('p_anggota_id', $this->p_anggota_id)
+            ->select();
+    }
 }

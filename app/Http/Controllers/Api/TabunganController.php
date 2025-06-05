@@ -137,12 +137,28 @@ class TabunganController extends BaseController
     public function getMutasi(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'p_anggota_id' => 'required|integer|exists:p_anggota,p_anggota_id',
+                'tahun' => 'required|integer',
+                'bulan' => 'required|integer',
+            ],[
+                'p_anggota_id.required' => 'Anggota harus diisi',
+                'tahun.required' => 'Tahun harus diisi',
+                'bulan.required' => 'Bulan harus diisi',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
+            }
+
             $user = $request->user();
             $isAdmin = $user->tokenCan('state:admin');
             $isAnggota = $user->tokenCan('state:anggota');
 
             if($isAdmin){
-                $query = TabunganJurnalModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
+                $query = TabunganJurnalModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
+                    ->whereYear('tgl_transaksi', $request->tahun)
+                    ->whereMonth('tgl_transaksi', $request->bulan);
             }
             if($isAnggota) {
                 $p_anggota_id = $user->anggota?->p_anggota_id;
@@ -150,7 +166,9 @@ class TabunganController extends BaseController
                     return $this->sendError('Data anggota tidak ditemukan.', [], 404);
                 }
                 $query = TabunganJurnalModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
-                    ->where('p_anggota_id', $p_anggota_id);
+                    ->where('p_anggota_id', $p_anggota_id)
+                    ->whereYear('tgl_transaksi', $request->tahun)
+                    ->whereMonth('tgl_transaksi', $request->bulan);
             }
 
             $listPengajuan = $query
