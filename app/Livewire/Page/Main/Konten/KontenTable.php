@@ -63,12 +63,11 @@ class KontenTable extends DataTableComponent
     {
         return [
             Column::make("ID", "t_content_id")
+                ->hideIf(true),
+            Column::make("Judul Konten", "content_title")
                 ->sortable()
                 ->searchable(),
             Column::make("Tipe Konten", "contentType.content_name")
-                ->sortable()
-                ->searchable(),
-            Column::make("Judul Konten", "content_title")
                 ->sortable()
                 ->searchable(),
             Column::make("Valid Dari", "valid_from")
@@ -81,7 +80,20 @@ class KontenTable extends DataTableComponent
     public function bulkActions(): array
     {
         return [
-            'reject' => 'Reject',
+            'delete' => 'Delete',
         ];
+    }
+
+    /**
+     * Fungsi hapus data
+     *
+     */
+    public function delete()
+    {
+        foreach ($this->getSelected() as $id) {
+            ContentModels::where('t_content_id', $id)
+                ->delete();
+        }
+        $this->clearSelected();
     }
 }

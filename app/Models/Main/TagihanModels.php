@@ -14,7 +14,6 @@ use App\Models\Master\MetodePembayaranModels;
 class TagihanModels extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use HasUlids;
 
     protected $table = 't_tagihan';
