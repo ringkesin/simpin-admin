@@ -54,7 +54,7 @@
 
                         <li>
                             <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pencairan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.pencairan.list')}}">
-                                <x-lucide-landmark class="size-4"/>
+                                <x-lucide-coins class="size-4"/>
                                 Pencairan Tabungan
                             </a>
                         </li>
