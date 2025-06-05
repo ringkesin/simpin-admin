@@ -16,10 +16,10 @@ class TagihanTable extends DataTableComponent
 
     public function configure(): void
     {
-        $this->setPrimaryKey('t_tagihan_id');
-        // ->setTableRowUrl(function($row) {
-        //     return route('main.tagihan.show', ['id' => $row->t_tagihan_id]);
-        // });
+        $this->setPrimaryKey('t_tagihan_id')
+        ->setTableRowUrl(function($row) {
+            return route('main.tagihan.show', ['id' => $row->t_tagihan_id]);
+        });
         $this->setComponentWrapperAttributes([
             'default' => true,
             'class' => 'rounded-none',
@@ -62,9 +62,11 @@ class TagihanTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Action", "t_tagihan_id")->format(function ($value, $row, $column) {
-                return view('livewire.page.main.tagihan.tagihan-action', ['row' => $row]);
-            }),
+            // Column::make("Action", "t_tagihan_id")->format(function ($value, $row, $column) {
+            //     return view('livewire.page.main.tagihan.tagihan-action', ['row' => $row]);
+            // }),
+            Column::make("ID", "t_tagihan_id")
+                ->hideIf(true),
             Column::make("Nomor Anggota", "masterAnggota.nomor_anggota")
                 ->sortable()
                 ->searchable(),
@@ -88,6 +90,14 @@ class TagihanTable extends DataTableComponent
                     return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
                 }),
         ];
+    }
+
+    public function builder(): Builder
+    {
+        return TagihanModels::query()
+            ->orderBy('tahun', 'desc')           // Urutan pertama
+            ->orderBy('bulan', 'desc')
+            ->orderBy('t_tagihan.p_anggota_id', 'asc');     // Urutan kedua
     }
 
     public function bulkActions(): array

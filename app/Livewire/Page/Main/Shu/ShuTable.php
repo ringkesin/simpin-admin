@@ -63,8 +63,7 @@ class ShuTable extends DataTableComponent
     {
         return [
             Column::make("ID", "t_shu_id")
-                ->sortable()
-                ->searchable(),
+                ->hideIf(true),
             Column::make("Nomor Anggota", "masterAnggota.nomor_anggota")
                 ->sortable()
                 ->searchable(),
@@ -90,6 +89,13 @@ class ShuTable extends DataTableComponent
             //         return $value != Null ? 'Rp. '.$this->toRupiah($value) : '-';
             //     }),
         ];
+    }
+
+    public function builder(): Builder
+    {
+        return ShuModels::query()
+            ->orderBy('tahun', 'desc')           // Urutan pertama
+            ->orderBy('t_shu.p_anggota_id', 'asc');     // Urutan kedua
     }
 
     public function bulkActions(): array
