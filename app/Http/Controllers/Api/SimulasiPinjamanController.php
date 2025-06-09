@@ -17,6 +17,7 @@ class SimulasiPinjamanController extends BaseController
             $simulasi = SimulasiPinjamanModels::where('tahun_margin', $request->tahun)
                                             ->where('p_jenis_pinjaman_id', $request->jenis_pinjaman_id)
                                             ->where('status', 'aktif')
+                                            ->orderBy('tenor', 'asc')
                                             ->get();
             if(!empty($simulasi)) {
                 $result = [];

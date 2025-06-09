@@ -43,6 +43,8 @@ class TagihanController extends BaseController
                                                 $query->where('tahun', $tahun);
                                             })
                                             ->whereNull('deleted_at')
+                                            ->orderBy('tahun', 'desc') // Urutan pertama
+                                            ->orderBy('bulan', 'desc')
                                             ->get();
 
                 $tagihanPeriod->makeHidden([
@@ -76,6 +78,8 @@ class TagihanController extends BaseController
                                                 $query->where('tahun', $tahun);
                                             })
                                             ->whereNull('deleted_at')
+                                            ->orderBy('tahun', 'desc') // Urutan pertama
+                                            ->orderBy('bulan', 'desc')
                                             ->get();
 
                 $tagihanPeriod->makeHidden([
@@ -115,6 +119,8 @@ class TagihanController extends BaseController
                 $tagihanPeriod = TagihanModels::with('pinjamanAnggota')
                                             ->with('statusPembayaran')
                                             ->with('metodePembayaran')
+                                            ->with('masterAnggota')
+                                            ->leftJoin('p_anggota', 't_tagihan.p_anggota_id', '=', 'p_anggota.p_anggota_id')
                                             ->whereHas('pinjamanAnggota', function ($query) use ($request) {
                                                 $query->where('nomor_pinjaman', $request->nomor_pinjaman);
                                             })
@@ -124,7 +130,10 @@ class TagihanController extends BaseController
                                             ->when($request->tahun, function ($query, $tahun) {
                                                 $query->where('tahun', $tahun);
                                             })
-                                            ->whereNull('deleted_at')
+                                            ->whereNull('t_tagihan.deleted_at')
+                                            ->orderBy('tahun', 'desc')           // Urutan pertama
+                                            ->orderBy('bulan', 'desc')
+                                            ->orderBy('p_anggota.nomor_anggota', 'asc')
                                             ->get();
 
                 $tagihanPeriod->makeHidden([
@@ -164,6 +173,8 @@ class TagihanController extends BaseController
                                                 $query->where('tahun', $tahun);
                                             })
                                             ->whereNull('deleted_at')
+                                            ->orderBy('tahun', 'desc')           // Urutan pertama
+                                            ->orderBy('bulan', 'desc')
                                             ->get();
 
                 $tagihanPeriod->makeHidden([
