@@ -8,12 +8,14 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Main\VPencairanTabungan;
 use App\Models\Main\TabunganPengambilanModels;
 use App\Traits\MyHelpers;
+use App\Traits\MyAlert;
 
 class PencairanTabunganTable extends DataTableComponent
 {
     protected $model = VPencairanTabungan::class;
 
     use MyHelpers;
+    use MyAlert;
 
     public function configure(): void
     {
@@ -59,7 +61,7 @@ class PencairanTabunganTable extends DataTableComponent
         $this->setPerPageAccepted([10, 25, 50, 100]);
         $this->getPerPageDisplayedItemCount();
     }
-
+    
     public function columns(): array
     {
         return [
@@ -131,6 +133,11 @@ class PencairanTabunganTable extends DataTableComponent
         ];
     }
 
+    public function isTableRowSelectable($model): bool
+    {
+        return $model->status_pengambilan !== 'DISETUJUI';
+    }
+
     public function bulkActions(): array
     {
         return [
@@ -144,7 +151,41 @@ class PencairanTabunganTable extends DataTableComponent
      */
     public function delete()
     {
-        TabunganPengambilanModels::whereIn('t_tabungan_pengambilan_id', $this->getSelected())->delete();
-        $this->clearSelected();
+        $selected = $this->getSelected();
+
+        $itemsToDelete = TabunganPengambilanModels::whereIn('t_tabungan_pengambilan_id', $selected)
+            ->where('status_pengambilan', '!=', 'DISETUJUI') // Only allow deletion if not 'DISETUJUI'
+            ->get();
+
+        $cannotDelete = TabunganPengambilanModels::whereIn('t_tabungan_pengambilan_id', $selected)
+            ->where('status_pengambilan', 'DISETUJUI')
+            ->count();
+
+        if ($itemsToDelete->isNotEmpty()) {
+            TabunganPengambilanModels::whereIn('t_tabungan_pengambilan_id', $itemsToDelete->pluck('t_tabungan_pengambilan_id'))->delete();
+            $this->clearSelected();
+        }
+
+        if ($cannotDelete > 0) {
+            $message = '';
+            if(count($itemsToDelete) > 0){
+                $message .= count($itemsToDelete).' data berhasil dihapus. Namun ada ';
+            }
+            $message .= $cannotDelete." data tidak dapat dihapus karena status approval telah disetujui.";
+            $this->sweetalert([
+                'icon' => 'warning',
+                'confirmButtonText'  => 'Okay',
+                'showCancelButton' => false,
+                'text' => $message
+            ]);
+        }
+        else {
+            $this->sweetalert([
+                'icon' => 'success',
+                'confirmButtonText' => 'Okay',
+                'showCancelButton' => false,
+                'text' => 'Data Berhasil Dihapus !',
+            ]);
+        }
     }
 }

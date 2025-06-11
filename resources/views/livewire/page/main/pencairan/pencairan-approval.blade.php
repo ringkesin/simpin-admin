@@ -33,6 +33,7 @@
     <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200 mb-6">
         <h4 class='mb-6 text-lg font-bold'>Form Approval</h4>
         <hr class='mb-6' />
+        @if($status_pencairan !== 'DISETUJUI')
         <form wire:submit="saveInsert">
             <div class="grid grid-cols-12 gap-10 mb-2">
                 <div class="col-span-12 md:col-span-6">
@@ -97,7 +98,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <x-elements.button-submit wire:loading.attr="disabled" wire:confirm="Are you sure your data is correct?">
                 <div wire:loading wire:target="saveInsert">
                     <span class="me-1 animate-spin inline-block size-3 border-[2px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
@@ -116,6 +117,16 @@
             </x-elements.button-submit>
 
         </form>
+        @else
+        <div class="grid grid-cols-2">
+            <div>
+                <x-elements.detail label="Status Approval">{{ $status_pencairan.' ('.date('d F Y, H:i:s', strtotime($data->updated_at)).')' }}</x-elements.detail> 
+                <x-elements.detail label="Jumlah Disetujui">Rp {{ number_format($data->jumlah_disetujui) }}</x-elements.detail>
+                <x-elements.detail label="Tanggal Pencairan">{{ date('d F Y, H:i:s', strtotime($data->tgl_pencairan)) }}</x-elements.detail>
+                <x-elements.detail label="Catatan Admin">{{ $catatan_approver }}</x-elements.detail>
+            </div>
+        </div>
+        @endif
     </div>
 
 </div>
