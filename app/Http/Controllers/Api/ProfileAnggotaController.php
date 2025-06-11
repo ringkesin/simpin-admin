@@ -114,7 +114,7 @@ class ProfileAnggotaController extends BaseController
                 'alamat_email' => 'nullable|email:rfc,dns|unique:p_anggota,email',
                 'nomor_hp' => 'nullable|string|max:15|unique:p_anggota,mobile',
                 'alamat' => 'nullable|string|max:1024',
-                'tgl_lahir' => ['nullable', Rule::date()->format('Y-m-d'),],
+                'tgl_lahir' => ['required', Rule::date()->format('Y-m-d'),],
                 // 'profile_photo' => 'nullable|image|mimes:jpg,png|max:2048',
             ],[
                 'p_anggota_id.required' => 'Anggota harus diisi',
