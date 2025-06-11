@@ -111,8 +111,17 @@ class ProfileAnggotaController extends BaseController
         try {
             $validator = Validator::make($request->all(), [
                 'p_anggota_id' => 'required|integer|exists:p_anggota,p_anggota_id',
-                'alamat_email' => 'nullable|email:rfc,dns|unique:p_anggota,email',
-                'nomor_hp' => 'nullable|string|max:15|unique:p_anggota,mobile',
+                'alamat_email' => [
+                    'nullable',
+                    'email:rfc,dns',
+                    Rule::unique('p_anggota', 'email')->ignore($request->p_anggota_id, 'p_anggota_id'),
+                ],
+                'nomor_hp' => [
+                    'nullable',
+                    'string',
+                    'max:15',
+                    Rule::unique('p_anggota', 'mobile')->ignore($request->p_anggota_id, 'p_anggota_id'),
+                ],
                 'alamat' => 'nullable|string|max:1024',
                 'tgl_lahir' => ['required', Rule::date()->format('Y-m-d'),],
                 // 'profile_photo' => 'nullable|image|mimes:jpg,png|max:2048',
@@ -135,7 +144,7 @@ class ProfileAnggotaController extends BaseController
 
             DB::beginTransaction();
 
-            $data = User::with(['anggota:nomor_anggota,nama,nik,email,mobile,alamat,tgl_lahir'])->find($user->id);
+            $data = User::find($user->id);
             $data->email = $request->alamat_email ?? $data->email;
             $data->mobile = $request->nomor_hp ?? $data->mobile;
             // if($request->file('profile_photo')){
@@ -145,12 +154,16 @@ class ProfileAnggotaController extends BaseController
             //     $path = $request->file('profile_photo')->store('avatar', 'public');
             //     $data->profile_photo_path = $path;
             // }
-            $data->anggota->email = $request->alamat_email ?? $data->anggota->email;
-            $data->anggota->mobile = $request->nomor_hp ?? $data->anggota->mobile;
-            $data->anggota->alamat = $request->alamat ?? $data->anggota->alamat;
-            $data->anggota->tgl_lahir = $request->tgl_lahir ?? $data->anggota->tgl_lahir;
             $data->updated_by = $user->id;
             $data->save();
+
+            $anggota = AnggotaModels::find($request->p_anggota_id);
+            $anggota->email = $request->alamat_email;
+            $anggota->mobile = $request->nomor_hp;
+            $anggota->alamat = $request->alamat;
+            $anggota->tgl_lahir = $request->tgl_lahir;
+            $anggota->updated_by = $user->id;
+            $anggota->save();
 
             $data->makeHidden([
                 'email_verified_at',
