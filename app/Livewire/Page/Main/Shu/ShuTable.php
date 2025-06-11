@@ -112,7 +112,7 @@ class ShuTable extends DataTableComponent
     public function delete()
     {
         foreach ($this->getSelected() as $id) {
-            TabunganModels::where('t_shu_id', $id)
+            ShuModels::where('t_shu_id', $id)
                 ->delete();
         }
         $this->clearSelected();
