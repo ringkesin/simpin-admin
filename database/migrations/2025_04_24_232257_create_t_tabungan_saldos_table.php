@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('p_anggota_id');
             $table->unsignedBigInteger('p_jenis_tabungan_id');
             $table->integer('tahun');
+            $table->double('total', 15, 2);
             $table->double('total_sd', 15, 2);
             $table->timestamps($precision = 0);
             $table->softDeletes($column = 'deleted_at', $precision = 0);

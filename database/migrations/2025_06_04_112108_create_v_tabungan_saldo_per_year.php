@@ -31,6 +31,8 @@ return new class extends Migration
                 a.p_jenis_tabungan_id,
                 b.nama,
                 a.tahun,
+                a.total,
+                _beautify_money(a.total) AS total_beautify,
                 a.total_sd,
                 _beautify_money(a.total_sd) AS total_sd_beautify 
             FROM 

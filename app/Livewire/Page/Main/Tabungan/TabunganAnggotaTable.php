@@ -8,6 +8,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Main\VTabunganJurnal;
 use App\Models\Main\TabunganJurnalModels;
 use App\Traits\MyHelpers;
+use App\Traits\MyAlert;
 use Illuminate\Support\Facades\DB;
 
 class TabunganAnggotaTable extends DataTableComponent
@@ -16,6 +17,7 @@ class TabunganAnggotaTable extends DataTableComponent
     public $p_anggota_id;
 
     use MyHelpers;
+    use MyAlert;
 
     public function configure(): void
     {
@@ -141,7 +143,16 @@ class TabunganAnggotaTable extends DataTableComponent
             'p_anggota_id' => $this->p_anggota_id,
             'tahun' => $tahun,
         ]);
-        $this->clearSelected();
+        // $this->clearSelected();
+
+        $redirect = route('main.tabungan.update', ['id' => $this->p_anggota_id]);
+        $this->sweetalert([
+            'icon' => 'success',
+            'confirmButtonText' => 'Okay',
+            'showCancelButton' => false,
+            'text' => 'Data Berhasil Dihapus !',
+            'redirectUrl' => $redirect
+        ]);
     }
 
     public function builder(): Builder

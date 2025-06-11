@@ -69,7 +69,15 @@ class TabunganAnggotaSaldoTable extends DataTableComponent
                 ->searchable(function($query, $searchTerm) {
                     $query->orWhere('nama', 'ilike', "%{$searchTerm}%");
                 }),
-            Column::make("Total s.d Tahun", "total_sd_beautify")
+            Column::make("Total Tahun Ini", "total_beautify")
+                ->sortable(function(Builder $query, string $direction) {
+                    return $query->orderBy('total', $direction);
+                })
+                ->searchable()
+                ->footer(function($rows) {
+                    return 'Total : ' . number_format($rows->sum('total'), 2, ',', '.');
+                }),
+            Column::make("Total s.d Tahun Ini", "total_sd_beautify")
                 ->sortable(function(Builder $query, string $direction) {
                     return $query->orderBy('total_sd', $direction);
                 })

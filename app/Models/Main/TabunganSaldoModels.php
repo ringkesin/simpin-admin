@@ -29,6 +29,7 @@ class TabunganSaldoModels extends Model
         'p_anggota_id',
         'p_jenis_tabungan_id',
         'tahun',
+        'total',
         'total_sd',
         'created_by',
         'updated_by',

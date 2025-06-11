@@ -12,6 +12,7 @@ class VTabunganSaldoPerYear extends Model
         'p_anggota_id' => 'integer',
         'tahun' => 'integer',
         'p_jenis_tabungan_id' => 'integer',
-        'total_sd' => 'float'
+        'total' => 'float',
+        'total_sd' => 'float',
     ];
 }
