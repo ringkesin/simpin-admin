@@ -9,6 +9,7 @@ use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
 use App\Models\Main\TabunganPengambilanModels;
 use App\Models\Main\TabunganSaldoModels;
+use App\Models\Main\TabunganJurnalModels;
 
 class PencairanTabunganApproval extends Component
 {
@@ -77,6 +78,22 @@ class PencairanTabunganApproval extends Component
                 'jumlah_disetujui' => $this->jumlah_disetujui,
                 'catatan_approver' => $this->catatan_approver
             ]);
+
+            if($this->status_pencairan == 'DISETUJUI') {
+                TabunganJurnalModels::create([
+                    'p_anggota_id' => $this->data->p_anggota_id,
+                    'p_jenis_tabungan_id' => $this->data->p_jenis_tabungan_id,
+                    'tgl_transaksi' => date('Y-m-d H:i:s'),
+                    'nilai' => '-'.$this->jumlah_disetujui,
+                    'nilai_sd' => 0,
+                    'catatan' => 'Pencairan Tabungan : '.$this->catatan_approver
+                ]);
+    
+                DB::select('SELECT _tabungan_recalculate(:p_anggota_id, :tahun)', [
+                    'p_anggota_id' => $this->data->p_anggota_id,
+                    'tahun' => date('Y'),
+                ]);   
+            }
 
             DB::commit();
 

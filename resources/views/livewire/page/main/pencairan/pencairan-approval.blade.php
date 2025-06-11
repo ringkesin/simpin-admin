@@ -11,7 +11,7 @@
         <span class="xs:block">Back to list page</span>
     </x-button>
 
-    <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200 mb-6">
+    <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200 mb-6">
         <h4 class='mb-6 text-lg font-bold'>Detail Request Pencairan</h4>
         <hr class='mb-6' />
         <div class="grid grid-cols-2">
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200 mb-6">
+    <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200 mb-6">
         <h4 class='mb-6 text-lg font-bold'>Form Approval</h4>
         <hr class='mb-6' />
         <form wire:submit="saveInsert">

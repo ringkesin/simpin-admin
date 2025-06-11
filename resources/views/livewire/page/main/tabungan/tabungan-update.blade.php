@@ -11,12 +11,12 @@
         <span class="xs:block">Back to list page</span>
     </x-button>
     
-    <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200 mb-6">
+    <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200 mb-6">
         <h4 class='mb-6 text-lg font-bold'>Saldo Tabungan</h4>
         <hr class='mb-6' />
         @livewire('page.main.tabungan.tabungan-anggota-saldo-table', ['p_anggota_id' => $id])
     </div>
-    <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200">
+    <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200">
         <h4 class='mb-6 text-lg font-bold'>Mutasi Tabungan</h4>
         <hr class='mb-6' />
         <form wire:submit="saveInsert">
