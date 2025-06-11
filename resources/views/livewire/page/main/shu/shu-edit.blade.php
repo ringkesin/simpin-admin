@@ -56,7 +56,7 @@
                         <div class="col-span-12 md:col-span-8">
                             <x-form.select-single name="tahun" wire:model.lazy="tahun" class="w-full md:w-2/4" id="tahun">
                                 <option value="">Pilih Tahun</option>
-                                @foreach($this->getYearRange(2) as $year)
+                                @foreach($this->getYearRange(5) as $year)
                                     <option value="{{ $year }}">{{ $year }}</option>
                                 @endforeach
                             </x-form.select-single>

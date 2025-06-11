@@ -67,8 +67,6 @@ class TagihanImport extends Component
         $this->validate([
             'files' => 'required|file|max:10240', // Maksimum 10MB per file
         ]);
-
-        $this->convertToJson();
     }
 
     public function convertToJson()
@@ -81,7 +79,7 @@ class TagihanImport extends Component
         // Pastikan data memiliki header yang benar
         if (count($rows) < 2) {
             session()->flash('error', 'File Excel tidak memiliki cukup data.');
-            return;
+            return 400;
         }
 
         // Hapus header dan simpan data ke array
@@ -112,11 +110,20 @@ class TagihanImport extends Component
         }
     }
 
-    public function uploadFiles()
+    public function uploadFilesOld()
     {
         // Simpan data ke database (contoh)
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
+            if($this->convertToJson() == 400) {
+                return $this->sweetalert([
+                    'icon' => 'error',
+                    'confirmButtonText'  => 'Okay',
+                    'showCancelButton' => false,
+                    'text' => 'File Excel tidak memiliki cukup data.',
+                ]);
+            }
 
             foreach ($this->data as $dataLoop) {
                 $dataFind = AnggotaModels::where('nomor_anggota', $dataLoop['nomor_anggota'])->firstOrFail();
@@ -162,6 +169,85 @@ class TagihanImport extends Component
 
         } catch (QueryException $e) {
             DB::rollBack();
+            $textError = $e->errorInfo[1] == 1062
+                ? 'Data gagal di update karena duplikat data, coba kembali.'
+                : 'Data gagal di update, coba kembali.';
+
+            return $this->sweetalert([
+                'icon' => 'error',
+                'confirmButtonText'  => 'Okay',
+                'showCancelButton' => false,
+                'text' => $textError,
+            ]);
+        }
+    }
+
+    public function uploadFiles()
+    {
+        // Simpan data ke database (contoh)
+        DB::beginTransaction();
+
+        try {
+            if($this->convertToJson() == 400) {
+                return $this->sweetalert([
+                    'icon' => 'error',
+                    'confirmButtonText'  => 'Okay',
+                    'showCancelButton' => false,
+                    'text' => 'File Excel tidak memiliki cukup data.',
+                ]);
+            }
+
+            // Ambil daftar referensi yang dibutuhkan
+            $nomorAnggotaList = collect($this->data)->pluck('nomor_anggota')->unique();
+            $nomorPinjamanList = collect($this->data)->pluck('nomor_pinjaman')->filter()->unique();
+            $statusCodeList = collect($this->data)->pluck('status_pembayaran')->filter()->unique();
+            $metodeCodeList = collect($this->data)->pluck('metode_pembayaran')->filter()->unique();
+
+            // Ambil semua data referensi sekaligus
+            $anggotaList = AnggotaModels::whereIn('nomor_anggota', $nomorAnggotaList)->get()->keyBy('nomor_anggota');
+            $pinjamanList = PinjamanModels::whereIn('nomor_pinjaman', $nomorPinjamanList)->get()->keyBy('nomor_pinjaman');
+            $statusList = StatusPembayaranModels::whereIn('status_code', $statusCodeList)->get()->keyBy('status_code');
+            $metodeList = MetodePembayaranModels::whereIn('metode_code', $metodeCodeList)->get()->keyBy('metode_code');
+
+            foreach ($this->data as $dataLoop) {
+                $anggota = $anggotaList[$dataLoop['nomor_anggota']] ?? null;
+                if (!$anggota) {
+                    continue; // skip jika tidak ada anggota
+                }
+
+                $payload = [
+                    'p_anggota_id' => $anggota->p_anggota_id,
+                    't_pinjaman_id' => $pinjamanList[$dataLoop['nomor_pinjaman']]?->t_pinjaman_id ?? null,
+                    'bulan' => $dataLoop['bulan'],
+                    'tahun' => $dataLoop['tahun'],
+                    'uraian' => $dataLoop['uraian'],
+                    'jumlah_tagihan' => $dataLoop['jumlah_tagihan'],
+                    'remarks' => $dataLoop['remarks'],
+                    'tgl_jatuh_tempo' => !empty($dataLoop['tgl_jatuh_tempo']) ? $dataLoop['tgl_jatuh_tempo'] : null,
+                    'p_status_pembayaran_id' => $statusList[$dataLoop['status_pembayaran']]?->p_status_pembayaran_id ?? null,
+                    'paid_at' => !empty($dataLoop['tgl_dibayar']) ? $dataLoop['tgl_dibayar'] : null,
+                    'jumlah_pembayaran' => $dataLoop['jumlah_dibayarkan'] ?? null,
+                    'p_metode_pembayaran_id' => $metodeList[$dataLoop['metode_pembayaran']]?->p_metode_pembayaran_id ?? null,
+                ];
+
+                if (!empty($dataLoop['t_tagihan_id'])) {
+                    TagihanModels::where('t_tagihan_id', $dataLoop['t_tagihan_id'])->update($payload);
+                } else {
+                    TagihanModels::create($payload);
+                }
+            }
+
+            return $this->sweetalert([
+                'icon' => 'success',
+                'confirmButtonText' => 'Okay',
+                'showCancelButton' => false,
+                'text' => 'Data Berhasil Disimpan !',
+                'redirectUrl' => route('main.tagihan.list'),
+            ]);
+
+        } catch (QueryException $e) {
+            DB::rollBack();
+            dd($e);
             $textError = $e->errorInfo[1] == 1062
                 ? 'Data gagal di update karena duplikat data, coba kembali.'
                 : 'Data gagal di update, coba kembali.';
