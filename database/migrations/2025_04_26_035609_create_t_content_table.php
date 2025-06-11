@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('t_content', function (Blueprint $table) {
-            $table->bigIncrements('t_content_id');
+            $table->uuid('t_content_id')->primary();
             $table->unsignedBigInteger('p_content_type_id');
             $table->string('thumbnail_path')->nullable();
             $table->string('content_title');
