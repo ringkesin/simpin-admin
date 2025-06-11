@@ -82,7 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/konten/tipe/{tipe_content}', [KontenController::class, 'getActiveByTipe']);
 
     Route::get('/profile', [ProfileAnggotaController::class, 'getProfile']);
-    Route::post('/profile', [ProfileAnggotaController::class, 'updateProfile']);
+    Route::put('/profile', [ProfileAnggotaController::class, 'updateProfile']);
     Route::post('/profile/update-photo', [ProfileAnggotaController::class, 'updateProfilePhoto']);
 
     Route::prefix('/chat')->group(function () {
