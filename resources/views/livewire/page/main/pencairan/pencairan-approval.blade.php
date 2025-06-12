@@ -33,7 +33,7 @@
     <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200 mb-6">
         <h4 class='mb-6 text-lg font-bold'>Form Approval</h4>
         <hr class='mb-6' />
-        @if($status_pencairan !== 'DISETUJUI')
+        @if($data->status_pengambilan !== 'DISETUJUI')
         <form wire:submit="saveInsert">
             <div class="grid grid-cols-12 gap-10 mb-2">
                 <div class="col-span-12 md:col-span-6">
@@ -63,7 +63,7 @@
                     </div>
                     <div class="grid items-start grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
-                            <x-form.label for="remarks">Catatan Admin</x-form.label>
+                            <x-form.label for="remarks">Catatan Admin <span class="text-red-500">*</span></x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
                             <div class="col-span-12 md:col-span-8">
@@ -120,7 +120,7 @@
         @else
         <div class="grid grid-cols-2">
             <div>
-                <x-elements.detail label="Status Approval">{{ $status_pencairan.' ('.date('d F Y, H:i:s', strtotime($data->updated_at)).')' }}</x-elements.detail> 
+                <x-elements.detail label="Status Approval">{{ $data->status_pengambilan.' ('.date('d F Y, H:i:s', strtotime($data->updated_at)).')' }}</x-elements.detail> 
                 <x-elements.detail label="Jumlah Disetujui">Rp {{ number_format($data->jumlah_disetujui) }}</x-elements.detail>
                 <x-elements.detail label="Tanggal Pencairan">{{ date('d F Y, H:i:s', strtotime($data->tgl_pencairan)) }}</x-elements.detail>
                 <x-elements.detail label="Catatan Admin">{{ $catatan_approver }}</x-elements.detail>
