@@ -319,4 +319,53 @@ class PinjamanController extends BaseController
         return $calTenor + $calMargin + $calAdmin;
     }
 
+    public function approvalPinjaman(Request $request) {
+        DB::beginTransaction();
+
+        try {
+            $validator = Validator::make($request->all(), [
+                't_pinjaman_id' => 'required',
+                'ri_jumlah_pinjaman' => 'required',
+                'p_status_pengajuan_id' => 'required',
+                'biaya_admin' => 'required|numeric',
+                'margin' => 'required|numeric',
+                'tenor' => 'required|numeric'
+
+            ],[
+                't_pinjaman_id' => 'Pinjaman ID required',
+                'ri_jumlah_pinjaman' => 'Jumlah Pinjaman yang Disetujui required',
+                'p_status_pengajuan_id.required' => 'Status Pengajuan required.',
+                'biaya_admin.required' => 'Biaya Admin required',
+                'margin.required' => 'Margin required',
+                'tenor.required' => 'Tenor required'
+            ]);
+
+            $user = $request->user();
+
+            $post = PinjamanModels::where('t_pinjaman_id', $request->t_pinjaman_id)->update([
+                'ri_jumlah_pinjaman' => $request->ri_jumlah_pinjaman,
+                'p_status_pengajuan_id' => $request->p_status_pengajuan_id,
+                'biaya_admin' => $request->biaya_admin,
+                'margin' => $request->margin,
+                'tenor' => $request->tenor,
+                'remarks' => $request->remarks,
+                'tgl_pencairan' => $request->tgl_pencairan ? $request->tgl_pencairan : NULL,
+                'tgl_pelunasan' => $request->tgl_pelunasan ? $request->tgl_pelunasan : NULL,
+                'updated_by' => $user->id
+            ]);
+
+            DB::commit();
+
+            if($post) {
+                return $this->sendResponse([], 'Approval Pinjaman Berhasil Disubmit');
+            } else {
+                return response()->json(['message' => 'Approval Pinjaman Gagal Disubmit.'], 403);
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+            \Log::error('Error : ' . $e->getMessage());
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

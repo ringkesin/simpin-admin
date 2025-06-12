@@ -210,8 +210,6 @@ class PinjamanShow extends Component
             'tenor.required' => 'Tenor required'
         ]);
 
-        dd($this->margin);
-
         try {
             $post = PinjamanModels::where('t_pinjaman_id', $this->id)->update([
                 'ri_jumlah_pinjaman' => $this->ri_jumlah_pinjaman,

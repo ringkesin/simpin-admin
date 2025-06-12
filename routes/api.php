@@ -45,10 +45,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/chat-reference-table', [MasterChatReferenceTableController::class, 'getAll']);
     });
 
-    Route::post('/pinjaman/pengajuan', [PinjamanController::class, 'formPengajuan']);
-    Route::post('/pinjaman/list', [PinjamanController::class, 'listPengajuan']);
-    Route::get('/pinjaman/preview/{id}', [PinjamanController::class, 'getPengajuanById'])->where('id', '[0-9]+');
-    Route::delete('/pinjaman/delete/{id}', [PinjamanController::class, 'deletePengajuanById'])->where('id', '[0-9]+');
+    Route::prefix('/pinjaman')->group(function () {
+        Route::post('/pengajuan', [PinjamanController::class, 'formPengajuan']);
+        Route::post('/list', [PinjamanController::class, 'listPengajuan']);
+        Route::get('/preview/{id}', [PinjamanController::class, 'getPengajuanById'])->where('id', '[0-9]+');
+        Route::delete('/delete/{id}', [PinjamanController::class, 'deletePengajuanById'])->where('id', '[0-9]+');
+        Route::post('/approval', [PinjamanController::class, 'approvalPinjaman']);
+    });
 
     Route::prefix('/tabungan')->group(function () {
         Route::post('/mutasi/list', [TabunganController::class, 'getMutasi']);
