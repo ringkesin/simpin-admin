@@ -252,6 +252,9 @@ class ShuImport extends Component
                         'p_anggota_id' => $anggota->p_anggota_id,
                         'tahun' => $dataLoop['tahun'],
                         'shu_diterima' => $dataLoop['shu_diterima'],
+                        'shu_dibagi' => 0,
+                        'shu_ditabung' => 0,
+                        'shu_tahun_lalu' => 0,
                         'updated_at' => now()
                     ];
 
@@ -290,6 +293,7 @@ class ShuImport extends Component
             ]);
         } catch (QueryException $e) {
             DB::rollBack();
+            dd($e);
             $textError = '';
             if($e->errorInfo[1] == 1062) {
                 $textError = 'Data gagal di update karena duplikat data, coba kembali.';
