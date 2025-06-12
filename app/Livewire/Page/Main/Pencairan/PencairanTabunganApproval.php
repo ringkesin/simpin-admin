@@ -61,7 +61,7 @@ class PencairanTabunganApproval extends Component
             'status_pencairan' => 'required',
             'tgl_pencairan' => 'nullable|date|date_format:Y-m-d',
             'jumlah_disetujui' => 'required|numeric',
-            'catatan_approver' =>  'nullable|max:2024',
+            'catatan_approver' =>  'required|max:2024',
         ], [
             'status_pencairan.required' => 'Status Pencairan harus diisi.',
             'tgl_pencairan.required' => 'Tgl. Pencairan harus diisi.',
