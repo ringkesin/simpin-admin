@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('t_tagihan', function (Blueprint $table) {
             $table->ulid('t_tagihan_id')->primary();
             $table->unsignedBigInteger('p_anggota_id');
-            $table->unsignedBigInteger('t_pinjaman_id');
+            $table->unsignedBigInteger('t_pinjaman_id')->nullable();
             $table->mediumText('uraian');
             $table->double('jumlah_tagihan', 15, 2);
             $table->mediumText('remarks')->nullable();
