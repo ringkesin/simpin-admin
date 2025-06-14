@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Exception;
 
 use App\Models\Master\AnggotaModels;
+use App\Models\Master\AnggotaAtributModels;
 use App\Models\User;
 
 class ProfileAnggotaController extends BaseController
@@ -230,6 +231,136 @@ class ProfileAnggotaController extends BaseController
             DB::commit();
 
             return $this->sendResponse(['update_photo_profile' => $data], 'Update Photo Profile Berhasil');
+        } catch (Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updateDoc(Request $request) {
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), [
+                'attr_no_ktp' => 'nullable',
+                'attachment_ktp' => 'nullable|file|mimes:jpg,png|max:2048',
+                'attr_no_kartu_pegawai' => 'nullable',
+                'attachment_kartu_pegawai' => 'nullable|file|mimes:jpg,png|max:2048',
+                'attr_no_kartu_keluarga' => 'nullable',
+                'attachment_kartu_keluarga' => 'nullable|file|mimes:jpg,png|max:2048',
+                'attr_npwp' => 'nullable',
+                'attachment_npwp' => 'nullable|file|mimes:jpg,png|max:2048'
+            ]);
+
+            $user = $request->user();
+
+            $p_anggota_id = $user->anggota?->p_anggota_id;
+
+            if(!$p_anggota_id) {
+                return response()->json(['message' => 'Tidak diizinkan update profile.'], 403);
+            }
+
+            // Chek attribut
+            $checkAtt = AnggotaAtributModels::where('p_anggota_id', $p_anggota_id)->get();
+
+            if($request->file('attachment_ktp')) {
+                $ktpPath = $request->file('attachment_ktp')->store('uploads/ktp', 'local');
+
+                $ktpAttribute = $checkAtt->firstWhere('atribut_kode', 'ktp');
+
+                if($ktpAttribute) {
+                    AnggotaAtributModels::where([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'ktp'
+                    ])
+                    ->update([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_value' => $request->attr_no_ktp,
+                        'atribut_attachment' => $ktpPath
+                    ]);
+                } else {
+                    AnggotaAtributModels::create([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'ktp',
+                        'atribut_value' => $request->attr_no_ktp,
+                        'atribut_attachment' => $ktpPath
+                    ]);
+                }
+            }
+
+            if($request->file('attachment_kartu_pegawai')) {
+                $kartuPegawaiPath = $request->file('attachment_kartu_pegawai')->store('uploads/kartu_pegawai', 'local');
+                $kartuPegawaiAttribute = $checkAtt->firstWhere('atribut_kode', 'kartu_pegawai');
+
+                if($kartuPegawaiAttribute) {
+                    AnggotaAtributModels::where([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'kartu_pegawai'
+                    ])
+                    ->update([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_value' => $request->attr_no_kartu_pegawai,
+                        'atribut_attachment' => $kartuPegawaiPath
+                    ]);
+                } else {
+                    AnggotaAtributModels::create([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'kartu_pegawai',
+                        'atribut_value' => $request->attr_no_kartu_pegawai,
+                        'atribut_attachment' => $kartuPegawaiPath
+                    ]);
+                }
+            }
+
+            if($request->file('attachment_kartu_keluarga')) {
+                $kkPath = $request->file('attachment_kartu_keluarga')->store('uploads/kartu_keluarga', 'local');
+                $kkAttribute = $checkAtt->firstWhere('atribut_kode', 'kartu_keluarga');
+
+                if($kkAttribute) {
+                    AnggotaAtributModels::where([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'kartu_keluarga'
+                    ])
+                    ->update([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_value' => $request->attr_no_kartu_keluarga,
+                        'atribut_attachment' => $kkPath
+                    ]);
+                } else {
+                    AnggotaAtributModels::create([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'kartu_keluarga',
+                        'atribut_value' => $request->attr_no_kartu_keluarga,
+                        'atribut_attachment' => $kkPath
+                    ]);
+                }
+            }
+
+            if($request->file('attachment_npwp')) {
+                $npwpPath = $request->file('attachment_npwp')->store('uploads/npwp', 'local');
+                $npwpAttribute = $checkAtt->firstWhere('atribut_kode', 'npwp');
+
+                if($npwpAttribute) {
+                    AnggotaAtributModels::where([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'npwp'
+                    ])
+                    ->update([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_value' => $request->attr_npwp,
+                        'atribut_attachment' => $npwpPath
+                    ]);
+                } else {
+                    AnggotaAtributModels::create([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'npwp',
+                        'atribut_value' => $request->attr_npwp,
+                        'atribut_attachment' => $npwpPath
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return $this->sendResponse([], 'Update Dokumen Profile Berhasil');
         } catch (Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
