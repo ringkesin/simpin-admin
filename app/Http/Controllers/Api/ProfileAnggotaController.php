@@ -367,6 +367,23 @@ class ProfileAnggotaController extends BaseController
             // Check attribut
             $checkAtt = AnggotaAtributModels::where('p_anggota_id', $p_anggota_id)->get();
 
+            $anggota = AnggotaModels::find($p_anggota_id);
+            $checkUpdate = false;
+
+            if($request->attr_no_ktp) {
+                $anggota->ktp =  $request->attr_no_ktp;
+                $checkUpdate = true;
+            }
+
+            if($request->attr_no_kartu_pegawai) {
+                $anggota->nik =  $request->attr_no_kartu_pegawai;
+                $checkUpdate = true;
+            }
+
+            if($checkUpdate) {
+                $anggota->save();
+            }
+
             if($request->file('attachment_ktp')) {
                 $ktpPath = $request->file('attachment_ktp')->store('uploads/ktp', 'local');
 
