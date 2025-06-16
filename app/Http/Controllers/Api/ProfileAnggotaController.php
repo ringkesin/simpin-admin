@@ -393,7 +393,7 @@ class ProfileAnggotaController extends BaseController
             }
 
             if($request->file('attachment_ktp')) {
-                $ktpPath = $request->file('attachment_ktp')->store('uploads/ktp', 'local');
+                $ktpPath = $request->file('attachment_ktp')->store('uploads/ktp', 'kkba_simpin');
 
                 $ktpAttribute = $checkAtt->firstWhere('atribut_kode', 'ktp');
 
@@ -418,7 +418,7 @@ class ProfileAnggotaController extends BaseController
             }
 
             if($request->file('attachment_kartu_pegawai')) {
-                $kartuPegawaiPath = $request->file('attachment_kartu_pegawai')->store('uploads/kartu_pegawai', 'local');
+                $kartuPegawaiPath = $request->file('attachment_kartu_pegawai')->store('uploads/kartu_pegawai', 'kkba_simpin');
                 $kartuPegawaiAttribute = $checkAtt->firstWhere('atribut_kode', 'kartu_pegawai');
 
                 if($kartuPegawaiAttribute) {
@@ -442,7 +442,7 @@ class ProfileAnggotaController extends BaseController
             }
 
             if($request->file('attachment_kartu_keluarga')) {
-                $kkPath = $request->file('attachment_kartu_keluarga')->store('uploads/kartu_keluarga', 'local');
+                $kkPath = $request->file('attachment_kartu_keluarga')->store('uploads/kartu_keluarga', 'kkba_simpin');
                 $kkAttribute = $checkAtt->firstWhere('atribut_kode', 'kartu_keluarga');
 
                 if($kkAttribute) {
@@ -466,7 +466,7 @@ class ProfileAnggotaController extends BaseController
             }
 
             if($request->file('attachment_npwp')) {
-                $npwpPath = $request->file('attachment_npwp')->store('uploads/npwp', 'local');
+                $npwpPath = $request->file('attachment_npwp')->store('uploads/npwp', 'kkba_simpin');
                 $npwpAttribute = $checkAtt->firstWhere('atribut_kode', 'npwp');
 
                 if($npwpAttribute) {
@@ -490,7 +490,7 @@ class ProfileAnggotaController extends BaseController
             }
 
             if($request->file('attachment_buku_nikah')) {
-                $bukuNikahPath = $request->file('attachment_buku_nikah')->store('uploads/buku_nikah', 'local');
+                $bukuNikahPath = $request->file('attachment_buku_nikah')->store('uploads/buku_nikah', 'kkba_simpin');
                 $bukuNikahAttribute = $checkAtt->firstWhere('atribut_kode', 'buku_nikah');
 
                 if($bukuNikahAttribute) {
