@@ -291,7 +291,7 @@ class ProfileAnggotaController extends BaseController
 
             if($kartuPegawaiAttribute) {
                 $fileKPUrl = NULL;
-                if ($kartuPegawaiAttribute['atribut_attachment'] && Storage::exists($kartuPegawaiAttribute['atribut_attachment'])) {
+                if ($kartuPegawaiAttribute['atribut_attachment'] && Storage::disk('kkba_simpin')->exists($kartuPegawaiAttribute['atribut_attachment'])) {
                     $fileKPUrl = URL::temporarySignedRoute(
                         'secure-file', // Route name
                         now()->addMinutes(1), // Expiration time
@@ -304,7 +304,7 @@ class ProfileAnggotaController extends BaseController
 
             if($kkAttribute) {
                 $fileKKUrl = NULL;
-                if ($kkAttribute['atribut_attachment'] && Storage::exists($kkAttribute['atribut_attachment'])) {
+                if ($kkAttribute['atribut_attachment'] && Storage::disk('kkba_simpin')->exists($kkAttribute['atribut_attachment'])) {
                     $fileKKUrl = URL::temporarySignedRoute(
                         'secure-file', // Route name
                         now()->addMinutes(1), // Expiration time
@@ -317,7 +317,7 @@ class ProfileAnggotaController extends BaseController
 
             if($npwpAttribute) {
                 $fileNpwpUrl = NULL;
-                if ($npwpAttribute['atribut_attachment'] && Storage::exists($npwpAttribute['atribut_attachment'])) {
+                if ($npwpAttribute['atribut_attachment'] && Storage::disk('kkba_simpin')->exists($npwpAttribute['atribut_attachment'])) {
                     $fileNpwpUrl = URL::temporarySignedRoute(
                         'secure-file', // Route name
                         now()->addMinutes(1), // Expiration time
@@ -330,7 +330,7 @@ class ProfileAnggotaController extends BaseController
 
             if($bukuNikahAttribute) {
                 $fileBukuNikahUrl = NULL;
-                if ($bukuNikahAttribute['atribut_attachment'] && Storage::exists($bukuNikahAttribute['atribut_attachment'])) {
+                if ($bukuNikahAttribute['atribut_attachment'] && Storage::disk('kkba_simpin')->exists($bukuNikahAttribute['atribut_attachment'])) {
                     $fileBukuNikahUrl = URL::temporarySignedRoute(
                         'secure-file', // Route name
                         now()->addMinutes(1), // Expiration time
