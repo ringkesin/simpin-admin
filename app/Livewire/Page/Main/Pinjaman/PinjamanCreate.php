@@ -153,7 +153,7 @@ class PinjamanCreate extends Component
         try {
             DB::beginTransaction();
 
-            $doc_slip_gaji_path = $this->doc_slip_gaji->store('uploads/slip_gaji', 'local');
+            $doc_slip_gaji_path = $this->doc_slip_gaji->store('uploads/slip_gaji', 'kkba_simpin');
 
             $pinjaman = PinjamanModels::create([
                 'nomor_pinjaman' => $this->generateNomorTransaksi($this->p_jenis_pinjaman_id),

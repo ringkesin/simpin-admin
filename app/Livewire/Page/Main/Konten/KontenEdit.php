@@ -93,7 +93,7 @@ class KontenEdit extends Component
             $file_thumbnail = '';
             if($this->thumbnail_path != $this->thumbnail_path_old) {
                 $file = $this->thumbnail_path;
-                $file_thumbnail = $file->store('uploads/content', 'local');
+                $file_thumbnail = $file->store('uploads/content', 'kkba_simpin');
             } else {
                 $file_thumbnail = $this->thumbnail_path_old;
             }

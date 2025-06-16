@@ -76,7 +76,7 @@ class PinjamanController extends BaseController
             // $doc_doc_ktp_suami_istri_path = $request->file('doc_doc_ktp_suami_istri_path') ? $request->file('doc_ktp_suami_istri')->store('uploads/ktp_suami_istri', 'local') : NULL;
             // $doc_kk_path = $request->file('doc_kk') ? $request->file('doc_kk')->store('uploads/kartu_keluarga', 'local') : NULL;
             // $doc_kartu_anggota_path = $request->file('doc_kartu_anggota') ? $request->file('doc_kartu_anggota')->store('uploads/kartu_anggota', 'local') : NULL;
-            $doc_slip_gaji_path = $request->file('doc_slip_gaji')->store('uploads/slip_gaji', 'local');
+            $doc_slip_gaji_path = $request->file('doc_slip_gaji')->store('uploads/slip_gaji', 'kkba_simpin');
 
             $pinjaman = PinjamanModels::create([
                 'nomor_pinjaman' => $this->generateNomorTransaksi($request->p_jenis_pinjaman_id),

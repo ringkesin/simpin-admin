@@ -16,17 +16,17 @@ class FileController extends BaseController
             return $this->sendError('Expired', ['error' => 'Link telah expired'], 403);
         }
 
-        if (!Storage::exists($filePath)) {
+        if (!Storage::disk('kkba_simpin')->exists($filePath)) {
             return $this->sendError('File Not Found', ['error' => 'File tidak ditemukan.'], 404);
         }
 
         // Get file MIME type
-        $mimeType = Storage::mimeType($filePath);
+        $mimeType = Storage::disk('kkba_simpin')->mimeType($filePath);
 
         try {
             // Attempt to stream the file
             return new StreamedResponse(function () use ($filePath) {
-                $stream = Storage::readStream($filePath);
+                $stream = Storage::disk('kkba_simpin')->readStream($filePath);
                 fpassthru($stream);
                 fclose($stream);
             }, 200, [
@@ -35,7 +35,7 @@ class FileController extends BaseController
             ]);
         } catch (\Exception $e) {
             // If streaming fails, fallback to download
-            return Storage::download($filePath);
+            return Storage::disk('kkba_simpin')->download($filePath);
         }
 
         // return Storage::download($filePath);

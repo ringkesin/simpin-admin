@@ -57,8 +57,8 @@ class MasterAnggotaController extends BaseController
             $lastAnggota = AnggotaModels::latest('nomor_anggota')->first();
             $newNomorAnggota = $lastAnggota ? $lastAnggota->nomor_anggota + 1 : 100001; 
 
-            $ktpPath = $request->file('attachment_ktp')->store('uploads/ktp', 'local');
-            $employeeCardIdPath = $request->file('attachment_kartu_pegawai')->store('uploads/kartu_pegawai', 'local');
+            $ktpPath = $request->file('attachment_ktp')->store('uploads/ktp', 'kkba_simpin');
+            $employeeCardIdPath = $request->file('attachment_kartu_pegawai')->store('uploads/kartu_pegawai', 'kkba_simpin');
 
             $anggota = AnggotaModels::create([
                 'nama' => $request->nama,

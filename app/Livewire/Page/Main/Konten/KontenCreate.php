@@ -81,7 +81,7 @@ class KontenCreate extends Component
             $file_thumbnail = '';
             if($this->thumbnail_path) {
                 $file = $this->thumbnail_path;
-                $file_thumbnail = $file->store('uploads/content', 'local');
+                $file_thumbnail = $file->store('uploads/content', 'kkba_simpin');
             }
 
             $post = ContentModels::create([

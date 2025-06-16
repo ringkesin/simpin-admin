@@ -105,7 +105,7 @@
                             <div class="flex gap-5">
                                 {{-- <div class='p-1 border rounded-2xl border-slate-200 dark:border-slate-600'> --}}
                                     @php
-                                        $pp = ($profile_photo_path != 'avatar/blank-avatar.png') ? '/storage/'.$profile_photo_path : asset('assets/'.$profile_photo_path);
+                                        $pp = ($profile_photo_path != 'avatar/blank-avatar.png') ? \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($profile_photo_path, now()->addMinutes(1)) : asset('assets/'.$profile_photo_path);
                                     @endphp
                                     <img class='rounded-xl ' src="{{ $pp }}" width="100">
                                 {{-- </div> --}}

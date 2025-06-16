@@ -59,7 +59,7 @@ class ProfileAnggotaController extends BaseController
                         $attribute = [];
                         foreach($profile->atribut as $row) {
                             $fileUrl = NULL;
-                            if ($row['atribut_attachment'] && Storage::exists($row['atribut_attachment'])) {
+                            if ($row['atribut_attachment'] && Storage::disk('kkba_simpin')->exists($row['atribut_attachment'])) {
                                 $fileUrl = URL::temporarySignedRoute(
                                     'secure-file', // Route name
                                     now()->addMinutes(1), // Expiration time
@@ -101,7 +101,15 @@ class ProfileAnggotaController extends BaseController
                 return $this->sendError('Access denied', ['error' => 'Anda tidak dapat mengakses data ini'], 401);
             }
 
-            return $this->sendResponse(['profile_user' => $userData,'profile_anggota' => $profile], 'Data berhasil digenerate.');
+            $profile_user = $userData->toArray();
+            $profile_user['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($userData->profile_photo_path, now()->addMinutes(5));
+
+
+            return $this->sendResponse([
+                'profile_user' => $profile_user,
+                'profile_anggota' => $profile], 
+                'Data berhasil digenerate.'
+            );
         } catch (\Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
@@ -208,9 +216,9 @@ class ProfileAnggotaController extends BaseController
 
             if($request->file('profile_photo')){
                 if($data->profile_photo_path !== 'avatar/blank-avatar.png'){
-                    Storage::disk('public')->delete($data->profile_photo_path);
+                    Storage::disk('kkba_simpin')->delete($data->profile_photo_path);
                 }
-                $path = $request->file('profile_photo')->store('avatar', 'public');
+                $path = $request->file('profile_photo')->store('avatar', 'kkba_simpin');
                 $data->profile_photo_path = $path;
             }
 

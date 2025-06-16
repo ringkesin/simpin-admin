@@ -34,7 +34,7 @@
             <x-elements.detail label="Mobile number">{{ $this->checkVal($loadData['mobile'],'-') }}</x-elements.detail>
             <x-elements.detail label="Profile photo">
                 @php
-                    $pp = ($loadData['profile_photo_path'] != 'avatar/blank-avatar.png') ? '/storage/'.$loadData['profile_photo_path'] : asset('assets/'.$loadData['profile_photo_path']);
+                    $pp = ($loadData['profile_photo_path'] != 'avatar/blank-avatar.png') ? \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($loadData['profile_photo_path'], now()->addMinutes(1)) : asset('assets/'.$loadData['profile_photo_path']);
                 @endphp
                 <img class='rounded-2xl' src="{{ $pp }}" width="130">
             </x-elements.detail>
