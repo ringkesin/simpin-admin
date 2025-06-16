@@ -108,7 +108,6 @@ class TagihanEdit extends Component
     public function saveUpdate() {
         $validated = $this->validate([
             'p_anggota_id' => 'required',
-            't_pinjaman_id' => 'required',
             'bulan' => 'required',
             'tahun' => 'required',
             'uraian' =>  'required',
@@ -116,7 +115,6 @@ class TagihanEdit extends Component
             'p_status_pembayaran_id' => 'required'
         ], [
             'p_anggota_id' => 'Nama Anggota required',
-            't_pinjaman_id' => 'Relasi Pinjaman required.',
             'bulan' => 'Bulan required',
             'tahun.required' => 'Tahun required.',
             'uraian.required' => 'Uraian required.',

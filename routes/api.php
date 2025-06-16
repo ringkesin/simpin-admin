@@ -84,9 +84,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/konten/{id}', [KontenController::class, 'getById']);
     Route::get('/konten/tipe/{tipe_content}', [KontenController::class, 'getActiveByTipe']);
 
-    Route::get('/profile', [ProfileAnggotaController::class, 'getProfile']);
-    Route::put('/profile', [ProfileAnggotaController::class, 'updateProfile']);
-    Route::post('/profile/update-photo', [ProfileAnggotaController::class, 'updateProfilePhoto']);
+    Route::prefix('/profile')->group(function () {
+        Route::get('/', [ProfileAnggotaController::class, 'getProfile']);
+        Route::get('/atribut', [ProfileAnggotaController::class, 'getAttrDoc']);
+        Route::put('/', [ProfileAnggotaController::class, 'updateProfile']);
+        Route::post('/update-photo', [ProfileAnggotaController::class, 'updateProfilePhoto']);
+        Route::post('/update-doc', [ProfileAnggotaController::class, 'updateDoc']);
+    });
 
     Route::prefix('/chat')->group(function () {
         Route::post('/ticket/add', [ChatController::class, 'createTicket']);

@@ -70,6 +70,7 @@ class SimulasiPinjamanController extends BaseController
             if(!empty($simulasi)) {
                 $margin = $simulasi->margin;
                 $angsuran = ($jumlah_pinjaman + ($jumlah_pinjaman * ($margin/100))) / $simulasi->tenor;
+                $totalPengembalian = $angsuran * $simulasi->tenor;
 
                 $result = [
                     'tahun' => $simulasi->tahun_margin,
@@ -77,7 +78,8 @@ class SimulasiPinjamanController extends BaseController
                     'margin' => (float)$margin,
                     'biaya_admin' => (float)$simulasi->biaya_admin,
                     'biaya_admin_rp' => (float)$biaya_admin_rp,
-                    'angsuran' => (float) number_format($angsuran, 2, '.', '')
+                    'angsuran' => (float) number_format($angsuran, 2, '.', ''),
+                    'total_pengembalian' => $totalPengembalian
                 ];
             } else {
                 return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => 'Data Not Found'], 404);

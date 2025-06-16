@@ -5,6 +5,7 @@ namespace App\Livewire\Page\Main\Tagihan;
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TagihanTemplateExport;
@@ -209,6 +210,9 @@ class TagihanImport extends Component
             $statusList = StatusPembayaranModels::whereIn('status_code', $statusCodeList)->get()->keyBy('status_code');
             $metodeList = MetodePembayaranModels::whereIn('metode_code', $metodeCodeList)->get()->keyBy('metode_code');
 
+            $payloads = [];
+            $now = now();
+
             foreach ($this->data as $dataLoop) {
                 $anggota = $anggotaList[$dataLoop['nomor_anggota']] ?? null;
                 if (!$anggota) {
@@ -216,6 +220,7 @@ class TagihanImport extends Component
                 }
 
                 $payload = [
+                    't_tagihan_id' => $dataLoop['t_tagihan_id'] ?? substr(str_replace('-', '', Str::uuid()->toString()), 0, 26),
                     'p_anggota_id' => $anggota->p_anggota_id,
                     't_pinjaman_id' => $pinjamanList[$dataLoop['nomor_pinjaman']]?->t_pinjaman_id ?? null,
                     'bulan' => $dataLoop['bulan'],
@@ -224,18 +229,26 @@ class TagihanImport extends Component
                     'jumlah_tagihan' => $dataLoop['jumlah_tagihan'],
                     'remarks' => $dataLoop['remarks'],
                     'tgl_jatuh_tempo' => !empty($dataLoop['tgl_jatuh_tempo']) ? $dataLoop['tgl_jatuh_tempo'] : null,
-                    'p_status_pembayaran_id' => $statusList[$dataLoop['status_pembayaran']]?->p_status_pembayaran_id ?? null,
+                    'p_status_pembayaran_id' => $statusList[$dataLoop['status_pembayaran']]?->p_status_pembayaran_id ?? 2,
                     'paid_at' => !empty($dataLoop['tgl_dibayar']) ? $dataLoop['tgl_dibayar'] : null,
                     'jumlah_pembayaran' => $dataLoop['jumlah_dibayarkan'] ?? null,
                     'p_metode_pembayaran_id' => $metodeList[$dataLoop['metode_pembayaran']]?->p_metode_pembayaran_id ?? null,
                 ];
 
-                if (!empty($dataLoop['t_tagihan_id'])) {
-                    TagihanModels::where('t_tagihan_id', $dataLoop['t_tagihan_id'])->update($payload);
-                } else {
-                    TagihanModels::create($payload);
-                }
+                $payloads[] = $payload;
             }
+
+            // dd($payloads);
+
+            if (!empty($payloads)) {
+                TagihanModels::upsert($payloads, ['t_tagihan_id'], [
+                    'p_anggota_id', 't_pinjaman_id', 'bulan', 'tahun', 'uraian', 'jumlah_tagihan',
+                    'remarks', 'tgl_jatuh_tempo', 'p_status_pembayaran_id', 'paid_at', 'jumlah_pembayaran',
+                    'p_metode_pembayaran_id', 'updated_at'
+                ]);
+            }
+
+            DB::commit();
 
             return $this->sweetalert([
                 'icon' => 'success',
@@ -247,6 +260,7 @@ class TagihanImport extends Component
 
         } catch (QueryException $e) {
             DB::rollBack();
+            dd($e);
             $textError = $e->errorInfo[1] == 1062
                 ? 'Data gagal di update karena duplikat data, coba kembali.'
                 : 'Data gagal di update, coba kembali.';
