@@ -101,7 +101,15 @@ class ProfileAnggotaController extends BaseController
                 return $this->sendError('Access denied', ['error' => 'Anda tidak dapat mengakses data ini'], 401);
             }
 
-            return $this->sendResponse(['profile_user' => $userData,'profile_anggota' => $profile], 'Data berhasil digenerate.');
+            $profile_user = $userData->toArray();
+            $profile_user['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('s3')->temporaryUrl($userData->profile_photo_path, now()->addMinutes(5));
+
+
+            return $this->sendResponse([
+                'profile_user' => $profile_user,
+                'profile_anggota' => $profile], 
+                'Data berhasil digenerate.'
+            );
         } catch (\Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
