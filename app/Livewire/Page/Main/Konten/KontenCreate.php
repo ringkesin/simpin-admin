@@ -62,12 +62,15 @@ class KontenCreate extends Component
             'p_content_type_id' => 'required',
             'content_title' => 'required',
             'valid_from' => 'required|date',
+            'thumbnail_path' => 'nullable|file|mimes:jpg,png|max:2048'
         ], [
             'p_content_type_id' => 'Tipe Konten required',
             'content_title' => 'Judul Konten required',
             'valid_from.required' => 'Valid from required.',
             'valid_from.date' => 'Format Valid from must "yyyy/mm/dd".',
             'valid_to.date' => 'Format Valid until must "yyyy/mm/dd".',
+            'thumbnail_path.file' => 'Format Thumbnail harus file.',
+            'thumbnail_path.max' => 'Size Thumbnail Maximal 2 MB.'
         ]);
 
         if($this->valid_to == "") {
