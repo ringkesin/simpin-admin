@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends BaseController
 {
@@ -110,8 +111,12 @@ class AuthController extends BaseController
                 ]);
             }
 
+            $overwriteUser = $user->toArray();
+            $overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->url($user->profile_photo_path);
+            //$overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($user->profile_photo_path, now()->addMinutes(60));
+
             return $this->sendResponse(
-                ['token' => $token, 'role' => $roleCode, 'anggota'=> $user->anggota, 'user' => $user, ], 
+                ['token' => $token, 'role' => $roleCode, 'anggota'=> $user->anggota, 'user' => $overwriteUser, ], 
                 'Login successful.'
             );
         }
