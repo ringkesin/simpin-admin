@@ -102,7 +102,7 @@ class ProfileAnggotaController extends BaseController
             }
 
             $profile_user = $userData->toArray();
-            $profile_user['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('s3')->temporaryUrl($userData->profile_photo_path, now()->addMinutes(5));
+            $profile_user['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($userData->profile_photo_path, now()->addMinutes(5));
 
 
             return $this->sendResponse([
