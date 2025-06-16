@@ -70,7 +70,7 @@ class SimulasiPinjamanController extends BaseController
             if(!empty($simulasi)) {
                 $margin = $simulasi->margin;
                 if($request->jenis_pinjaman_id == 1) {
-                    $angsuran = (((($margin + $simulasi->biaya_admin) / 100) * $jumlah_pinjaman) / $simulasi->tenor );
+                    $angsuran = ($jumlah_pinjaman + ($jumlah_pinjaman * (($simulasi->biaya_admin + $margin) / 100))) / $simulasi->tenor;
                 } else{
                     $angsuran = ($jumlah_pinjaman + ($jumlah_pinjaman * ($margin/100))) / $simulasi->tenor;
                 }
