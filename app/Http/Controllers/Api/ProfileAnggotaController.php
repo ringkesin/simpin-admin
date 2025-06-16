@@ -58,7 +58,7 @@ class ProfileAnggotaController extends BaseController
                         $attribute = [];
                         foreach($profile->atribut as $row) {
                             $fileUrl = NULL;
-                            if ($row['atribut_attachment'] && Storage::exists($row['atribut_attachment'])) {
+                            if ($row['atribut_attachment'] && Storage::disk('kkba_simpin')->exists($row['atribut_attachment'])) {
                                 $fileUrl = URL::temporarySignedRoute(
                                     'secure-file', // Route name
                                     now()->addMinutes(1), // Expiration time
@@ -207,9 +207,9 @@ class ProfileAnggotaController extends BaseController
 
             if($request->file('profile_photo')){
                 if($data->profile_photo_path !== 'avatar/blank-avatar.png'){
-                    Storage::disk('public')->delete($data->profile_photo_path);
+                    Storage::disk('kkba_simpin')->delete($data->profile_photo_path);
                 }
-                $path = $request->file('profile_photo')->store('avatar', 'public');
+                $path = $request->file('profile_photo')->store('avatar', 'kkba_simpin');
                 $data->profile_photo_path = $path;
             }
 

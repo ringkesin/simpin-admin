@@ -40,7 +40,7 @@ class KontenShow extends Component
         $data = ContentModels::find($id);
         $this->loadData = $data;
         $fileUrl = null;
-        if ($this->loadData['thumbnail_path'] && Storage::exists($this->loadData['thumbnail_path'])) {
+        if ($this->loadData['thumbnail_path'] && Storage::disk('kkba_simpin')->exists($this->loadData['thumbnail_path'])) {
             $fileUrl = URL::temporarySignedRoute(
                 'secure-file', // Route name
                 now()->addMinutes(1), // Expiration time

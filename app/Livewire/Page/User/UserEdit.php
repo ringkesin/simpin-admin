@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\File;
 use App\Traits\MyAlert;
 use App\Traits\MyParams;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserEdit extends Component
 {
@@ -66,7 +67,7 @@ class UserEdit extends Component
         $this->mobile = $this->loadData['mobile'];
         $this->remarks = $this->loadData['remarks'];
         $this->profile_photo_path = $this->loadData['profile_photo_path'];
-        $this->profile_photo_path_old = $this->loadData['profile_photo_path'];
+        $this->profile_photo_old = $this->loadData['profile_photo_path'];
         $this->valid_from = $this->loadData['valid_from'];
         $this->valid_until = $this->loadData['valid_until'];
     }
@@ -95,11 +96,11 @@ class UserEdit extends Component
             $file = $validated['profile_photo'];
             $filename = time() . '_' . $file->getClientOriginalName();
             $location = 'avatar';
-            $file->storeAs($location, $filename, 'public');
+            $file->storeAs($location, $filename, 'kkba_simpin');
             // $file->move($location, $filename);
             $filename = $location . '/' . $filename;
-            if ($this->profile_photo_old !== 'assets/avatar/blank-avatar.png') {
-                File::delete(public_path($this->profile_photo_old));
+            if ($this->profile_photo_old !== 'avatar/blank-avatar.png') {
+                Storage::disk('kkba_simpin')->delete($this->profile_photo_old);
             }
             $this->profile_photo_path = $filename;
         }

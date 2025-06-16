@@ -54,7 +54,7 @@ class AnggotaShow extends Component
         foreach($data as $d){
 
             $fileUrl = null;
-            if (Storage::exists($d->atribut_attachment)) {
+            if (Storage::disk('kkba_simpin')->exists($d->atribut_attachment)) {
                 $fileUrl = URL::temporarySignedRoute(
                     'secure-file', // Route name
                     now()->addMinutes(1), // Expiration time

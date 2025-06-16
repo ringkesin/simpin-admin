@@ -30,7 +30,7 @@ class KontenController extends BaseController
 
             foreach($allData as $row) {
                 $fileUrl = NULL;
-                if ($row['thumbnail_path'] && Storage::exists($row['thumbnail_path'])) {
+                if ($row['thumbnail_path'] && Storage::disk('kkba_simpin')->exists($row['thumbnail_path'])) {
                     $fileUrl = URL::temporarySignedRoute(
                         'secure-file', // Route name
                         now()->addMinutes(1), // Expiration time
@@ -68,7 +68,7 @@ class KontenController extends BaseController
 
             foreach($allData as $row) {
                 $fileUrl = NULL;
-                if ($row['thumbnail_path'] && Storage::exists($row['thumbnail_path'])) {
+                if ($row['thumbnail_path'] && Storage::disk('kkba_simpin')->exists($row['thumbnail_path'])) {
                     $fileUrl = URL::temporarySignedRoute(
                         'secure-file', // Route name
                         now()->addMinutes(1), // Expiration time
@@ -97,7 +97,7 @@ class KontenController extends BaseController
             }
 
             $fileUrl = NULL;
-            if ($allData['thumbnail_path'] && Storage::exists($allData['thumbnail_path'])) {
+            if ($allData['thumbnail_path'] && Storage::disk('kkba_simpin')->exists($allData['thumbnail_path'])) {
                 $fileUrl = URL::temporarySignedRoute(
                     'secure-file', // Route name
                     now()->addMinutes(1), // Expiration time
@@ -149,7 +149,7 @@ class KontenController extends BaseController
 
             foreach($allData as $row) {
                 $fileUrl = NULL;
-                if ($row['thumbnail_path'] && Storage::exists($row['thumbnail_path'])) {
+                if ($row['thumbnail_path'] && Storage::disk('kkba_simpin')->exists($row['thumbnail_path'])) {
                     $fileUrl = URL::temporarySignedRoute(
                         'secure-file', // Route name
                         now()->addMinutes(1), // Expiration time
