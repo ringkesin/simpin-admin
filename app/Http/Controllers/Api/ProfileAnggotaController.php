@@ -236,6 +236,110 @@ class ProfileAnggotaController extends BaseController
         }
     }
 
+    public function getAttrDoc() {
+        try {
+            $user = Auth::user();
+
+            $p_anggota_id = $user->anggota?->p_anggota_id;
+
+            if(!$p_anggota_id) {
+                return response()->json(['message' => 'Unauthorize.'], 403);
+            }
+
+            // Check attribut
+            $checkAtt = AnggotaAtributModels::where('p_anggota_id', $p_anggota_id)->get();
+
+            $ktpAttribute = $checkAtt->firstWhere('atribut_kode', 'ktp');
+            $kartuPegawaiAttribute = $checkAtt->firstWhere('atribut_kode', 'kartu_pegawai');
+            $kkAttribute = $checkAtt->firstWhere('atribut_kode', 'kartu_keluarga');
+            $npwpAttribute = $checkAtt->firstWhere('atribut_kode', 'npwp');
+            $bukuNikahAttribute = $checkAtt->firstWhere('atribut_kode', 'buku_nikah');
+
+            $data = [
+                'attr_no_ktp' => null,
+                'attachment_ktp' => null,
+                'attr_no_kartu_pegawai' => null,
+                'attachment_kartu_pegawai' => null,
+                'attr_no_kartu_keluarga' => null,
+                'attachment_kartu_keluarga' => null,
+                'attr_npwp' => null,
+                'attachment_npwp' => null,
+                'attr_buku_nikah' => null,
+                'attachment_buku_nikah' => null,
+            ];
+
+            if($ktpAttribute) {
+                $fileKtpUrl = NULL;
+                if ($ktpAttribute['atribut_attachment'] && Storage::exists($ktpAttribute['atribut_attachment'])) {
+                    $fileKtpUrl = URL::temporarySignedRoute(
+                        'secure-file', // Route name
+                        now()->addMinutes(1), // Expiration time
+                        ['path' => $ktpAttribute['atribut_attachment']] // File path parameter
+                    );
+                }
+                $data['attr_no_ktp'] = $ktpAttribute['atribut_value'];
+                $data['attachment_ktp'] = $fileKtpUrl;
+            }
+
+            if($kartuPegawaiAttribute) {
+                $fileKPUrl = NULL;
+                if ($kartuPegawaiAttribute['atribut_attachment'] && Storage::exists($kartuPegawaiAttribute['atribut_attachment'])) {
+                    $fileKPUrl = URL::temporarySignedRoute(
+                        'secure-file', // Route name
+                        now()->addMinutes(1), // Expiration time
+                        ['path' => $kartuPegawaiAttribute['atribut_attachment']] // File path parameter
+                    );
+                }
+                $data['attr_no_kartu_pegawai'] = $kartuPegawaiAttribute['atribut_value'];
+                $data['attachment_kartu_pegawai'] = $fileKPUrl;
+            }
+
+            if($kkAttribute) {
+                $fileKKUrl = NULL;
+                if ($kkAttribute['atribut_attachment'] && Storage::exists($kkAttribute['atribut_attachment'])) {
+                    $fileKKUrl = URL::temporarySignedRoute(
+                        'secure-file', // Route name
+                        now()->addMinutes(1), // Expiration time
+                        ['path' => $kkAttribute['atribut_attachment']] // File path parameter
+                    );
+                }
+                $data['attr_no_kartu_keluarga'] = $kkAttribute['atribut_value'];
+                $data['attachment_kartu_keluarga'] = $fileKKUrl;
+            }
+
+            if($npwpAttribute) {
+                $fileNpwpUrl = NULL;
+                if ($npwpAttribute['atribut_attachment'] && Storage::exists($npwpAttribute['atribut_attachment'])) {
+                    $fileNpwpUrl = URL::temporarySignedRoute(
+                        'secure-file', // Route name
+                        now()->addMinutes(1), // Expiration time
+                        ['path' => $npwpAttribute['atribut_attachment']] // File path parameter
+                    );
+                }
+                $data['attr_npwp'] = $npwpAttribute['atribut_value'];
+                $data['attachment_npwp'] = $fileNpwpUrl;
+            }
+
+            if($bukuNikahAttribute) {
+                $fileBukuNikahUrl = NULL;
+                if ($bukuNikahAttribute['atribut_attachment'] && Storage::exists($bukuNikahAttribute['atribut_attachment'])) {
+                    $fileBukuNikahUrl = URL::temporarySignedRoute(
+                        'secure-file', // Route name
+                        now()->addMinutes(1), // Expiration time
+                        ['path' => $bukuNikahAttribute['atribut_attachment']] // File path parameter
+                    );
+                }
+                $data['attr_buku_nikah'] = $bukuNikahAttribute['atribut_value'];
+                $data['attachment_buku_nikah'] = $fileBukuNikahUrl;
+            }
+
+            return $this->sendResponse($data, 'Get Dokumen Profile Berhasil');
+        } catch (Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+
+    }
+
     public function updateDoc(Request $request) {
         DB::beginTransaction();
         try {
@@ -247,7 +351,9 @@ class ProfileAnggotaController extends BaseController
                 'attr_no_kartu_keluarga' => 'nullable',
                 'attachment_kartu_keluarga' => 'nullable|file|mimes:jpg,png|max:2048',
                 'attr_npwp' => 'nullable',
-                'attachment_npwp' => 'nullable|file|mimes:jpg,png|max:2048'
+                'attachment_npwp' => 'nullable|file|mimes:jpg,png|max:2048',
+                'attr_buku_nikah' => 'nullable',
+                'attachment_buku_nikah' => 'nullable|file|mimes:jpg,png|max:2048',
             ]);
 
             $user = $request->user();
@@ -258,7 +364,7 @@ class ProfileAnggotaController extends BaseController
                 return response()->json(['message' => 'Tidak diizinkan update profile.'], 403);
             }
 
-            // Chek attribut
+            // Check attribut
             $checkAtt = AnggotaAtributModels::where('p_anggota_id', $p_anggota_id)->get();
 
             if($request->file('attachment_ktp')) {
@@ -354,6 +460,30 @@ class ProfileAnggotaController extends BaseController
                         'atribut_kode' => 'npwp',
                         'atribut_value' => $request->attr_npwp,
                         'atribut_attachment' => $npwpPath
+                    ]);
+                }
+            }
+
+            if($request->file('attachment_buku_nikah')) {
+                $bukuNikahPath = $request->file('attachment_buku_nikah')->store('uploads/buku_nikah', 'local');
+                $bukuNikahAttribute = $checkAtt->firstWhere('atribut_kode', 'buku_nikah');
+
+                if($bukuNikahAttribute) {
+                    AnggotaAtributModels::where([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'buku_nikah'
+                    ])
+                    ->update([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_value' => $request->attr_npwp,
+                        'atribut_attachment' => $bukuNikahPath
+                    ]);
+                } else {
+                    AnggotaAtributModels::create([
+                        'p_anggota_id' => $p_anggota_id,
+                        'atribut_kode' => 'buku_nikah',
+                        'atribut_value' => $request->attr_npwp,
+                        'atribut_attachment' => $bukuNikahPath
                     ]);
                 }
             }
