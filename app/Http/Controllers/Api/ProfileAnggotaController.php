@@ -107,7 +107,7 @@ class ProfileAnggotaController extends BaseController
 
             return $this->sendResponse([
                 'profile_user' => $profile_user,
-                'profile_anggota' => $profile], 
+                'profile_anggota' => $profile],
                 'Data berhasil digenerate.'
             );
         } catch (\Exception $e) {
@@ -278,7 +278,7 @@ class ProfileAnggotaController extends BaseController
 
             if($ktpAttribute) {
                 $fileKtpUrl = NULL;
-                if ($ktpAttribute['atribut_attachment'] && Storage::exists($ktpAttribute['atribut_attachment'])) {
+                if ($ktpAttribute['atribut_attachment'] && Storage::disk('kkba_simpin')->exists($ktpAttribute['atribut_attachment'])) {
                     $fileKtpUrl = URL::temporarySignedRoute(
                         'secure-file', // Route name
                         now()->addMinutes(1), // Expiration time
