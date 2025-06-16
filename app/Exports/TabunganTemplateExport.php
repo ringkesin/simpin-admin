@@ -20,21 +20,20 @@ class TabunganTemplateExport implements FromArray, WithHeadings
     {
         return [
             'nomor_anggota',
-            'bulan',
-            'tahun',
-            'simpanan_pokok',
-            'simpanan_wajib',
-            'tabungan_sukarela',
-            'tabungan_indir',
-            'kompensasi_masa_kerja',
+            'tgl_transaksi (yyyy-mm-dd)',
+            'tabungan_id',
+            'remarks',
+            'nilai',
         ];
     }
 
     public function array(): array
     {
         return [
-            ['100001', '1', '2025', '1000000', '1000000', '1000000', '1000000', '1000000'], // Contoh data
-            ['100002', '1', '2025', '1000000', '1000000', '1000000', '1000000', '1000000'], // Contoh data
+            ['100001', '2025-06-16', '1', 'Lorem ipsum', '100000'], // Contoh data
+            ['100001', '2025-06-16', '3', 'dolor sit amet', '20000'], // Contoh data
+            ['100002', '2025-06-16', '1', '', '500000'], // Contoh data
+            ['100002', '2025-06-16', '3', 'Testing Keterangan', '100000'], // Contoh data
         ];
     }
 }

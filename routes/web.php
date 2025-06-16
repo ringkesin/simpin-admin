@@ -86,8 +86,7 @@ Route::middleware([
     Route::prefix('main')->group(function () {
         Route::prefix('tabungan')->group(function () {
             Route::get('list', TabunganList::class)->name('main.tabungan.list');
-            // Route::get('create', TabunganCreate::class)->name('main.tabungan.create');
-            // Route::get('import', TabunganImport::class)->name('main.tabungan.import');
+            Route::get('import', TabunganImport::class)->name('main.tabungan.import');
             Route::get('update/{id}', TabunganUpdate::class)->name('main.tabungan.update');
         });
         Route::prefix('pencairan')->group(function () {

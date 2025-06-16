@@ -7,21 +7,12 @@
             </h1>
         </div>
     </div>
-    <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200">
-        <!----------------Action Button------------------------>
-        <div class='px-4 py-4 border rounded bg-slate-50 border-slate-200'>
-            <div class="flex justify-between gap-2">
-                <div>
-                    <x-elements.button wire:navigate :href="route('main.tagihan.list')" :variant="'success'" :style="'outlined'" :type="'link'">
-                        <x-lucide-arrow-left class="size-5"/>
-                        <span class="xs:block">Back to list page</span>
-                    </x-button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="grid grid-cols-2 gap-4 mt-5">
-        <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200">
+    <x-elements.button wire:navigate :href="route('main.tagihan.list')" :variant="'success'" :style="'outlined'" :type="'link'" class='mb-6'>
+        <x-lucide-arrow-left class="size-5"/>
+        <span class="xs:block">Back to list page</span>
+    </x-button>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200">
             <!----------------Action Button------------------------>
             <div class='px-4 py-4 mb-6 border rounded bg-slate-50 border-slate-200'>
                 <div class="flex justify-between gap-2">
@@ -84,7 +75,7 @@
                 </div>
             </form>
         </div>
-        <div class="p-6 bg-white border rounded-sm shadow-lg border-slate-200">
+        <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200">
             <!----------------Action Button------------------------>
             <div class='px-4 py-4 border rounded bg-slate-50 border-slate-200'>
                 <div class="flex justify-between gap-2">
