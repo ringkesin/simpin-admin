@@ -15,16 +15,16 @@ class AuthController extends BaseController
     public function apiLogin(Request $request)
     {
         $request->validate([
-            'username' => 'required|string', 
+            'username' => 'required|string',
             'password' => 'required',
         ]);
 
         $user = User::with(['roleUser', 'roleUser.role', 'anggota'])
             ->where('username', $request->username)
             ->whereHas('roleUser.role', function ($query) {
-                $query->whereIn('code', ['mobile_anggota', 'mobile_admin']); 
+                $query->whereIn('code', ['mobile_anggota', 'mobile_admin']);
             })
-            ->first();            
+            ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return $this->sendError('Unauthorized', ['error' => 'The provided credentials are incorrect.'], 401);
@@ -112,11 +112,11 @@ class AuthController extends BaseController
             }
 
             $overwriteUser = $user->toArray();
-            $overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->url($user->profile_photo_path);
+            $overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($user->profile_photo_path, now()->addMinutes(5));
             //$overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($user->profile_photo_path, now()->addMinutes(60));
 
             return $this->sendResponse(
-                ['token' => $token, 'role' => $roleCode, 'anggota'=> $user->anggota, 'user' => $overwriteUser, ], 
+                ['token' => $token, 'role' => $roleCode, 'anggota'=> $user->anggota, 'user' => $overwriteUser, ],
                 'Login successful.'
             );
         }
