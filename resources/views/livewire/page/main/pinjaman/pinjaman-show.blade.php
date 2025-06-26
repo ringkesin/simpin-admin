@@ -16,6 +16,10 @@
                         <x-lucide-arrow-left class="size-5"/>
                         <span class="xs:block">Back to list page</span>
                     </x-button>
+                    <x-elements.button wire:click='exportPDF' :variant="'success'" :style="'outlined'" :type="'button'">
+                        <x-lucide-arrow-down class="size-5"/>
+                        <span class="xs:block">Export Form</span>
+                    </x-button>
                 </div>
             </div>
         </div>
