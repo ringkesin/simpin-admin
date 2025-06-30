@@ -66,7 +66,7 @@ class UsersTable extends DataTableComponent
                     fn ($value, $row, $column) =>
                     "<div class='flex items-center'>
                         <div class='mr-3 shrink-0 w-9'>
-                            <img class='rounded-full' src='" . (($row->profile_photo_path == 'avatar/blank-avatar.png') ? asset('assets/'.$row->profile_photo_path) : \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($row->profile_photo_path, now()->addMinutes(1))) . "' width='40' height='40' alt='User 01'>
+                            <img class='rounded-full size-9' src='" . (($row->profile_photo_path == 'avatar/blank-avatar.png') ? asset('assets/'.$row->profile_photo_path) : \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($row->profile_photo_path, now()->addMinutes(1))) . "' width='40' height='40' alt='User 01'>
                         </div>
                         <div class='font-medium text-slate-800 dark:text-slate-100'>" . $row->name . "</div>
                     </div>"

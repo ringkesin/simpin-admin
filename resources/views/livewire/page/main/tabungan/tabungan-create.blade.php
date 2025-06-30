@@ -12,7 +12,7 @@
         <div class='px-4 py-4 mb-6 border rounded bg-slate-50 border-slate-200'>
             <div class="flex justify-between gap-2">
                 <div>
-                    <x-elements.button wire:navigate :href="route('main.tabungan.list')" :variant="'success'" :style="'outlined'" :type="'link'">
+                    <x-elements.button wire:navigate :href="route('main.tabungan.list')" :variant="'primary'" :style="'outlined'" :type="'link'">
                         <x-lucide-arrow-left class="size-5"/>
                         <span class="xs:block">Back to list page</span>
                     </x-button>
@@ -158,13 +158,13 @@
                     </div>
                 </div>
             </div>
-            
+
             <!----------------Keterangan Section------------------------>
             <x-elements.header-form class='!mb-0 !border-white'>Keterangan</x-header-form>
             <div class='mb-8'>
                 <x-form.textarea class="w-full" type="text" name="keterangan" wire:model.lazy="keterangan"/>
             </div>
-                
+
             <div class="grid grid-cols-12 gap-10">
                 <div class="col-span-12">
                     <x-elements.button-submit wire:loading.attr="disabled" wire:confirm="Are you sure your data is correct?">
