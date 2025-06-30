@@ -22,7 +22,7 @@
             $class .= 'text-slate-800 bg-slate-200 hover:bg-white border-slate-200 hover:border-slate-300 hover:text-slate-800 ';
         }
         if($style == 'outlined'){
-            $class .= 'text-slate-200 bg-white hover:bg-slate-100 border-slate-300 hover:text-slate-800 ';
+            $class .= 'text-slate-800 bg-white hover:bg-slate-100 border-slate-300 hover:text-slate-800 ';
         }
     }
 
