@@ -22,16 +22,16 @@
             $class .= 'text-slate-800 bg-slate-200 hover:bg-white border-slate-200 hover:border-slate-300 hover:text-slate-800 ';
         }
         if($style == 'outlined'){
-            $class .= 'text-slate-800 bg-white hover:bg-slate-100 border-slate-300 hover:text-slate-800 ';
+            $class .= 'text-slate-200 bg-white hover:bg-slate-100 border-slate-300 hover:text-slate-800 ';
         }
     }
 
     if($variant == 'success'){
         if($style == 'solid'){
-            $class .= 'text-white bg-blue-600 hover:bg-white border-blue-600 hover:text-blue-600 ';
+            $class .= 'text-white bg-green-600 hover:bg-white border-green-600 hover:text-green-600 ';
         }
         if($style == 'outlined'){
-            $class .= 'text-blue-600 bg-white hover:bg-blue-600 border-blue-600 hover:text-white ';
+            $class .= 'text-green-600 bg-white hover:bg-green-600 border-green-600 hover:text-white ';
         }
     }
 
@@ -49,7 +49,7 @@
             $class .= 'text-white bg-sky-400 hover:bg-white border-sky-400 hover:text-sky-400 ';
         }
         if($style == 'outlined'){
-            $class .= 'text-gray-800 bg-white hover:bg-sky-400 border-sky-400 hover:text-white ';
+            $class .= 'text-sky-400 bg-white hover:bg-sky-400 border-sky-400 hover:text-white ';
         }
     }
 

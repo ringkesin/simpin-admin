@@ -86,7 +86,7 @@
             <div class='pt-4'>
                 <span class='text-rose-500'>PENTING !</span>
                 <p>
-                    Mohon isi <b>tabungan_id</b> hanya angka saja. Berikut detailnya :<br /> 
+                    Mohon isi <b>tabungan_id</b> hanya angka saja. Berikut detailnya :<br />
                     <ul>
                         @foreach($jenisTabungan as $j)
                         <li>{{ $j->p_jenis_tabungan_id }} = {{ $j->nama }}</li>

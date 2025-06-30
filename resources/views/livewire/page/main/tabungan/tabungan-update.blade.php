@@ -6,12 +6,12 @@
             </h1>
         </div>
     </div>
-    <x-elements.button wire:navigate :href="route('main.tabungan.list')" :variant="'success'" :style="'outlined'" :type="'link'" class='mb-6'>
+    <x-elements.button wire:navigate :href="route('main.tabungan.list')" :variant="'primary'" :style="'outlined'" :type="'link'" class='mb-6'>
         <x-lucide-arrow-left class="size-5"/>
         <span class="xs:block">Back to list page</span>
     </x-button>
-    
-    <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200 mb-6">
+
+    <div class="p-6 mb-6 bg-white border rounded-lg shadow-lg border-slate-200">
         <h4 class='mb-6 text-lg font-bold'>Saldo Tabungan</h4>
         <hr class='mb-6' />
         @livewire('page.main.tabungan.tabungan-anggota-saldo-table', ['p_anggota_id' => $id])
@@ -94,9 +94,9 @@
                 </div>
             </x-elements.button-submit>
         </form>
-        
+
         <hr class='mt-8 mb-6' />
-        
+
         @livewire('page.main.tabungan.tabungan-anggota-table', ['p_anggota_id' => $id])
     </div>
 </div>

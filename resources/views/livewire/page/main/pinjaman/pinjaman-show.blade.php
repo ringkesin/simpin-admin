@@ -12,9 +12,13 @@
         <div class='px-4 py-4 mb-6 border rounded bg-slate-50 border-slate-200'>
             <div class="flex justify-between gap-2">
                 <div>
-                    <x-elements.button wire:navigate :href="route('main.pinjaman.list')" :variant="'success'" :style="'outlined'" :type="'link'">
+                    <x-elements.button wire:navigate :href="route('main.pinjaman.list')" :variant="'primary'" :style="'outlined'" :type="'link'">
                         <x-lucide-arrow-left class="size-5"/>
                         <span class="xs:block">Back to list page</span>
+                    </x-button>
+                    <x-elements.button wire:click='exportPDF' :variant="'info'" :style="'outlined'" :type="'button'">
+                        <x-lucide-download class="size-5"/>
+                        <span class="xs:block">Export Form</span>
                     </x-button>
                 </div>
             </div>

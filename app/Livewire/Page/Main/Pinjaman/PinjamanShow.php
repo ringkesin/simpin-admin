@@ -6,6 +6,7 @@ use Livewire\Component;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
@@ -255,6 +256,22 @@ class PinjamanShow extends Component
                 'text' => $textError,
             ]);
         }
+    }
+
+    public function exportPDF()
+    {
+        // $data = $this->only(array_keys(get_object_vars($this)));
+        $data = $this->loadData;
+
+        // dd($data);
+
+        $pdf = Pdf::loadView('livewire.page.main.pinjaman.pinjaman-formulir-export', $data)
+                  ->setPaper('a4', 'portrait');
+
+        return response()->streamDownload(
+            fn () => print($pdf->stream()),
+            'Formulir_Pinjaman_KKBA.pdf'
+        );
     }
 
     public function render()

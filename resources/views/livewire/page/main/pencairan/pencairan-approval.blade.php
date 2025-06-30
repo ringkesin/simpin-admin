@@ -6,12 +6,12 @@
             </h1>
         </div>
     </div>
-    <x-elements.button wire:navigate :href="route('main.pencairan.list')" :variant="'success'" :style="'outlined'" :type="'link'" class='mb-6'>
+    <x-elements.button wire:navigate :href="route('main.pencairan.list')" :variant="'primary'" :style="'outlined'" :type="'link'" class='mb-6'>
         <x-lucide-arrow-left class="size-5"/>
         <span class="xs:block">Back to list page</span>
     </x-button>
 
-    <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200 mb-6">
+    <div class="p-6 mb-6 bg-white border rounded-lg shadow-lg border-slate-200">
         <h4 class='mb-6 text-lg font-bold'>Detail Request Pencairan</h4>
         <hr class='mb-6' />
         <div class="grid grid-cols-2">
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="p-6 bg-white border rounded-lg shadow-lg border-slate-200 mb-6">
+    <div class="p-6 mb-6 bg-white border rounded-lg shadow-lg border-slate-200">
         <h4 class='mb-6 text-lg font-bold'>Form Approval</h4>
         <hr class='mb-6' />
         @if($data->status_pengambilan !== 'DISETUJUI')
@@ -98,7 +98,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <x-elements.button-submit wire:loading.attr="disabled" wire:confirm="Are you sure your data is correct?">
                 <div wire:loading wire:target="saveInsert">
                     <span class="me-1 animate-spin inline-block size-3 border-[2px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
@@ -120,7 +120,7 @@
         @else
         <div class="grid grid-cols-2">
             <div>
-                <x-elements.detail label="Status Approval">{{ $data->status_pengambilan.' ('.date('d F Y, H:i:s', strtotime($data->updated_at)).')' }}</x-elements.detail> 
+                <x-elements.detail label="Status Approval">{{ $data->status_pengambilan.' ('.date('d F Y, H:i:s', strtotime($data->updated_at)).')' }}</x-elements.detail>
                 <x-elements.detail label="Jumlah Disetujui">Rp {{ number_format($data->jumlah_disetujui) }}</x-elements.detail>
                 <x-elements.detail label="Tanggal Pencairan">{{ date('d F Y, H:i:s', strtotime($data->tgl_pencairan)) }}</x-elements.detail>
                 <x-elements.detail label="Catatan Admin">{{ $catatan_approver }}</x-elements.detail>
