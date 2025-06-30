@@ -7,7 +7,7 @@
             </h1>
         </div>
     </div>
-    <x-elements.button wire:navigate :href="route('main.tabungan.list')" :variant="'success'" :style="'outlined'" :type="'link'" class='mb-6'>
+    <x-elements.button wire:navigate :href="route('main.tabungan.list')" :variant="'primary'" :style="'outlined'" :type="'link'" class='mb-6'>
         <x-lucide-arrow-left class="size-5"/>
         <span class="xs:block">Back to list page</span>
     </x-button>
