@@ -113,4 +113,10 @@ trait MyHelpers
 
         return $romawi[$bulan] ?? 'Invalid';
     }
+
+    function toTerbilang($number)
+    {
+        $formatter = new \NumberFormatter("id", \NumberFormatter::SPELLOUT);
+        return ucfirst($formatter->format($number));
+    }
 }

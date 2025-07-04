@@ -9,7 +9,11 @@
     <x-elements.button wire:navigate :href="route('main.pencairan.list')" :variant="'primary'" :style="'outlined'" :type="'link'" class='mb-6'>
         <x-lucide-arrow-left class="size-5"/>
         <span class="xs:block">Back to list page</span>
-    </x-button>
+    </x-elements.button>
+    <x-elements.button wire:click='exportPDF' :variant="'info'" :style="'outlined'" :type="'button'">
+        <x-lucide-download class="size-5"/>
+        <span class="xs:block">Export Form</span>
+    </x-elements.button>
 
     <div class="p-6 mb-6 bg-white border rounded-lg shadow-lg border-slate-200">
         <h4 class='mb-6 text-lg font-bold'>Detail Request Pencairan</h4>

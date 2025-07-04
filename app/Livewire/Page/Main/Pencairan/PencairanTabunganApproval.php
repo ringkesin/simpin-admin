@@ -5,8 +5,11 @@ namespace App\Livewire\Page\Main\Pencairan;
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
+
 use App\Models\Main\TabunganPengambilanModels;
 use App\Models\Main\TabunganSaldoModels;
 use App\Models\Main\TabunganJurnalModels;
@@ -54,6 +57,8 @@ class PencairanTabunganApproval extends Component
         if($this->dataSaldo) {
             $this->saldoSisa = $this->dataSaldo->total_sd;
         }
+
+        // dd($this->data->masterAnggota->toArray());
     }
 
     public function saveInsert() {
@@ -88,11 +93,11 @@ class PencairanTabunganApproval extends Component
                     'nilai_sd' => 0,
                     'catatan' => 'Pencairan Tabungan : '.$this->catatan_approver
                 ]);
-    
+
                 DB::select('SELECT _tabungan_recalculate(:p_anggota_id, :tahun)', [
                     'p_anggota_id' => $this->data->p_anggota_id,
                     'tahun' => date('Y'),
-                ]);   
+                ]);
             }
 
             DB::commit();
@@ -116,6 +121,32 @@ class PencairanTabunganApproval extends Component
         }
     }
 
+    public function exportPDF()
+    {
+        // $data = $this->only(array_keys(get_object_vars($this)));
+        $data =  [];
+        $data = [
+            'nama_anggota' => $this->data->masterAnggota->nama,
+            'nomor_anggota' => $this->data->masterAnggota->nomor_anggota,
+            'nik' => $this->data->masterAnggota->nik,
+            'mobile' => $this->data->masterAnggota->mobile,
+            'saldo_saat_ini' => $this->saldoSisa,
+            'jumlah_pengambilan' => $this->data->jumlah_diambil,
+            'terbilang' => $this->data->jumlah_diambil ? $this->toTerbilang($this->data->jumlah_diambil) : null,
+            'no_rek' => $this->data->rekening_no,
+            'nama_bank' => $this->data->rekening_bank,
+            'tgl_pengajuan' => date('d F Y', strtotime($this->data->tgl_pengajuan))
+        ];
+
+        $pdf = Pdf::loadView('livewire.page.main.pencairan.pencairan-formulir-export', $data)
+                  ->setPaper('a4', 'portrait');
+
+        return response()->streamDownload(
+            fn () => print($pdf->stream()),
+            'Formulir_Pencairan_KKBA.pdf'
+        );
+    }
+
     public function render()
     {
         return view('livewire.page.main.pencairan.pencairan-approval')
@@ -135,7 +166,7 @@ class PencairanTabunganApproval extends Component
             $message = $e->getMessage();
             DB::rollBack();
         }
-        
+
         $this->sweetalert([
             'icon' => 'error',
             'confirmButtonText'  => 'Okay',
