@@ -415,6 +415,27 @@ class ProfileAnggotaController extends BaseController
                         'atribut_attachment' => $ktpPath
                     ]);
                 }
+            } else {
+                if($request->attr_no_ktp) {
+                    $ktpAttribute = $checkAtt->firstWhere('atribut_kode', 'ktp');
+
+                    if($ktpAttribute) {
+                        AnggotaAtributModels::where([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'ktp'
+                        ])
+                        ->update([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_value' => $request->attr_no_ktp
+                        ]);
+                    } else {
+                        AnggotaAtributModels::create([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'ktp',
+                            'atribut_value' => $request->attr_no_ktp
+                        ]);
+                    }
+                }
             }
 
             if($request->file('attachment_kartu_pegawai')) {
@@ -438,6 +459,27 @@ class ProfileAnggotaController extends BaseController
                         'atribut_value' => $request->attr_no_kartu_pegawai,
                         'atribut_attachment' => $kartuPegawaiPath
                     ]);
+                }
+            } else {
+                if($request->attr_no_kartu_pegawai) {
+                    $kartuPegawaiAttribute = $checkAtt->firstWhere('atribut_kode', 'kartu_pegawai');
+
+                    if($kartuPegawaiAttribute) {
+                        AnggotaAtributModels::where([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'kartu_pegawai'
+                        ])
+                        ->update([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_value' => $request->attr_no_kartu_pegawai
+                        ]);
+                    } else {
+                        AnggotaAtributModels::create([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'kartu_pegawai',
+                            'atribut_value' => $request->attr_no_kartu_pegawai
+                        ]);
+                    }
                 }
             }
 
@@ -463,6 +505,27 @@ class ProfileAnggotaController extends BaseController
                         'atribut_attachment' => $kkPath
                     ]);
                 }
+            } else {
+                if($request->attr_no_kartu_keluarga) {
+                    $kkAttribute = $checkAtt->firstWhere('atribut_kode', 'kartu_keluarga');
+
+                    if($kkAttribute) {
+                        AnggotaAtributModels::where([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'kartu_keluarga'
+                        ])
+                        ->update([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_value' => $request->attr_no_kartu_keluarga
+                        ]);
+                    } else {
+                        AnggotaAtributModels::create([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'kartu_keluarga',
+                            'atribut_value' => $request->attr_no_kartu_keluarga
+                        ]);
+                    }
+                }
             }
 
             if($request->file('attachment_npwp')) {
@@ -487,6 +550,27 @@ class ProfileAnggotaController extends BaseController
                         'atribut_attachment' => $npwpPath
                     ]);
                 }
+            } else {
+                if($request->attr_npwp) {
+                    $npwpAttribute = $checkAtt->firstWhere('atribut_kode', 'npwp');
+
+                    if($npwpAttribute) {
+                        AnggotaAtributModels::where([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'npwp'
+                        ])
+                        ->update([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_value' => $request->attr_npwp
+                        ]);
+                    } else {
+                        AnggotaAtributModels::create([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'npwp',
+                            'atribut_value' => $request->attr_npwp
+                        ]);
+                    }
+                }
             }
 
             if($request->file('attachment_buku_nikah')) {
@@ -500,16 +584,37 @@ class ProfileAnggotaController extends BaseController
                     ])
                     ->update([
                         'p_anggota_id' => $p_anggota_id,
-                        'atribut_value' => $request->attr_npwp,
+                        'atribut_value' => $request->attr_buku_nikah,
                         'atribut_attachment' => $bukuNikahPath
                     ]);
                 } else {
                     AnggotaAtributModels::create([
                         'p_anggota_id' => $p_anggota_id,
                         'atribut_kode' => 'buku_nikah',
-                        'atribut_value' => $request->attr_npwp,
+                        'atribut_value' => $request->attr_buku_nikah,
                         'atribut_attachment' => $bukuNikahPath
                     ]);
+                }
+            } else {
+                if($request->attr_buku_nikah) {
+                    $bukuNikahAttribute = $checkAtt->firstWhere('atribut_kode', 'buku_nikah');
+
+                    if($bukuNikahAttribute) {
+                        AnggotaAtributModels::where([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'buku_nikah'
+                        ])
+                        ->update([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_value' => $request->attr_buku_nikah
+                        ]);
+                    } else {
+                        AnggotaAtributModels::create([
+                            'p_anggota_id' => $p_anggota_id,
+                            'atribut_kode' => 'buku_nikah',
+                            'atribut_value' => $request->attr_buku_nikah
+                        ]);
+                    }
                 }
             }
 
