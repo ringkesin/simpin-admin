@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Api\BaseController;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Main\DeleteAccountRequestModels;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class AuthController extends BaseController
 {
@@ -150,5 +154,69 @@ class AuthController extends BaseController
         ]);
 
         return $this->sendResponse([], 'Password changed successfully');
+    }
+
+    public function requestDeleteAccount(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'nomor_anggota' => 'required',
+                'email' => 'required',
+                'no_robots' => 'required',
+                'remarks' => 'required'
+            ],[
+                'nomor_anggota.required' => 'No Anggota harus diisi',
+                'email.required' => 'Email harus diisi',
+                'no_robots.required' => 'Validasi text harus diisi',
+                'remarks.required' => 'Keterangan harus diisi'
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
+            }
+
+            if($request->no_robots != 'delete_account')
+            {
+                return $this->sendError('Validasi Text salah', [], 400);
+            }
+
+            DB::beginTransaction();
+
+            $user = $request->user();
+            $isAnggota = $user->tokenCan('state:anggota');
+            $anggota = $user->anggota;
+
+            if(!$isAnggota) {
+                return $this->sendError('Maaf anda tidak terdaftar sebagai anggota', [], 400);
+            }
+
+            if($anggota->nomor_anggota != $request->nomor_anggota)
+            {
+                return $this->sendError('Nomor anggota tidak sesuai', [], 400);
+            }
+
+            if($anggota->email != $request->email)
+            {
+                return $this->sendError('Email tidak sesuai', [], 400);
+            }
+
+            $payloadInsert = [
+                'p_anggota_id' => $anggota->p_anggota_id,
+                'remarks' => $request->remarks,
+                'status' => 'open',
+                'created_by' => $user->id,
+                'updated_by' => $user->id
+            ];
+
+            $processInsert = DeleteAccountRequestModels::create($payloadInsert);
+
+            DB::commit();
+
+            return $this->sendResponse($processInsert, 'Request tutup akun dikirim ke admin');
+        } catch (Exception $e) {
+            DB::rollBack();
+            \Log::error('Error : ' . $e->getMessage());
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
     }
 }

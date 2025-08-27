@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/anggota/{p_anggota_id}', [MasterAnggotaController::class, 'getAnggotaById'])->where('id', '[0-9]+');
     Route::post('/file/get-link', [FileController::class, 'getLink']);
+    Route::post('/delete-account', [AuthController::class, 'requestDeleteAccount']);
 
     Route::prefix('/master')->group(function () {
         Route::get('/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);
