@@ -201,7 +201,7 @@ class AuthController extends BaseController
             }
 
             $payloadInsert = [
-                'p_anggota_id' => $anggota->p_anggota_id,
+                'user_id' => $user->id,
                 'remarks' => $request->remarks,
                 'status' => 'open',
                 'created_by' => $user->id,

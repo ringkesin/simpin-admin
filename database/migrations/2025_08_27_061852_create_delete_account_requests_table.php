@@ -16,7 +16,7 @@ return new class extends Migration
             $table->ulid('t_delete_account_requests_id')->primary();
 
             // relasi ke anggota
-            $table->unsignedBigInteger('p_anggota_id');
+            $table->unsignedBigInteger('user_id');
 
             // catatan tambahan
             $table->text('remarks')->nullable();

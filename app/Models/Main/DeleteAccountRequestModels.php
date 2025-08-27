@@ -25,7 +25,7 @@ class DeleteAccountRequestModels extends Model
      * @var string[]
      */
     protected $fillable = [
-        'p_anggota_id',
+        'user_id',
         'remarks',
         'status',
         'created_at',
@@ -36,9 +36,9 @@ class DeleteAccountRequestModels extends Model
         'deleted_by',
     ];
 
-    protected $casts = [
-        'p_anggota_id' => 'integer'
-    ];
+    // protected $casts = [
+    //     'p_anggota_id' => 'integer'
+    // ];
 
     public function updatedBy() : HasOne
     {
@@ -50,8 +50,8 @@ class DeleteAccountRequestModels extends Model
         return $this->hasOne(User::class, 'id', 'created_by');
     }
 
-    public function masterAnggota(): HasOne
+    public function user(): HasOne
     {
-        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }
