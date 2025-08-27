@@ -200,6 +200,11 @@ class AuthController extends BaseController
                 return $this->sendError('Email tidak sesuai', [], 400);
             }
 
+            if(!$anggota->is_registered || $anggota->valid_until < now())
+            {
+                return $this->sendError('Anda belum terdaftar sebagai anggota aktif', [], 400);
+            }
+
             $payloadInsert = [
                 'user_id' => $user->id,
                 'remarks' => $request->remarks,

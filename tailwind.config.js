@@ -13,6 +13,12 @@ export default {
         './vendor/laravel/jetstream/**/*.blade.php',
     ],
 
+    safelist: [
+        'bg-yellow-500', 'bg-yellow-600',
+        'bg-green-500', 'bg-green-600',
+        'bg-red-500', 'bg-red-600'
+    ],
+
     theme: {
         extend: {
             fontFamily: {

@@ -49,6 +49,9 @@ use App\Livewire\Page\Master\Simulasi\SimulasiShow;
 use App\Livewire\Page\Master\Simulasi\SimulasiCreate;
 use App\Livewire\Page\Master\Simulasi\SimulasiEdit;
 
+use App\Livewire\Page\Account\DeleteRequest\DeleteRequestList;
+use App\Livewire\Page\Account\DeleteRequest\DeleteRequestExecute;
+
 // Route::get('/', function () {
 //     return redirect()->route('dashboard');
 // });
@@ -67,6 +70,10 @@ Route::middleware([
         Route::get('create', UserCreate::class)->name('user.create');
         Route::get('show/{id}', UserShow::class)->name('user.show');
         Route::get('edit/{id}', UserEdit::class)->name('user.edit');
+    });
+    Route::prefix('account')->group(function () {
+        Route::get('list', DeleteRequestList::class)->name('account.delete-request.list');
+        Route::get('execute/{id}', DeleteRequestExecute::class)->name('account.delete-request.execute');
     });
     Route::prefix('master')->group(function () {
         Route::prefix('anggota')->group(function () {

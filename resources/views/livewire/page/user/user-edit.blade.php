@@ -143,7 +143,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="date" id="valid_until" name="valid_until" :value="''" wire:model.lazy="valid_until"/>
+                            <x-form.input class="w-full" type="date" id="valid_until" name="valid_until" :value="'{{ $valid_until }}'" wire:model.lazy="valid_until"/>
                         </div>
                     </div>
                 </div>

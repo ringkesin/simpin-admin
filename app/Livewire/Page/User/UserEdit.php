@@ -59,7 +59,7 @@ class UserEdit extends Component
     }
 
     public function getData($id) {
-        $data = User::find($id);
+        $data = User::find($id)->toArray();
         $this->loadData = $data;
         $this->username = $this->loadData['username'];
         $this->name = $this->loadData['name'];
@@ -68,8 +68,8 @@ class UserEdit extends Component
         $this->remarks = $this->loadData['remarks'];
         $this->profile_photo_path = $this->loadData['profile_photo_path'];
         $this->profile_photo_old = $this->loadData['profile_photo_path'];
-        $this->valid_from = $this->loadData['valid_from'];
-        $this->valid_until = $this->loadData['valid_until'];
+        $this->valid_from = \Carbon\Carbon::parse($this->loadData['valid_from'])->format('Y-m-d');
+        $this->valid_until = $this->loadData['valid_until'] ? \Carbon\Carbon::parse($this->loadData['valid_until'])->format('Y-m-d') : null;
     }
 
     public function saveUpdate() {

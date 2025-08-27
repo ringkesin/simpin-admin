@@ -117,11 +117,32 @@
                                 <span class="lg:sidebar-expanded:block 2xl:block">Configuration</span>
                             </h3>
                         </li>
-                        <li>
+                        {{-- <li>
                             <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'user' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('user.list')}}">
                                 <x-lucide-user class="size-4"/>
                                 User
                             </a>
+                        </li> --}}
+                        <li class="hs-accordion" id="account-accordion">
+                            <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-slate-700 rounded-lg hover:bg-slate-100 focus:outline-none focus:bg-slate-100" aria-expanded="true" aria-controls="account-accordion-collapse-1">
+                                <x-lucide-user class="size-4"/>
+                                    Account
+                                <svg class="hidden text-slate-600 hs-accordion-active:block ms-auto size-4 group-hover:text-slate-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+
+                                <svg class="block text-slate-600 hs-accordion-active:hidden ms-auto size-4 group-hover:text-slate-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div id="account-accordion-collapse-1" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 {{ (in_array($menu_code, ['user', 'delete_request_user'])) ? '' : 'hidden'}}" role="region" aria-labelledby="account-accordion">
+                                <ul class="pt-1 space-y-1 ps-7">
+                                    <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'user' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('user.list')}}">
+                                        User
+                                    </a>
+                                </ul>
+                                <ul class="pt-1 space-y-1 ps-7">
+                                    <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'delete_request_user' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('account.delete-request.list')}}">
+                                        Delete Request
+                                    </a>
+                                </ul>
+                            </div>
                         </li>
 
                         {{-- <li class="hs-accordion" id="users-accordion">
