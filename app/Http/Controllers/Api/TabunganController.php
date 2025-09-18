@@ -202,7 +202,7 @@ class TabunganController extends BaseController
             $user = $request->user();
             $isAnggota = $user->tokenCan('state:anggota');
             $p_anggota_id = $user->anggota?->p_anggota_id;
-            
+
             if ($isAnggota && (int) $request->p_anggota_id !== $p_anggota_id) {
                 return response()->json(['message' => 'Tidak diizinkan melihat data dengan anggota id = '.$request->p_anggota_id], 403);
             }
@@ -255,11 +255,11 @@ class TabunganController extends BaseController
             $user = $request->user();
             $isAnggota = $user->tokenCan('state:anggota');
             $p_anggota_id = $user->anggota?->p_anggota_id;
-            
+
             if ($isAnggota && (int) $request->p_anggota_id !== $p_anggota_id) {
                 return response()->json(['message' => 'Tidak diizinkan melihat data dengan anggota id = '.$request->p_anggota_id], 403);
             }
-            
+
             $saldo = [];
             $totalBulanIni = 0;
             $totalBulanIniSd = 0;
@@ -280,7 +280,7 @@ class TabunganController extends BaseController
                     ->whereMonth('tgl_transaksi', '<=', $request->bulan)
                     ->first();
                 $sdBulanIni = $sdBulanIni->total_nilai ?? 0;
-                    
+
                 $saldo[] = [
                     'p_jenis_tabungan_id' => $j->p_jenis_tabungan_id,
                     'jenis_tabungan' => $j->nama,
@@ -416,5 +416,58 @@ class TabunganController extends BaseController
         $data->delete();
 
         return $this->sendResponse([], 'Data pengajuan pencairan tabungan berhasil dihapus');
+    }
+
+    public function approvalPencairan(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status_pencairan' => 'required',
+            'tgl_pencairan' => 'nullable|date|date_format:Y-m-d',
+            'jumlah_disetujui' => 'required|numeric',
+            'catatan_approver' =>  'required|max:2024',
+        ],[
+            'status_pencairan.required' => 'Status Pencairan harus diisi.',
+            'tgl_pencairan.required' => 'Tgl. Pencairan harus diisi.',
+            'jumlah_disetujui.required' => 'Jumlah harus diisi.',
+            'catatan_approver.required' => 'Catatan harus diisi.',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $data = TabunganPengambilanModels::findOrFail($request->id);
+
+            TabunganPengambilanModels::where('t_tabungan_pengambilan_id', $request->id)->update([
+                'status_pengambilan' => $request->status_pencairan,
+                'tgl_pencairan' => ( ! empty($request->tgl_pencairan)) ? $request->tgl_pencairan.' '.date('H:i:s') : null,
+                'jumlah_disetujui' => $request->jumlah_disetujui,
+                'catatan_approver' => $request->catatan_approver
+            ]);
+
+            if($request->status_pencairan == 'DISETUJUI') {
+                TabunganJurnalModels::create([
+                    'p_anggota_id' => $data->p_anggota_id,
+                    'p_jenis_tabungan_id' => $data->p_jenis_tabungan_id,
+                    'tgl_transaksi' => date('Y-m-d H:i:s'),
+                    'nilai' => '-'.$request->jumlah_disetujui,
+                    'nilai_sd' => 0,
+                    'catatan' => 'Pencairan Tabungan : '.$request->catatan_approver
+                ]);
+
+                DB::select('SELECT _tabungan_recalculate(:p_anggota_id, :tahun)', [
+                    'p_anggota_id' => $data->p_anggota_id,
+                    'tahun' => date('Y'),
+                ]);
+            }
+
+            DB::commit();
+            return $this->sendResponse(['t_tabungan_pengambilan_id' => $request->id], 'Pengajuan Pencairan Tabungan Berhasil Disubmit');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
     }
 }

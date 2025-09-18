@@ -78,6 +78,10 @@ class SimulasiPinjamanController extends BaseController
 
                 $totalPengembalian = $angsuran * $simulasi->tenor;
 
+                if($request->jenis_pinjaman_id == 3) {
+                    $margin = $margin / ($simulasi->tenor / 12);
+                }
+
                 $result = [
                     'tahun' => $simulasi->tahun_margin,
                     'tenor' => $simulasi->tenor,
