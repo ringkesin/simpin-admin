@@ -62,6 +62,12 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/pengajuan', [TabunganController::class, 'formPengajuanPencairan']);
             Route::get('/pengajuan/list', [TabunganController::class, 'listPengajuanPencairan']);
             Route::delete('/pembatalan/{id}', [TabunganController::class, 'batalkanPencairan'])->where('id', '[A-Za-z0-9]+');
+            Route::post('/approval', [TabunganController::class, 'batalkanPencairan']);
+        });
+        Route::prefix('/penyertaan')->group(function () {
+            Route::post('/pengajuan', [TabunganController::class, 'formPengajuanPenyertaan']);
+            Route::get('/pengajuan/list', [TabunganController::class, 'listPengajuanPenyertaan']);
+            Route::delete('/pembatalan/{id}', [TabunganController::class, 'batalkanPenyertaan'])->where('id', '[A-Za-z0-9]+');
         });
     });
 
