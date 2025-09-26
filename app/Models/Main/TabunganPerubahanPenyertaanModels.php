@@ -31,6 +31,7 @@ class TabunganPerubahanPenyertaanModels extends Model
         'nilai_sebelum',
         'nilai_baru',
         'valid_from',
+        'status_perubahan_penyertaan',
         'catatan_user',
         'catatan_approver',
         'created_by',
