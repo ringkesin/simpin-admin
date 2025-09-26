@@ -11,6 +11,7 @@ use App\Models\Main\TabunganSaldoModels;
 use App\Models\Main\TabunganJurnalModels;
 use App\Models\Main\TabunganPengambilanModels;
 use App\Models\Main\TabunganPenyertaanModels;
+use App\Models\Main\TabunganPerubahanPenyertaanModels;
 use App\Models\Master\JenisTabunganModels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -440,6 +441,13 @@ class TabunganController extends BaseController
         try {
             DB::beginTransaction();
 
+            $user = $request->user();
+            $isAdmin = $user->tokenCan('state:admin');
+
+            if(!$isAdmin) {
+                return $this->sendError('Anda tidak ada akses.', [], 403);
+            }
+
             $data = TabunganPengambilanModels::findOrFail($request->id);
 
             TabunganPengambilanModels::where('t_tabungan_pengambilan_id', $request->id)->update([
@@ -581,7 +589,7 @@ class TabunganController extends BaseController
         $data->save();
         $data->delete();
 
-        return $this->sendResponse([], 'Data pengajuan pencairan tabungan berhasil dihapus');
+        return $this->sendResponse([], 'Data pengajuan penyertaan tabungan berhasil dihapus');
     }
 
     public function approvalPenyertaan(Request $request)
@@ -604,6 +612,13 @@ class TabunganController extends BaseController
 
         try {
             DB::beginTransaction();
+
+            $user = $request->user();
+            $isAdmin = $user->tokenCan('state:admin');
+
+            if(!$isAdmin) {
+                return $this->sendError('Anda tidak ada akses.', [], 403);
+            }
 
             $data = TabunganPenyertaanModels::findOrFail($request->id);
 
@@ -631,7 +646,166 @@ class TabunganController extends BaseController
             }
 
             DB::commit();
-            return $this->sendResponse(['t_tabungan_pengambilan_id' => $request->id], 'Pengajuan Pencairan Tabungan Berhasil Disubmit');
+            return $this->sendResponse(['t_tabungan_penyertaan_id' => $request->id], 'Pengajuan Penyertaan Tabungan Berhasil Disubmit');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /* Perubahan Penyertaan */
+    public function formPengajuanPerubahanPenyertaan(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'p_anggota_id' => 'required|integer|exists:p_anggota,p_anggota_id',
+                'p_jenis_tabungan_id' => 'required|integer|exists:p_jenis_tabungan,p_jenis_tabungan_id',
+                'nilai_baru' => 'required|numeric',
+                'valid_from' => 'required|date',
+                'keterangan' => 'nullable|max:2024',
+            ],[
+                'p_anggota_id.required' => 'Anggota harus diisi',
+                'p_jenis_tabungan_id.required' => 'Jenis Tabungan harus diisi',
+                'nilai_baru.required' => 'Nilai Perubahan harus diisi',
+                'valid_from.required' => 'Tanggal Mulai harus diisi',
+                'valid_from.date' => 'Tanggal Mulai harus format tanggal',
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
+            }
+
+            $user = $request->user();
+            $isAnggota = $user->tokenCan('state:anggota');
+            $p_anggota_id = $user->anggota?->p_anggota_id;
+            if ($isAnggota && (int) $request->p_anggota_id !== $p_anggota_id) {
+                return response()->json(['message' => 'Tidak diizinkan melihat data dengan anggota id = '.$request->p_anggota_id], 403);
+            }
+
+            DB::beginTransaction();
+
+            $pengajuan_perubahan_penyertaan = TabunganPerubahanPenyertaanModels::create([
+                'p_anggota_id' => $request->p_anggota_id,
+                'p_jenis_tabungan_id' => $request->p_jenis_tabungan_id,
+                'valid_from' => $request->valid_from,
+                'nilai_baru' => $request->nilai_baru,
+                'status_perubahan_penyertaan' => 'PENDING', //PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK, DIBATALKAN_ANGGOTA
+                'catatan_user' => $request->keterangan,
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
+            ]);
+
+            DB::commit();
+
+            return $this->sendResponse(['pengajuan_perubahan_penyertaan' => $pengajuan_perubahan_penyertaan], 'Pengajuan Perubahan Penyertaan Tabungan Berhasil Disubmit');
+        } catch (Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function listPengajuanPerubahanPenyertaan(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $isAdmin = $user->tokenCan('state:admin');
+            $isAnggota = $user->tokenCan('state:anggota');
+
+            if($isAdmin){
+                $query = TabunganPerubahanPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
+            }
+            if($isAnggota) {
+                $p_anggota_id = $user->anggota?->p_anggota_id;
+                if (!$p_anggota_id) {
+                    return $this->sendError('Data anggota tidak ditemukan.', [], 404);
+                }
+                $query = TabunganPerubahanPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
+                    ->where('p_anggota_id', $p_anggota_id);
+            }
+
+            $listPengajuan = $query
+                ->orderBy('created_at', 'desc')
+                ->paginate(10)
+                ->through(fn ($item) => $item->makeHidden([
+                    'p_anggota_id','p_jenis_tabungan_id','deleted_at', 'created_by', 'updated_by','deleted_by',
+                ]));
+
+            return $this->sendResponse($listPengajuan, 'Daftar Pengajuan Perubahan Penyertaan Tabungan Berhasil Diambil');
+        } catch (\Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function batalkanPerubahanPenyertaan(Request $request, $id)
+    {
+        $user = $request->user();
+        $isAnggota = $user->tokenCan('state:anggota');
+        $p_anggota_id = $user->anggota?->p_anggota_id;
+
+        $data = TabunganPerubahanPenyertaanModels::find($id);
+        if (! $data) {
+            return response()->json(['message' => 'Data pengajuan pencairan tabungan tidak ditemukan.'], 404);
+        }
+
+        if ($isAnggota && $data->p_anggota_id !== $p_anggota_id) {
+            return response()->json(['message' => 'Tidak diizinkan menghapus pencairan ini.'], 403);
+        }
+
+        if ($isAnggota){
+            if($data->status_pengambilan !== 'PENDING') //available status = 'PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK'
+            {
+                return response()->json(['message' => "Tidak diizinkan menghapus pengajuan ini, karena statusnya tidak lagi 'Pending'."], 403);
+            }
+        }
+
+        $user = $request->user();
+        $data->deleted_by = $user->id;
+        $data->save();
+        $data->delete();
+
+        return $this->sendResponse([], 'Data pengajuan perubahan penyertaan tabungan berhasil dihapus');
+    }
+
+    public function approvalPerubahanPenyertaan(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status_perubahan_penyertaan' => 'required',
+            'nilai_sebelum' => 'required|numeric',
+            'nilai_baru' => 'required|numeric',
+            'valid_from' => 'required|date',
+            'catatan_approver' =>  'required|max:2024',
+        ],[
+            'status_perubahan_penyertaan.required' => 'Status Perubahan Penyertaan harus diisi.',
+            'nilai_sebelum.required' => 'Nilai Sebelum Perubahan harus diisi',
+            'nilai_baru.required' => 'Nilai Perubahan harus diisi',
+            'valid_from.required' => 'Tanggal Mulai harus diisi',
+            'valid_from.date' => 'Tanggal Mulai harus format tanggal',
+            'catatan_approver.required' => 'Catatan harus diisi.',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $user = $request->user();
+            $isAdmin = $user->tokenCan('state:admin');
+
+            if(!$isAdmin) {
+                return $this->sendError('Anda tidak ada akses.', [], 403);
+            }
+
+            $data = TabunganPerubahanPenyertaanModels::findOrFail($request->id);
+
+            TabunganPerubahanPenyertaanModels::where('t_tabungan_perubahan_penyertaan_id', $request->id)->update([
+                'status_perubahan_penyertaan' => $request->status_perubahan_penyertaan,
+                'valid_from' => ( ! empty($request->valid_from)) ? $request->valid_from.' '.date('H:i:s') : null,
+                'nilai_sebelum' => $request->nilai_sebelum,
+                'nilai_baru' => $request->nilai_baru,
+                'catatan_approver' => $request->catatan_approver
+            ]);
+
+            DB::commit();
+            return $this->sendResponse(['t_tabungan_perubahan_penyertaan_id' => $request->id], 'Pengajuan Perubahan Penyertaan Tabungan Berhasil Disubmit');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
