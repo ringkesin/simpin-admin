@@ -52,11 +52,33 @@
                             </a>
                         </li>
 
-                        <li>
-                            <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pencairan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.pencairan.list')}}">
+                        <li class="hs-accordion" id="transaksi-tabungan-accordion">
+                            <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-slate-700 rounded-lg hover:bg-slate-100 focus:outline-none focus:bg-slate-100" aria-expanded="true" aria-controls="transaksi-tabungan-collapse-1">
                                 <x-lucide-coins class="size-4"/>
-                                Pencairan Tabungan
-                            </a>
+                                    Transaksi Tabungan
+                                <svg class="hidden text-slate-600 hs-accordion-active:block ms-auto size-4 group-hover:text-slate-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+
+                                <svg class="block text-slate-600 hs-accordion-active:hidden ms-auto size-4 group-hover:text-slate-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div id="transaksi-tabungan-collapse-1" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 {{ (in_array($menu_code, ['pencairan', 'penyertaan', 'perubahan-penyertaan'])) ? '' : 'hidden'}}" role="region" aria-labelledby="transaksi-tabungan">
+                                <ul class="pt-1 space-y-1 ps-7">
+                                    <li>
+                                        <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'pencairan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.pencairan.list')}}">
+                                            Pencairan Tabungan
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'penyertaan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.penyertaan.list')}}">
+                                            Penyertaan Tabungan
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 {{$menu_code == 'perubahan-penyertaan' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} text-sm rounded-lg" href="{{route('main.perubahan-penyertaan.list')}}">
+                                            Perubahan Penyertaan Tabungan
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
 
                         <li>

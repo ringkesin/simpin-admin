@@ -52,12 +52,22 @@ use App\Livewire\Page\Master\Simulasi\SimulasiEdit;
 use App\Livewire\Page\Account\DeleteRequest\DeleteRequestList;
 use App\Livewire\Page\Account\DeleteRequest\DeleteRequestExecute;
 
+use App\Livewire\Page\Main\Penyertaan\PenyertaanTabunganList;
+use App\Livewire\Page\Main\Penyertaan\PenyertaanTabunganApproval;
+
+use App\Livewire\Page\Main\PerubahanPenyertaan\PerubahanPenyertaanTabunganList;
+use App\Livewire\Page\Main\PerubahanPenyertaan\PerubahanPenyertaanTabunganApproval;
+
 // Route::get('/', function () {
 //     return redirect()->route('dashboard');
 // });
 // Route::redirect('/', 'login');
 
 Route::redirect('/', 'login');
+
+Route::get('/privacy-policy', function () {
+    return response()->file(public_path('privacy-policy.html'));
+});
 
 Route::middleware([
     'auth',
@@ -99,6 +109,14 @@ Route::middleware([
         Route::prefix('pencairan')->group(function () {
             Route::get('list', PencairanTabunganList::class)->name('main.pencairan.list');
             Route::get('approval/{id}', PencairanTabunganApproval::class)->name('main.pencairan.approval');
+        });
+        Route::prefix('penyertaan')->group(function () {
+            Route::get('list', PenyertaanTabunganList::class)->name('main.penyertaan.list');
+            Route::get('approval/{id}', PenyertaanTabunganApproval::class)->name('main.penyertaan.approval');
+        });
+        Route::prefix('perubahan-penyertaan')->group(function () {
+            Route::get('list', PerubahanPenyertaanTabunganList::class)->name('main.perubahan-penyertaan.list');
+            Route::get('approval/{id}', PerubahanPenyertaanTabunganApproval::class)->name('main.perubahan-penyertaan.approval');
         });
         Route::prefix('tagihan')->group(function () {
             Route::get('list', TagihanList::class)->name('main.tagihan.list');

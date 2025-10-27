@@ -138,7 +138,7 @@ class PencairanTabunganApproval extends Component
             'tgl_pengajuan' => date('d F Y', strtotime($this->data->tgl_pengajuan))
         ];
 
-        $pdf = Pdf::loadView('livewire.page.main.pencairan.pencairan-formulir-export', $data)
+        $pdf = Pdf::loadView('livewire.page.main.export.tabungan-formulir-export', $data)
                   ->setPaper('a4', 'portrait');
 
         return response()->streamDownload(
