@@ -68,7 +68,7 @@ class PerubahanPenyertaanTabunganApproval extends Component
 
         return response()->streamDownload(
             fn () => print($pdf->stream()),
-            'Formulir_Pencairan_KKBA.pdf'
+            'Formulir_Perubahan_Penyertaan_KKBA_'.$this->data->masterAnggota->nomor_anggota.'.pdf'
         );
     }
 

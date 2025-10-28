@@ -90,7 +90,7 @@
   <div class="section-title">PENYERTAAN TABUNGAN</div>
   <table class="info-table">
     <tr><td class="label-col">JUMLAH</td><td>: {{isset($jumlah_penyertaan) ? 'Rp ' . number_format($jumlah_penyertaan) : '.............................................................................................'}}</td></tr>
-    <tr><td class="label-col">TERBILANG</td><td>: {{isset($terbilang_penyertaan) ? $terbilang_penyertaan : '.............................................................................................'}}</td></tr>
+    <tr><td class="label-col">TERBILANG</td><td>: <i>{{isset($terbilang_penyertaan) ? $terbilang_penyertaan . ' Rupiah' : '.............................................................................................'}}</i></td></tr>
     <tr><td class="label-col">TANGGAL PENYERTAAN</td><td>: {{isset($tgl_penyertaan) ? $tgl_penyertaan : '.............................................................................................' }}</td></tr>
   </table>
 
