@@ -135,7 +135,7 @@
 
         </form>
         @else
-        <div class="grid grid-cols-2">
+        <div class="grid grid-cols-1 md:grid-cols-2">
             <div>
                 <x-elements.detail label="Status Approval">{{ $data->status_perubahan_penyertaan.' ('.date('d F Y, H:i:s', strtotime($data->updated_at)).')' }}</x-elements.detail>
                 <x-elements.detail label="Nilai Sebelumnya">Rp {{ number_format($data->nilai_sebelum) }}</x-elements.detail>
