@@ -629,21 +629,21 @@ class TabunganController extends BaseController
                 'catatan_approver' => $request->catatan_approver
             ]);
 
-            if($request->status_pencairan == 'DISETUJUI') {
-                TabunganJurnalModels::create([
-                    'p_anggota_id' => $data->p_anggota_id,
-                    'p_jenis_tabungan_id' => $data->p_jenis_tabungan_id,
-                    'tgl_transaksi' => date('Y-m-d H:i:s'),
-                    'nilai' => $request->jumlah,
-                    'nilai_sd' => 0,
-                    'catatan' => 'Penyertaan Tabungan : '.$request->catatan_approver
-                ]);
+            // if($request->status_pencairan == 'DISETUJUI') {
+            //     TabunganJurnalModels::create([
+            //         'p_anggota_id' => $data->p_anggota_id,
+            //         'p_jenis_tabungan_id' => $data->p_jenis_tabungan_id,
+            //         'tgl_transaksi' => date('Y-m-d H:i:s'),
+            //         'nilai' => $request->jumlah,
+            //         'nilai_sd' => 0,
+            //         'catatan' => 'Penyertaan Tabungan : '.$request->catatan_approver
+            //     ]);
 
-                DB::select('SELECT _tabungan_recalculate(:p_anggota_id, :tahun)', [
-                    'p_anggota_id' => $data->p_anggota_id,
-                    'tahun' => date('Y'),
-                ]);
-            }
+            //     DB::select('SELECT _tabungan_recalculate(:p_anggota_id, :tahun)', [
+            //         'p_anggota_id' => $data->p_anggota_id,
+            //         'tahun' => date('Y'),
+            //     ]);
+            // }
 
             DB::commit();
             return $this->sendResponse(['t_tabungan_penyertaan_id' => $request->id], 'Pengajuan Penyertaan Tabungan Berhasil Disubmit');
