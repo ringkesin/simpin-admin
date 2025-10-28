@@ -140,7 +140,7 @@
                 <x-elements.detail label="Status Approval">{{ $data->status_perubahan_penyertaan.' ('.date('d F Y, H:i:s', strtotime($data->updated_at)).')' }}</x-elements.detail>
                 <x-elements.detail label="Nilai Sebelumnya">Rp {{ number_format($data->nilai_sebelum) }}</x-elements.detail>
                 <x-elements.detail label="Nilai Baru">Rp {{ number_format($data->nilai_baru) }}</x-elements.detail>
-                <x-elements.detail label="Tanggal Mulai">{{ date('d F Y, H:i:s', strtotime($data->valid_from)) }}</x-elements.detail>
+                <x-elements.detail label="Tanggal Mulai">{{ date('d F Y', strtotime($data->valid_from)) }}</x-elements.detail>
                 <x-elements.detail label="Catatan Admin">{{ $catatan_approver }}</x-elements.detail>
             </div>
         </div>

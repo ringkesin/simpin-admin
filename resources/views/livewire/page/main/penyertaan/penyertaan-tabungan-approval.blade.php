@@ -124,7 +124,7 @@
             <div>
                 <x-elements.detail label="Status Approval">{{ $data->status_penyertaan.' ('.date('d F Y, H:i:s', strtotime($data->updated_at)).')' }}</x-elements.detail>
                 <x-elements.detail label="Jumlah Disetujui">Rp {{ number_format($data->jumlah_disetujui) }}</x-elements.detail>
-                <x-elements.detail label="Tanggal Pencairan">{{ date('d F Y, H:i:s', strtotime($data->tgl_pencairan)) }}</x-elements.detail>
+                <x-elements.detail label="Tanggal Penyertaan">{{ date('d F Y', strtotime($data->penyertaan_date)) }}</x-elements.detail>
                 <x-elements.detail label="Catatan Admin">{{ $catatan_approver }}</x-elements.detail>
             </div>
         </div>
