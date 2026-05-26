@@ -15,6 +15,7 @@ use App\Models\Main\TabunganPerubahanPenyertaanModels;
 use App\Models\Master\JenisTabunganModels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Exception;
 
 class TabunganController extends BaseController
@@ -278,9 +279,13 @@ class TabunganController extends BaseController
                 $sdBulanIni = TabunganJurnalModels::select(DB::raw('SUM(nilai) as total_nilai'))
                     ->where('p_anggota_id', $request->p_anggota_id)
                     ->where('p_jenis_tabungan_id', $j->p_jenis_tabungan_id)
-                    ->whereYear('tgl_transaksi', $request->tahun)
-                    ->whereMonth('tgl_transaksi', '<=', $request->bulan)
-                    ->first();
+                    ->whereDate(
+                        'tgl_transaksi',
+                        '<=',
+                    Carbon::create($request->tahun, $request->bulan, 1)->endOfMonth()
+                )
+                ->first();
+
                 $sdBulanIni = $sdBulanIni->total_nilai ?? 0;
 
                 $saldo[] = [
