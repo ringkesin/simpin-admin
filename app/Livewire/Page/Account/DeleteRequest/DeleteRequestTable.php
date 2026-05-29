@@ -5,12 +5,14 @@ namespace App\Livewire\Page\Account\DeleteRequest;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\Main\DeleteAccountRequestModels;
 use App\Traits\MyHelpers;
 use Illuminate\Support\HtmlString;
 
 class DeleteRequestTable extends DataTableComponent
 {
+    use CaseInsensitiveTableSearch;
     protected $model = DeleteAccountRequestModels::class;
 
     use MyHelpers;

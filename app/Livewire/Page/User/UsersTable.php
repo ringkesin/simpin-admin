@@ -5,10 +5,12 @@ namespace App\Livewire\Page\User;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\User;
 
 class UsersTable extends DataTableComponent
 {
+    use CaseInsensitiveTableSearch;
     protected $model = User::class;
 
     public function configure(): void

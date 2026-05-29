@@ -5,10 +5,12 @@ namespace App\Livewire\Page\Master\Anggota;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\Master\AnggotaModels;
 
 class AnggotaTable extends DataTableComponent
 {
+    use CaseInsensitiveTableSearch;
     protected $model = AnggotaModels::class;
 
     public function configure(): void

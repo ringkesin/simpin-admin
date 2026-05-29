@@ -5,12 +5,14 @@ namespace App\Livewire\Page\Main\PerubahanPenyertaan;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\Main\VPerubahanPenyertaanTabungan;
 use App\Traits\MyHelpers;
 use App\Traits\MyAlert;
 
 class PerubahanPenyertaanTabunganTable extends DataTableComponent
 {
+    use CaseInsensitiveTableSearch;
     protected $model = VPerubahanPenyertaanTabungan::class;
 
     use MyHelpers;

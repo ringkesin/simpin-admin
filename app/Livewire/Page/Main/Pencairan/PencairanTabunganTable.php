@@ -5,6 +5,7 @@ namespace App\Livewire\Page\Main\Pencairan;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\Main\VPencairanTabungan;
 use App\Models\Main\TabunganPengambilanModels;
 use App\Traits\MyHelpers;
@@ -12,6 +13,7 @@ use App\Traits\MyAlert;
 
 class PencairanTabunganTable extends DataTableComponent
 {
+    use CaseInsensitiveTableSearch;
     protected $model = VPencairanTabungan::class;
 
     use MyHelpers;

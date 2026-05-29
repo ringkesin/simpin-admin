@@ -5,11 +5,13 @@ namespace App\Livewire\Page\Main\Shu;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\Main\ShuModels;
 use App\Traits\MyHelpers;
 
 class ShuTable extends DataTableComponent
 {
+    use CaseInsensitiveTableSearch;
     protected $model = ShuModels::class;
 
     use MyHelpers;

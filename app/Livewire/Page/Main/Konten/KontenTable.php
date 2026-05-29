@@ -5,11 +5,13 @@ namespace App\Livewire\Page\Main\Konten;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\Main\ContentModels;
 use App\Traits\MyHelpers;
 
 class KontenTable extends DataTableComponent
 {
+    use CaseInsensitiveTableSearch;
     protected $model = ContentModels::class;
 
     use MyHelpers;

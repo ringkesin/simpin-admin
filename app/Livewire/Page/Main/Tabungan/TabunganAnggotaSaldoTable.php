@@ -5,11 +5,13 @@ namespace App\Livewire\Page\Main\Tabungan;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\Main\VTabunganSaldoPerYear;
 use App\Traits\MyHelpers;
 
 class TabunganAnggotaSaldoTable extends DataTableComponent
 {
+    use CaseInsensitiveTableSearch;
     protected $model = VTabunganSaldoPerYear::class;
     public $p_anggota_id;
 

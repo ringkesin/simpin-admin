@@ -5,11 +5,13 @@ namespace App\Livewire\Page\Main\Tabungan;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\Main\VTabunganSaldo;
 use App\Traits\MyHelpers;
 
 class TabunganTable extends DataTableComponent
 {
+    use CaseInsensitiveTableSearch;
     protected $model = VTabunganSaldo::class;
 
     use MyHelpers;
