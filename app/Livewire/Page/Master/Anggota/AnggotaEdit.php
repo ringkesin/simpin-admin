@@ -63,17 +63,28 @@ class AnggotaEdit extends Component
 
     public function saveUpdate() {
         $validated = $this->validate([
-            'nomor_anggota' => 'required',
-            'nama' => 'required',
-            'nik' =>  'required',
+            'nomor_anggota' => 'required|unique:p_anggota,nomor_anggota,'.$this->id.',p_anggota_id',
+            'nama' => 'required|string',
+            'email' => 'nullable|email:rfc,dns|unique:p_anggota,email,'.$this->id.',p_anggota_id',
+            'nik' =>  'required|string|unique:p_anggota,nik,'.$this->id.',p_anggota_id',
+            'mobile' => 'nullable|string|max:15|unique:p_anggota,mobile,'.$this->id.',p_anggota_id',
             'tgl_lahir' => 'required|date',
             'tanggal_masuk' => 'required|date',
+            'ktp' => 'nullable|string|max:20|unique:p_anggota,ktp,'.$this->id.',p_anggota_id',
             'valid_from' => 'required|date',
             'valid_to' => 'date|nullable'
         ], [
             'nomor_anggota.required' => 'Nomor Anggota required',
-            'nama.required' => 'User required.',
-            'nik.required' => 'ID Sign required.',
+            'nomor_anggota.unique' => 'Nomor Anggota sudah pernah terdaftar.',
+            'nama.required' => 'Nama required.',
+            'nama.string' => 'Nama harus berupa string.',
+            'email.email' => 'Format Email tidak valid.',
+            'email.unique' => 'Email sudah pernah terdaftar.',
+            'mobile.string' => 'No HP harus berupa string.',
+            'mobile.max' => 'No HP maksimal 15 karakter.',
+            'mobile.unique' => 'No HP sudah pernah terdaftar.',
+            'nik.required' => 'NIK required.',
+            'nik.string' => 'NIK harus berupa string.',
             'tgl_lahir.required' => 'Tanggal lahir required.',
             'tgl_lahir.date' => 'Format Tanggal lahir must "yyyy/mm/dd".',
             'tanggal_masuk.required' => 'Tanggal Masuk required.',
@@ -81,6 +92,8 @@ class AnggotaEdit extends Component
             'valid_from.required' => 'Valid from required.',
             'valid_from.date' => 'Format Valid from must "yyyy/mm/dd".',
             'valid_to.date' => 'Format Valid until must "yyyy/mm/dd".',
+            'ktp.max' => 'Nomor KTP maksimal 20 karakter.',
+            'ktp.unique' => 'Nomor KTP sudah pernah terdaftar.',
         ]);
         if($this->valid_to == "") {
             $this->valid_to = null;
