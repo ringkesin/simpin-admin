@@ -98,10 +98,10 @@
                     let files = event.dataTransfer.files;
                     $wire.upload('files', files);
                 "
-                x-on:click="document.getElementById('fileInput').click()"
+                x-on:click="$refs.fileInput.click()"
             >
-                <input type="file" wire:model="files" class="hidden" id="fileInput">
-                <label for="fileInput" class="block text-gray-600 cursor-pointer">
+                <input type="file" wire:model="files" class="hidden" id="fileInput" x-ref="fileInput">
+                <div class="block text-gray-600 cursor-pointer">
                     <div wire:loading wire:target="files">
                         <span class="me-1 animate-spin inline-block size-3 border-[2px] border-current border-t-transparent text-blue rounded-full" role="status" aria-label="loading">
                             <span class="sr-only">Processing.....</span>
@@ -113,7 +113,7 @@
                     <div wire:loading.remove wire:target="files">
                         Seret & Lepaskan file di sini atau klik untuk memilih
                     </div>
-                </label>
+                </div>
             </div>
 
             <!-- Menampilkan daftar nama file yang telah dipilih -->
