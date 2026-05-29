@@ -93,9 +93,14 @@ class ShuTable extends DataTableComponent
 
     public function builder(): Builder
     {
-        return ShuModels::query()
-            ->orderBy('tahun', 'desc')           // Urutan pertama
-            ->orderBy('masterAnggota.nomor_anggota', 'asc');     // Urutan kedua
+        $query = ShuModels::query();
+
+        if (! $this->hasSorts()) {
+            $query->orderBy('tahun', 'desc')           // Urutan pertama
+                ->orderBy('masterAnggota.nomor_anggota', 'asc');     // Urutan kedua
+        }
+
+        return $query;
     }
 
     public function bulkActions(): array

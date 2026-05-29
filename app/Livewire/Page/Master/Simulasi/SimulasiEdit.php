@@ -4,6 +4,7 @@ namespace App\Livewire\Page\Master\Simulasi;
 
 use Livewire\Component;
 use Illuminate\Database\QueryException;
+use Illuminate\Validation\Rule;
 use App\Models\Master\AnggotaModels;
 use App\Models\Master\SimulasiPinjamanModels;
 use App\Models\Master\JenisPinjamanModels;
@@ -62,13 +63,19 @@ class SimulasiEdit extends Component
             'p_jenis_pinjaman_id' => 'required',
             'margin' => 'required',
             'tahun_margin' => 'required',
-            'tenor' => 'required',
+            'tenor' => [
+                'required',
+                Rule::unique('t_simulasi_pinjaman', 'tenor')
+                    ->where(fn ($query) => $query->where('tahun_margin', $this->tahun_margin))
+                    ->ignore($this->id),
+            ],
             'biaya_admin' => 'required'
         ], [
             'p_jenis_pinjaman_id.required' => 'Jenis Pinjaman Wajib Diisi',
             'margin.required' => 'Bunga Masih Wajib Diisi.',
             'tahun_margin.required' => 'Tahun Bunga Wajib Diisi.',
-            'tenor.date' => 'Tenor Wajib Diisi.',
+            'tenor.required' => 'Tenor Wajib Diisi.',
+            'tenor.unique' => 'Kombinasi tahun dan tenor sudah terdaftar.',
             'biaya_admin.required' => 'Biaya Admin Wajib Diisi.'
         ]);
 
