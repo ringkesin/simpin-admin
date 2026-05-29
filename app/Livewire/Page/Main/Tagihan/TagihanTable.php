@@ -100,10 +100,15 @@ class TagihanTable extends DataTableComponent
 
     public function builder(): Builder
     {
-        return TagihanModels::query()
-            ->orderBy('tahun', 'desc')           // Urutan pertama
-            ->orderBy('bulan', 'desc')
-            ->orderBy('masterAnggota.nomor_anggota', 'asc');     // Urutan kedua
+        $query = TagihanModels::query();
+
+        if (! $this->hasSorts()) {
+            $query->orderBy('tahun', 'desc')           // Urutan pertama
+                ->orderBy('bulan', 'desc')
+                ->orderBy('masterAnggota.nomor_anggota', 'asc');     // Urutan kedua
+        }
+
+        return $query;
     }
 
     public function bulkActions(): array

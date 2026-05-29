@@ -100,9 +100,14 @@ class PinjamanTable extends DataTableComponent
 
     public function builder(): Builder
     {
-        return PinjamanModels::query()
-            ->orderBy('created_at', 'desc')           // Urutan pertama
-            ->orderBy('masterAnggota.nomor_anggota', 'asc');     // Urutan kedua
+        $query = PinjamanModels::query();
+
+        if (! $this->hasSorts()) {
+            $query->orderBy('created_at', 'desc')           // Urutan pertama
+                ->orderBy('masterAnggota.nomor_anggota', 'asc');     // Urutan kedua
+        }
+
+        return $query;
     }
 
     public function bulkActions(): array

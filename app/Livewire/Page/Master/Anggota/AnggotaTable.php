@@ -92,8 +92,12 @@ class AnggotaTable extends DataTableComponent
 
     public function builder(): Builder
     {
-        return AnggotaModels::query()
-            ->orderBy('nomor_anggota', 'asc');
+        $query = AnggotaModels::query();
+
+        if (! $this->hasSorts()) {
+            $query->orderBy('nomor_anggota', 'asc');
+        }
+        return $query;
     }
 
     // public function bulkActions(): array
