@@ -5,7 +5,9 @@ namespace App\Livewire\Page\Main\Tagihan;
 use Livewire\Component;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Throwable;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TagihanTemplateExport;
@@ -185,10 +187,13 @@ class TagihanImport extends Component
 
     public function uploadFiles()
     {
-        // Simpan data ke database (contoh)
-        DB::beginTransaction();
-
         try {
+            $this->validate([
+                'files' => 'required|file|max:10240',
+            ]);
+
+            $this->data = [];
+
             if($this->convertToJson() == 400) {
                 return $this->sweetalert([
                     'icon' => 'error',
@@ -197,6 +202,17 @@ class TagihanImport extends Component
                     'text' => 'File Excel tidak memiliki cukup data.',
                 ]);
             }
+
+            if (empty($this->data)) {
+                return $this->sweetalert([
+                    'icon' => 'error',
+                    'confirmButtonText'  => 'Okay',
+                    'showCancelButton' => false,
+                    'text' => 'Tidak ada data valid yang bisa diimport dari file Excel.',
+                ]);
+            }
+
+            DB::beginTransaction();
 
             // Ambil daftar referensi yang dibutuhkan
             $nomorAnggotaList = collect($this->data)->pluck('nomor_anggota')->unique();
@@ -211,28 +227,37 @@ class TagihanImport extends Component
             $metodeList = MetodePembayaranModels::whereIn('metode_code', $metodeCodeList)->get()->keyBy('metode_code');
 
             $payloads = [];
-            $now = now();
 
             foreach ($this->data as $dataLoop) {
-                $anggota = $anggotaList[$dataLoop['nomor_anggota']] ?? null;
+                $anggota = $anggotaList->get($dataLoop['nomor_anggota']);
                 if (!$anggota) {
                     continue; // skip jika tidak ada anggota
                 }
 
+                $pinjaman = !empty($dataLoop['nomor_pinjaman'])
+                    ? $pinjamanList->get($dataLoop['nomor_pinjaman'])
+                    : null;
+                $status = !empty($dataLoop['status_pembayaran'])
+                    ? $statusList->get($dataLoop['status_pembayaran'])
+                    : null;
+                $metode = !empty($dataLoop['metode_pembayaran'])
+                    ? $metodeList->get($dataLoop['metode_pembayaran'])
+                    : null;
+
                 $payload = [
                     't_tagihan_id' => $dataLoop['t_tagihan_id'] ?? substr(str_replace('-', '', Str::uuid()->toString()), 0, 26),
                     'p_anggota_id' => $anggota->p_anggota_id,
-                    't_pinjaman_id' => $pinjamanList[$dataLoop['nomor_pinjaman']]?->t_pinjaman_id ?? null,
+                    't_pinjaman_id' => $pinjaman?->t_pinjaman_id,
                     'bulan' => $dataLoop['bulan'],
                     'tahun' => $dataLoop['tahun'],
                     'uraian' => $dataLoop['uraian'],
                     'jumlah_tagihan' => $dataLoop['jumlah_tagihan'],
                     'remarks' => $dataLoop['remarks'],
                     'tgl_jatuh_tempo' => !empty($dataLoop['tgl_jatuh_tempo']) ? $dataLoop['tgl_jatuh_tempo'] : null,
-                    'p_status_pembayaran_id' => $statusList[$dataLoop['status_pembayaran']]?->p_status_pembayaran_id ?? 2,
+                    'p_status_pembayaran_id' => $status?->p_status_pembayaran_id ?? 2,
                     'paid_at' => !empty($dataLoop['tgl_dibayar']) ? $dataLoop['tgl_dibayar'] : null,
                     'jumlah_pembayaran' => $dataLoop['jumlah_dibayarkan'] ?? null,
-                    'p_metode_pembayaran_id' => $metodeList[$dataLoop['metode_pembayaran']]?->p_metode_pembayaran_id ?? null,
+                    'p_metode_pembayaran_id' => $metode?->p_metode_pembayaran_id,
                 ];
 
                 $payloads[] = $payload;
@@ -240,13 +265,22 @@ class TagihanImport extends Component
 
             // dd($payloads);
 
-            if (!empty($payloads)) {
-                TagihanModels::upsert($payloads, ['t_tagihan_id'], [
-                    'p_anggota_id', 't_pinjaman_id', 'bulan', 'tahun', 'uraian', 'jumlah_tagihan',
-                    'remarks', 'tgl_jatuh_tempo', 'p_status_pembayaran_id', 'paid_at', 'jumlah_pembayaran',
-                    'p_metode_pembayaran_id', 'updated_at'
+            if (empty($payloads)) {
+                DB::rollBack();
+
+                return $this->sweetalert([
+                    'icon' => 'error',
+                    'confirmButtonText'  => 'Okay',
+                    'showCancelButton' => false,
+                    'text' => 'Data gagal diimport karena nomor anggota tidak ditemukan.',
                 ]);
             }
+
+            TagihanModels::upsert($payloads, ['t_tagihan_id'], [
+                'p_anggota_id', 't_pinjaman_id', 'bulan', 'tahun', 'uraian', 'jumlah_tagihan',
+                'remarks', 'tgl_jatuh_tempo', 'p_status_pembayaran_id', 'paid_at', 'jumlah_pembayaran',
+                'p_metode_pembayaran_id', 'updated_at'
+            ]);
 
             DB::commit();
 
@@ -259,8 +293,11 @@ class TagihanImport extends Component
             ]);
 
         } catch (QueryException $e) {
-            DB::rollBack();
-            $textError = $e->errorInfo[1] == 1062
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+
+            $textError = ($e->errorInfo[1] ?? null) == 1062
                 ? 'Data gagal di update karena duplikat data, coba kembali.'
                 : 'Data gagal di update, coba kembali.';
 
@@ -269,6 +306,23 @@ class TagihanImport extends Component
                 'confirmButtonText'  => 'Okay',
                 'showCancelButton' => false,
                 'text' => $textError,
+            ]);
+        } catch (Throwable $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+
+            Log::error('Import tagihan gagal.', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return $this->sweetalert([
+                'icon' => 'error',
+                'confirmButtonText'  => 'Okay',
+                'showCancelButton' => false,
+                'text' => 'Import gagal. Pastikan format file Excel sesuai template.',
             ]);
         }
     }
