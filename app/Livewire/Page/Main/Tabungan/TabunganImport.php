@@ -6,6 +6,7 @@ use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TabunganTemplateExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
@@ -52,12 +53,12 @@ class TabunganImport extends Component
         $this->validate([
             'files' => 'required|file|max:10240', // Maksimum 10MB per file
         ]);
-
-        $this->convertToJson();
     }
 
     public function convertToJson()
     {
+        $this->data = [];
+
         $path = $this->files->getRealPath();
         $spreadsheet = IOFactory::load($path);
         $sheet = $spreadsheet->getActiveSheet();
@@ -80,11 +81,11 @@ class TabunganImport extends Component
                 !empty($row[4])
                 ) {
                 $this->data[] = [
-                    'nomor_anggota' => trim($row[0]),
-                    'tgl_transaksi' => trim($row[1]),
+                    'nomor_anggota' => trim((string) $row[0]),
+                    'tgl_transaksi' => $this->normalizeExcelDate($row[1]),
                     'p_jenis_tabungan_id' => trim($row[2]),
-                    'remarks' => trim($row[3]),
-                    'nilai' => floatval(trim($row[4])),
+                    'remarks' => trim((string) $row[3]),
+                    'nilai' => floatval(trim((string) $row[4])),
                 ];
             }
         }
@@ -93,11 +94,26 @@ class TabunganImport extends Component
     public function uploadFiles()
     {
         try {
+            $this->validate([
+                'files' => 'required|file|max:10240',
+            ]);
+
+            $this->convertToJson();
+
+            if (empty($this->data)) {
+                return $this->sweetalert([
+                    'icon' => 'error',
+                    'confirmButtonText'  => 'Okay',
+                    'showCancelButton' => false,
+                    'text' => 'Tidak ada data valid yang bisa diimport dari file Excel.',
+                ]);
+            }
+
             $collection = collect($this->data);
             $rules = [
                 'nomor_anggota' => 'required|numeric',
                 'tgl_transaksi' => 'required|date_format:Y-m-d',
-                'p_jenis_tabungan_id' => 'required|numeric',
+                'p_jenis_tabungan_id' => 'required|numeric|exists:p_jenis_tabungan,p_jenis_tabungan_id',
                 'remarks' => 'nullable|string',
                 'nilai' => 'required|numeric',
             ];
@@ -137,23 +153,40 @@ class TabunganImport extends Component
                 ->sortBy(fn($year) => $year)
                 ->toArray();
             
-            DB::beginTransaction();
-
             $distinctNomorAnggota = collect($this->data)->pluck('nomor_anggota')->unique()->values();
-            $distinctList = AnggotaModels::whereIn('nomor_anggota', $distinctNomorAnggota)->get();
-            if(count($distinctList) > 0){
-                $anggota = [];
-                foreach($distinctList as $d){
-                    $anggota[$d['nomor_anggota']] = $d->toArray() + [
-                        'recalculate_from' => $recalculateList[$d['nomor_anggota']]
+            $anggota = AnggotaModels::whereIn('nomor_anggota', $distinctNomorAnggota)
+                ->get()
+                ->keyBy('nomor_anggota');
+
+            $missingNomorAnggota = $distinctNomorAnggota
+                ->reject(fn ($nomorAnggota) => $anggota->has($nomorAnggota))
+                ->values();
+
+            if ($missingNomorAnggota->isNotEmpty()) {
+                return $this->sweetalert([
+                    'icon' => 'error',
+                    'confirmButtonText'  => 'Okay',
+                    'showCancelButton' => false,
+                    'html' => 'Nomor anggota berikut tidak ditemukan di master anggota:<br><b>'.$missingNomorAnggota->implode(', ').'</b>',
+                ]);
+            }
+
+            if($anggota->isNotEmpty()){
+                DB::beginTransaction();
+
+                $anggota = $anggota->map(function ($d) use ($recalculateList) {
+                    return $d->toArray() + [
+                        'recalculate_from' => $recalculateList[$d->nomor_anggota]
                     ];
-                }
+                });
                 
                 $batchInsert = [];
                 foreach ($this->data as $x) {
+                    $anggotaData = $anggota->get($x['nomor_anggota']);
+
                     $batchInsert[] = [
                         't_tabungan_jurnal_id' => strtolower(Str::ulid()),
-                        'p_anggota_id' => $anggota[$x['nomor_anggota']]['p_anggota_id'],
+                        'p_anggota_id' => $anggotaData['p_anggota_id'],
                         'p_jenis_tabungan_id' => $x['p_jenis_tabungan_id'],
                         'tgl_transaksi' => $x['tgl_transaksi'].' '.date('H:i:s'),
                         'nilai' => $x['nilai'],
@@ -190,7 +223,10 @@ class TabunganImport extends Component
                 ]);
             }
         } catch (\Exception $e) {
-            DB::rollBack();
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+
             $this->sweetalert([
                 'icon' => 'error',
                 'confirmButtonText'  => 'Okay',
@@ -208,5 +244,14 @@ class TabunganImport extends Component
             'breadcrumbs' => $this->breadcrumb,
             'menu_code' => $this->menuCode,
         ]);
+    }
+
+    private function normalizeExcelDate($value): string
+    {
+        if (is_numeric($value)) {
+            return ExcelDate::excelToDateTimeObject($value)->format('Y-m-d');
+        }
+
+        return trim((string) $value);
     }
 }
