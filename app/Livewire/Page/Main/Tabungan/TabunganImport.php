@@ -153,10 +153,14 @@ class TabunganImport extends Component
                 ->sortBy(fn($year) => $year)
                 ->toArray();
             
-            $distinctNomorAnggota = collect($this->data)->pluck('nomor_anggota')->unique()->values();
-            $anggota = AnggotaModels::whereIn('nomor_anggota', $distinctNomorAnggota)
+            $distinctNomorAnggota = collect($this->data)
+                ->pluck('nomor_anggota')
+                ->map(fn ($nomorAnggota) => trim((string) $nomorAnggota))
+                ->unique()
+                ->values();
+            $anggota = AnggotaModels::whereIn(DB::raw('TRIM(nomor_anggota)'), $distinctNomorAnggota)
                 ->get()
-                ->keyBy('nomor_anggota');
+                ->keyBy(fn ($row) => trim((string) $row->nomor_anggota));
 
             $missingNomorAnggota = $distinctNomorAnggota
                 ->reject(fn ($nomorAnggota) => $anggota->has($nomorAnggota))
@@ -175,8 +179,10 @@ class TabunganImport extends Component
                 DB::beginTransaction();
 
                 $anggota = $anggota->map(function ($d) use ($recalculateList) {
+                    $nomorAnggota = trim((string) $d->nomor_anggota);
+
                     return $d->toArray() + [
-                        'recalculate_from' => $recalculateList[$d->nomor_anggota]
+                        'recalculate_from' => $recalculateList[$nomorAnggota]
                     ];
                 });
                 
