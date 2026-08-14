@@ -130,7 +130,8 @@
         <td style="padding-top: 100px;">
           <div class="signature-line">Bag. Simpin</div>
         </td>
-        <td style="padding-top: 85px;">
+        <td style="padding-top: 35px;">
+          <div style="width: 150px; margin: 0 auto 30px; color: #808080; font-size: 10px;">Diajukan secara elektronik melalui aplikasi KKBA Mobile</div>
           <div style="font-weight: bold;">{{ $nama_anggota ? $nama_anggota : '' }}</div>
           <div class="signature-line"></div>
           <div style="font-size: 11px;">Anggota</div>

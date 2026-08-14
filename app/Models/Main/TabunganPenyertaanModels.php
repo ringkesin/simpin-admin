@@ -2,22 +2,24 @@
 
 namespace App\Models\Main;
 
-use App\Models\User;
 use App\Models\Master\AnggotaModels;
 use App\Models\Master\JenisTabunganModels;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TabunganPenyertaanModels extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use HasUlids;
+    use SoftDeletes;
 
     protected $table = 't_tabungan_penyertaan';
+
     protected $primaryKey = 't_tabungan_penyertaan_id';
 
     /**
@@ -45,7 +47,7 @@ class TabunganPenyertaanModels extends Model
         'jumlah' => 'float',
     ];
 
-    public function updatedBy() : HasOne
+    public function updatedBy(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
@@ -63,5 +65,10 @@ class TabunganPenyertaanModels extends Model
     public function jenisTabungan(): HasOne
     {
         return $this->hasOne(JenisTabunganModels::class, 'p_jenis_tabungan_id', 'p_jenis_tabungan_id');
+    }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(TabunganPenyertaanFileModels::class, 't_tabungan_penyertaan_id', 't_tabungan_penyertaan_id');
     }
 }
