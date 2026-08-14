@@ -30,6 +30,22 @@
                 <x-elements.detail label="Alasan Penyertaan">{{ $data->catatan_user }}</x-elements.detail>
             </div>
         </div>
+
+        <div class="mt-6">
+            <h5 class="mb-3 font-semibold text-slate-700">Bukti Transfer</h5>
+            @if(count($buktiTransferFiles))
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach($buktiTransferFiles as $file)
+                        <a href="{{ $file['url'] }}" target="_blank" rel="noopener noreferrer" class="block overflow-hidden border rounded-lg border-slate-200 hover:border-green-500">
+                            <img src="{{ $file['url'] }}" alt="Bukti transfer {{ $file['nama_file'] }}" class="object-cover w-full h-52" />
+                            <p class="px-3 py-2 text-sm truncate text-slate-600">{{ $file['nama_file'] }}</p>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-sm text-slate-500">Bukti transfer belum diunggah.</p>
+            @endif
+        </div>
     </div>
 
     <div class="p-6 mb-6 bg-white border rounded-lg shadow-lg border-slate-200">

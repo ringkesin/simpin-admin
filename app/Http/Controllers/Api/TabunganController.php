@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\BaseController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Master\AnggotaModels;
-use App\Models\Main\TabunganModels;
-use App\Models\Main\TabunganSaldoModels;
 use App\Models\Main\TabunganJurnalModels;
+use App\Models\Main\TabunganModels;
 use App\Models\Main\TabunganPengambilanModels;
+use App\Models\Main\TabunganPenyertaanFileModels;
 use App\Models\Main\TabunganPenyertaanModels;
 use App\Models\Main\TabunganPerubahanPenyertaanModels;
+use App\Models\Main\TabunganSaldoModels;
+use App\Models\Master\AnggotaModels;
 use App\Models\Master\JenisTabunganModels;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class TabunganController extends BaseController
 {
@@ -27,15 +27,15 @@ class TabunganController extends BaseController
 
         try {
             if (in_array('state:admin', $tokenAbilities)) {
-                if(!empty($request->p_anggota_id)) {
+                if (! empty($request->p_anggota_id)) {
                     $tabunganPeriod = TabunganModels::where('p_anggota_id', $request->p_anggota_id)
-                                            ->where('bulan', $request->bulan)
-                                            ->where('tahun', $request->tahun)
-                                            ->whereNull('deleted_at')
-                                            ->first();
+                        ->where('bulan', $request->bulan)
+                        ->where('tahun', $request->tahun)
+                        ->whereNull('deleted_at')
+                        ->first();
                     $total_tabungan = 0;
 
-                    if(!empty($tabunganPeriod)) {
+                    if (! empty($tabunganPeriod)) {
                         $total_tabungan = $total_tabungan
                                             + $tabunganPeriod->simpanan_pokok
                                             + $tabunganPeriod->simpanan_wajib
@@ -64,19 +64,19 @@ class TabunganController extends BaseController
                     }
                 } else {
                     $tabunganPeriod = TabunganModels::where('bulan', $request->bulan)
-                                            ->where('tahun', $request->tahun)
-                                            ->whereNull('deleted_at');
+                        ->where('tahun', $request->tahun)
+                        ->whereNull('deleted_at');
 
                     $tabungan = [
-                        'simpanan_pokok'   => $tabunganPeriod->sum('simpanan_pokok'),
-                        'simpanan_wajib'    => $tabunganPeriod->sum('simpanan_wajib'),
+                        'simpanan_pokok' => $tabunganPeriod->sum('simpanan_pokok'),
+                        'simpanan_wajib' => $tabunganPeriod->sum('simpanan_wajib'),
                         'tabungan_sukarela' => $tabunganPeriod->sum('tabungan_sukarela'),
-                        'tabungan_indir'    => $tabunganPeriod->sum('tabungan_indir'),
-                        'kompensasi_masa_kerja' => $tabunganPeriod->sum('kompensasi_masa_kerja')
+                        'tabungan_indir' => $tabunganPeriod->sum('tabungan_indir'),
+                        'kompensasi_masa_kerja' => $tabunganPeriod->sum('kompensasi_masa_kerja'),
                     ];
 
                     $total_tabungan = 0;
-                    if(!empty($tabunganPeriod)) {
+                    if (! empty($tabunganPeriod)) {
                         $total_tabungan = $total_tabungan
                                         + $tabungan['simpanan_pokok']
                                         + $tabungan['simpanan_wajib']
@@ -95,13 +95,13 @@ class TabunganController extends BaseController
                 $anggota = AnggotaModels::where('user_id', $user->id)->first();
 
                 $tabunganPeriod = TabunganModels::where('p_anggota_id', $anggota->p_anggota_id)
-                                            ->where('bulan', $request->bulan)
-                                            ->where('tahun', $request->tahun)
-                                            ->whereNull('deleted_at')
-                                            ->first();
+                    ->where('bulan', $request->bulan)
+                    ->where('tahun', $request->tahun)
+                    ->whereNull('deleted_at')
+                    ->first();
                 $total_tabungan = 0;
 
-                if(!empty($tabunganPeriod)) {
+                if (! empty($tabunganPeriod)) {
                     $total_tabungan = $total_tabungan
                                         + $tabunganPeriod->simpanan_pokok
                                         + $tabunganPeriod->simpanan_wajib
@@ -144,7 +144,7 @@ class TabunganController extends BaseController
                 'p_anggota_id' => 'required|integer|exists:p_anggota,p_anggota_id',
                 'tahun' => 'required|integer',
                 'bulan' => 'required|integer',
-            ],[
+            ], [
                 'p_anggota_id.required' => 'Anggota harus diisi',
                 'tahun.required' => 'Tahun harus diisi',
                 'bulan.required' => 'Bulan harus diisi',
@@ -158,17 +158,17 @@ class TabunganController extends BaseController
             $isAdmin = $user->tokenCan('state:admin');
             $isAnggota = $user->tokenCan('state:anggota');
 
-            if($isAdmin){
-                $query = TabunganJurnalModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
+            if ($isAdmin) {
+                $query = TabunganJurnalModels::with(['jenisTabungan:p_jenis_tabungan_id,nama', 'masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
                     ->whereYear('tgl_transaksi', $request->tahun)
                     ->whereMonth('tgl_transaksi', $request->bulan);
             }
-            if($isAnggota) {
+            if ($isAnggota) {
                 $p_anggota_id = $user->anggota?->p_anggota_id;
-                if (!$p_anggota_id) {
+                if (! $p_anggota_id) {
                     return $this->sendError('Data anggota tidak ditemukan.', [], 404);
                 }
-                $query = TabunganJurnalModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
+                $query = TabunganJurnalModels::with(['jenisTabungan:p_jenis_tabungan_id,nama', 'masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
                     ->where('p_anggota_id', $p_anggota_id)
                     ->whereYear('tgl_transaksi', $request->tahun)
                     ->whereMonth('tgl_transaksi', $request->bulan);
@@ -178,7 +178,7 @@ class TabunganController extends BaseController
                 ->orderBy('tgl_transaksi', 'desc')
                 ->paginate(10)
                 ->through(fn ($item) => $item->makeHidden([
-                    'p_anggota_id','p_jenis_tabungan_id','updated_at','deleted_at', 'created_by', 'updated_by','deleted_by',
+                    'p_anggota_id', 'p_jenis_tabungan_id', 'updated_at', 'deleted_at', 'created_by', 'updated_by', 'deleted_by',
                 ]));
 
             return $this->sendResponse($listPengajuan, 'Daftar Mutasi Tabungan Berhasil Diambil');
@@ -193,7 +193,7 @@ class TabunganController extends BaseController
             $validator = Validator::make($request->all(), [
                 'p_anggota_id' => 'required|integer|exists:p_anggota,p_anggota_id',
                 'tahun' => 'required|integer',
-            ],[
+            ], [
                 'p_anggota_id.required' => 'Anggota harus diisi',
                 'tahun.required' => 'Tahun harus diisi',
             ]);
@@ -211,25 +211,25 @@ class TabunganController extends BaseController
             }
 
             $get = TabunganSaldoModels::with('jenisTabungan')->where('p_anggota_id', $request->p_anggota_id)->where('tahun', $request->tahun)->get();
-            if( ! $get){
+            if (! $get) {
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);
             }
 
             $totalSaldo = 0;
             $detailSaldo = [];
-            foreach($get as $g){
+            foreach ($get as $g) {
                 $totalSaldo = $totalSaldo + $g->total_sd;
                 $detailSaldo[] = [
                     'p_jenis_tabungan_id' => $g->p_jenis_tabungan_id,
                     'jenis_tabungan' => $g->jenisTabungan->nama,
-                    'saldo_sd_bulan_ini' => $g->total_sd
+                    'saldo_sd_bulan_ini' => $g->total_sd,
                 ];
             }
 
             $saldo = [
                 'tahun' => $request->tahun,
                 'total_saldo_sd' => $totalSaldo,
-                'detail' => $detailSaldo
+                'detail' => $detailSaldo,
             ];
 
             return $this->sendResponse($saldo, 'Data Berhasil Ditampilkan');
@@ -245,7 +245,7 @@ class TabunganController extends BaseController
                 'p_anggota_id' => 'required|integer|exists:p_anggota,p_anggota_id',
                 'tahun' => 'required|integer',
                 'bulan' => 'required|integer',
-            ],[
+            ], [
                 'p_anggota_id.required' => 'Anggota harus diisi',
                 'tahun.required' => 'Tahun harus diisi',
                 'bulan.required' => 'Bulan harus diisi',
@@ -267,7 +267,7 @@ class TabunganController extends BaseController
             $totalBulanIni = 0;
             $totalBulanIniSd = 0;
             $jenisTabungan = JenisTabunganModels::all();
-            foreach($jenisTabungan as $j){
+            foreach ($jenisTabungan as $j) {
                 $bulanIni = TabunganJurnalModels::select(DB::raw('SUM(nilai) as total_nilai'))
                     ->where('p_anggota_id', $request->p_anggota_id)
                     ->where('p_jenis_tabungan_id', $j->p_jenis_tabungan_id)
@@ -282,9 +282,9 @@ class TabunganController extends BaseController
                     ->whereDate(
                         'tgl_transaksi',
                         '<=',
-                    Carbon::create($request->tahun, $request->bulan, 1)->endOfMonth()
-                )
-                ->first();
+                        Carbon::create($request->tahun, $request->bulan, 1)->endOfMonth()
+                    )
+                    ->first();
 
                 $sdBulanIni = $sdBulanIni->total_nilai ?? 0;
 
@@ -298,6 +298,7 @@ class TabunganController extends BaseController
                 $totalBulanIni = $totalBulanIni + $bulanIni;
                 $totalBulanIniSd = $totalBulanIniSd + $sdBulanIni;
             }
+
             return $this->sendResponse([
                 'bulan' => $request->bulan,
                 'tahun' => $request->tahun,
@@ -305,7 +306,7 @@ class TabunganController extends BaseController
                     'saldo_bulan_ini' => $totalBulanIni,
                     'saldo_sd_bulan_ini' => $totalBulanIniSd,
                 ],
-                'detail' => $saldo
+                'detail' => $saldo,
             ], 'Data Berhasil Ditampilkan');
         } catch (Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
@@ -323,7 +324,7 @@ class TabunganController extends BaseController
                 'rekening_bank' => 'required|string|max:200',
                 'rekening_no' => 'required|numeric',
                 'keterangan' => 'nullable|max:2024',
-            ],[
+            ], [
                 'p_anggota_id.required' => 'Anggota harus diisi',
                 'p_jenis_tabungan_id.required' => 'Jenis Tabungan harus diisi',
                 'jumlah_diambil.required' => 'Jumlah Diambil harus diisi',
@@ -350,7 +351,7 @@ class TabunganController extends BaseController
                 'jumlah_diambil' => $request->jumlah_diambil,
                 'rekening_no' => $request->rekening_no,
                 'rekening_bank' => $request->rekening_bank,
-                'status_pengambilan' => 'PENDING', //PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK, DIBATALKAN_ANGGOTA
+                'status_pengambilan' => 'PENDING', // PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK, DIBATALKAN_ANGGOTA
                 'catatan_user' => $request->keterangan,
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
@@ -371,15 +372,15 @@ class TabunganController extends BaseController
             $isAdmin = $user->tokenCan('state:admin');
             $isAnggota = $user->tokenCan('state:anggota');
 
-            if($isAdmin){
-                $query = TabunganPengambilanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
+            if ($isAdmin) {
+                $query = TabunganPengambilanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama', 'masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
             }
-            if($isAnggota) {
+            if ($isAnggota) {
                 $p_anggota_id = $user->anggota?->p_anggota_id;
-                if (!$p_anggota_id) {
+                if (! $p_anggota_id) {
                     return $this->sendError('Data anggota tidak ditemukan.', [], 404);
                 }
-                $query = TabunganPengambilanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
+                $query = TabunganPengambilanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama', 'masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
                     ->where('p_anggota_id', $p_anggota_id);
             }
 
@@ -387,7 +388,7 @@ class TabunganController extends BaseController
                 ->orderBy('created_at', 'desc')
                 ->paginate(10)
                 ->through(fn ($item) => $item->makeHidden([
-                    'p_anggota_id','p_jenis_tabungan_id','deleted_at', 'created_by', 'updated_by','deleted_by',
+                    'p_anggota_id', 'p_jenis_tabungan_id', 'deleted_at', 'created_by', 'updated_by', 'deleted_by',
                 ]));
 
             return $this->sendResponse($listPengajuan, 'Daftar Pengajuan Pencairan Tabungan Berhasil Diambil');
@@ -411,9 +412,8 @@ class TabunganController extends BaseController
             return response()->json(['message' => 'Tidak diizinkan menghapus pencairan ini.'], 403);
         }
 
-        if ($isAnggota){
-            if($data->status_pengambilan !== 'PENDING') //available status = 'PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK'
-            {
+        if ($isAnggota) {
+            if ($data->status_pengambilan !== 'PENDING') { // available status = 'PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK'
                 return response()->json(['message' => "Tidak diizinkan menghapus pengajuan ini, karena statusnya tidak lagi 'Pending'."], 403);
             }
         }
@@ -432,8 +432,8 @@ class TabunganController extends BaseController
             'status_pencairan' => 'required',
             'tgl_pencairan' => 'nullable|date|date_format:Y-m-d',
             'jumlah_disetujui' => 'required|numeric',
-            'catatan_approver' =>  'required|max:2024',
-        ],[
+            'catatan_approver' => 'required|max:2024',
+        ], [
             'status_pencairan.required' => 'Status Pencairan harus diisi.',
             'tgl_pencairan.required' => 'Tgl. Pencairan harus diisi.',
             'jumlah_disetujui.required' => 'Jumlah harus diisi.',
@@ -449,7 +449,7 @@ class TabunganController extends BaseController
             $user = $request->user();
             $isAdmin = $user->tokenCan('state:admin');
 
-            if(!$isAdmin) {
+            if (! $isAdmin) {
                 return $this->sendError('Anda tidak ada akses.', [], 403);
             }
 
@@ -457,19 +457,19 @@ class TabunganController extends BaseController
 
             TabunganPengambilanModels::where('t_tabungan_pengambilan_id', $request->id)->update([
                 'status_pengambilan' => $request->status_pencairan,
-                'tgl_pencairan' => ( ! empty($request->tgl_pencairan)) ? $request->tgl_pencairan.' '.date('H:i:s') : null,
+                'tgl_pencairan' => (! empty($request->tgl_pencairan)) ? $request->tgl_pencairan.' '.date('H:i:s') : null,
                 'jumlah_disetujui' => $request->jumlah_disetujui,
-                'catatan_approver' => $request->catatan_approver
+                'catatan_approver' => $request->catatan_approver,
             ]);
 
-            if($request->status_pencairan == 'DISETUJUI') {
+            if ($request->status_pencairan == 'DISETUJUI') {
                 TabunganJurnalModels::create([
                     'p_anggota_id' => $data->p_anggota_id,
                     'p_jenis_tabungan_id' => $data->p_jenis_tabungan_id,
                     'tgl_transaksi' => date('Y-m-d H:i:s'),
                     'nilai' => '-'.$request->jumlah_disetujui,
                     'nilai_sd' => 0,
-                    'catatan' => 'Pencairan Tabungan : '.$request->catatan_approver
+                    'catatan' => 'Pencairan Tabungan : '.$request->catatan_approver,
                 ]);
 
                 DB::select('SELECT _tabungan_recalculate(:p_anggota_id, :tahun)', [
@@ -479,9 +479,11 @@ class TabunganController extends BaseController
             }
 
             DB::commit();
+
             return $this->sendResponse(['t_tabungan_pengambilan_id' => $request->id], 'Pengajuan Pencairan Tabungan Berhasil Disubmit');
         } catch (\Exception $e) {
             DB::rollBack();
+
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
@@ -496,7 +498,9 @@ class TabunganController extends BaseController
                 'jumlah' => 'required|numeric',
                 'tanggal_penyertaan' => 'required|date',
                 'keterangan' => 'nullable|max:2024',
-            ],[
+                'bukti_transfer' => 'nullable|array',
+                'bukti_transfer.*' => 'image|mimes:jpg,jpeg,png|max:5120',
+            ], [
                 'p_anggota_id.required' => 'Anggota harus diisi',
                 'p_jenis_tabungan_id.required' => 'Jenis Tabungan harus diisi',
                 'jumlah.required' => 'Jumlah harus diisi',
@@ -521,11 +525,24 @@ class TabunganController extends BaseController
                 'p_jenis_tabungan_id' => $request->p_jenis_tabungan_id,
                 'penyertaan_date' => $request->tanggal_penyertaan,
                 'jumlah' => $request->jumlah,
-                'status_penyertaan' => 'PENDING', //PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK, DIBATALKAN_ANGGOTA
+                'status_penyertaan' => 'PENDING', // PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK, DIBATALKAN_ANGGOTA
                 'catatan_user' => $request->keterangan,
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
             ]);
+
+            foreach ($request->file('bukti_transfer', []) as $file) {
+                $path = $file->store('uploads/penyertaan/bukti_transfer', 'kkba_simpin');
+
+                TabunganPenyertaanFileModels::create([
+                    't_tabungan_penyertaan_id' => $pengajuan_penyertaan->t_tabungan_penyertaan_id,
+                    'nama_file' => $file->getClientOriginalName(),
+                    'path_file' => $path,
+                    'mime_type' => $file->getMimeType(),
+                    'created_by' => $user->id,
+                    'updated_by' => $user->id,
+                ]);
+            }
 
             DB::commit();
 
@@ -542,15 +559,15 @@ class TabunganController extends BaseController
             $isAdmin = $user->tokenCan('state:admin');
             $isAnggota = $user->tokenCan('state:anggota');
 
-            if($isAdmin){
-                $query = TabunganPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
+            if ($isAdmin) {
+                $query = TabunganPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama', 'masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
             }
-            if($isAnggota) {
+            if ($isAnggota) {
                 $p_anggota_id = $user->anggota?->p_anggota_id;
-                if (!$p_anggota_id) {
+                if (! $p_anggota_id) {
                     return $this->sendError('Data anggota tidak ditemukan.', [], 404);
                 }
-                $query = TabunganPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
+                $query = TabunganPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama', 'masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
                     ->where('p_anggota_id', $p_anggota_id);
             }
 
@@ -558,7 +575,7 @@ class TabunganController extends BaseController
                 ->orderBy('created_at', 'desc')
                 ->paginate(10)
                 ->through(fn ($item) => $item->makeHidden([
-                    'p_anggota_id','p_jenis_tabungan_id','deleted_at', 'created_by', 'updated_by','deleted_by',
+                    'p_anggota_id', 'p_jenis_tabungan_id', 'deleted_at', 'created_by', 'updated_by', 'deleted_by',
                 ]));
 
             return $this->sendResponse($listPengajuan, 'Daftar Pengajuan Penyertaan Tabungan Berhasil Diambil');
@@ -582,9 +599,8 @@ class TabunganController extends BaseController
             return response()->json(['message' => 'Tidak diizinkan menghapus pencairan ini.'], 403);
         }
 
-        if ($isAnggota){
-            if($data->status_pengambilan !== 'PENDING') //available status = 'PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK'
-            {
+        if ($isAnggota) {
+            if ($data->status_pengambilan !== 'PENDING') { // available status = 'PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK'
                 return response()->json(['message' => "Tidak diizinkan menghapus pengajuan ini, karena statusnya tidak lagi 'Pending'."], 403);
             }
         }
@@ -603,8 +619,8 @@ class TabunganController extends BaseController
             'status_penyertaan' => 'required',
             'jumlah' => 'required|numeric',
             'tanggal_penyertaan' => 'required|date',
-            'catatan_approver' =>  'required|max:2024',
-        ],[
+            'catatan_approver' => 'required|max:2024',
+        ], [
             'status_penyertaan.required' => 'Status Penyertaan harus diisi.',
             'jumlah.required' => 'Jumlah harus diisi',
             'tanggal_penyertaan.required' => 'Tanggal Penyertaan harus diisi',
@@ -621,7 +637,7 @@ class TabunganController extends BaseController
             $user = $request->user();
             $isAdmin = $user->tokenCan('state:admin');
 
-            if(!$isAdmin) {
+            if (! $isAdmin) {
                 return $this->sendError('Anda tidak ada akses.', [], 403);
             }
 
@@ -629,9 +645,9 @@ class TabunganController extends BaseController
 
             TabunganPenyertaanModels::where('t_tabungan_penyertaan_id', $request->id)->update([
                 'status_penyertaan' => $request->status_penyertaan,
-                'penyertaan_date' => ( ! empty($request->tanggal_penyertaan)) ? $request->tanggal_penyertaan.' '.date('H:i:s') : null,
+                'penyertaan_date' => (! empty($request->tanggal_penyertaan)) ? $request->tanggal_penyertaan.' '.date('H:i:s') : null,
                 'jumlah' => $request->jumlah,
-                'catatan_approver' => $request->catatan_approver
+                'catatan_approver' => $request->catatan_approver,
             ]);
 
             // if($request->status_pencairan == 'DISETUJUI') {
@@ -651,9 +667,11 @@ class TabunganController extends BaseController
             // }
 
             DB::commit();
+
             return $this->sendResponse(['t_tabungan_penyertaan_id' => $request->id], 'Pengajuan Penyertaan Tabungan Berhasil Disubmit');
         } catch (\Exception $e) {
             DB::rollBack();
+
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
@@ -668,7 +686,7 @@ class TabunganController extends BaseController
                 'nilai_baru' => 'required|numeric',
                 'valid_from' => 'required|date',
                 'keterangan' => 'nullable|max:2024',
-            ],[
+            ], [
                 'p_anggota_id.required' => 'Anggota harus diisi',
                 'p_jenis_tabungan_id.required' => 'Jenis Tabungan harus diisi',
                 'nilai_baru.required' => 'Nilai Perubahan harus diisi',
@@ -693,7 +711,7 @@ class TabunganController extends BaseController
                 'p_jenis_tabungan_id' => $request->p_jenis_tabungan_id,
                 'valid_from' => $request->valid_from,
                 'nilai_baru' => $request->nilai_baru,
-                'status_perubahan_penyertaan' => 'PENDING', //PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK, DIBATALKAN_ANGGOTA
+                'status_perubahan_penyertaan' => 'PENDING', // PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK, DIBATALKAN_ANGGOTA
                 'catatan_user' => $request->keterangan,
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
@@ -714,15 +732,15 @@ class TabunganController extends BaseController
             $isAdmin = $user->tokenCan('state:admin');
             $isAnggota = $user->tokenCan('state:anggota');
 
-            if($isAdmin){
-                $query = TabunganPerubahanPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
+            if ($isAdmin) {
+                $query = TabunganPerubahanPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama', 'masterAnggota:p_anggota_id,nomor_anggota,nama,nik']);
             }
-            if($isAnggota) {
+            if ($isAnggota) {
                 $p_anggota_id = $user->anggota?->p_anggota_id;
-                if (!$p_anggota_id) {
+                if (! $p_anggota_id) {
                     return $this->sendError('Data anggota tidak ditemukan.', [], 404);
                 }
-                $query = TabunganPerubahanPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama','masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
+                $query = TabunganPerubahanPenyertaanModels::with(['jenisTabungan:p_jenis_tabungan_id,nama', 'masterAnggota:p_anggota_id,nomor_anggota,nama,nik'])
                     ->where('p_anggota_id', $p_anggota_id);
             }
 
@@ -730,7 +748,7 @@ class TabunganController extends BaseController
                 ->orderBy('created_at', 'desc')
                 ->paginate(10)
                 ->through(fn ($item) => $item->makeHidden([
-                    'p_anggota_id','p_jenis_tabungan_id','deleted_at', 'created_by', 'updated_by','deleted_by',
+                    'p_anggota_id', 'p_jenis_tabungan_id', 'deleted_at', 'created_by', 'updated_by', 'deleted_by',
                 ]));
 
             return $this->sendResponse($listPengajuan, 'Daftar Pengajuan Perubahan Penyertaan Tabungan Berhasil Diambil');
@@ -754,9 +772,8 @@ class TabunganController extends BaseController
             return response()->json(['message' => 'Tidak diizinkan menghapus pencairan ini.'], 403);
         }
 
-        if ($isAnggota){
-            if($data->status_pengambilan !== 'PENDING') //available status = 'PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK'
-            {
+        if ($isAnggota) {
+            if ($data->status_pengambilan !== 'PENDING') { // available status = 'PENDING, DIVERIFIKASI, DISETUJUI, DITOLAK'
                 return response()->json(['message' => "Tidak diizinkan menghapus pengajuan ini, karena statusnya tidak lagi 'Pending'."], 403);
             }
         }
@@ -776,8 +793,8 @@ class TabunganController extends BaseController
             'nilai_sebelum' => 'required|numeric',
             'nilai_baru' => 'required|numeric',
             'valid_from' => 'required|date',
-            'catatan_approver' =>  'required|max:2024',
-        ],[
+            'catatan_approver' => 'required|max:2024',
+        ], [
             'status_perubahan_penyertaan.required' => 'Status Perubahan Penyertaan harus diisi.',
             'nilai_sebelum.required' => 'Nilai Sebelum Perubahan harus diisi',
             'nilai_baru.required' => 'Nilai Perubahan harus diisi',
@@ -795,7 +812,7 @@ class TabunganController extends BaseController
             $user = $request->user();
             $isAdmin = $user->tokenCan('state:admin');
 
-            if(!$isAdmin) {
+            if (! $isAdmin) {
                 return $this->sendError('Anda tidak ada akses.', [], 403);
             }
 
@@ -803,16 +820,18 @@ class TabunganController extends BaseController
 
             TabunganPerubahanPenyertaanModels::where('t_tabungan_perubahan_penyertaan_id', $request->id)->update([
                 'status_perubahan_penyertaan' => $request->status_perubahan_penyertaan,
-                'valid_from' => ( ! empty($request->valid_from)) ? $request->valid_from.' '.date('H:i:s') : null,
+                'valid_from' => (! empty($request->valid_from)) ? $request->valid_from.' '.date('H:i:s') : null,
                 'nilai_sebelum' => $request->nilai_sebelum,
                 'nilai_baru' => $request->nilai_baru,
-                'catatan_approver' => $request->catatan_approver
+                'catatan_approver' => $request->catatan_approver,
             ]);
 
             DB::commit();
+
             return $this->sendResponse(['t_tabungan_perubahan_penyertaan_id' => $request->id], 'Pengajuan Perubahan Penyertaan Tabungan Berhasil Disubmit');
         } catch (\Exception $e) {
             DB::rollBack();
+
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
