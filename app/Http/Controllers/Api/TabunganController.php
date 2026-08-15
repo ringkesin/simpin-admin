@@ -397,6 +397,82 @@ class TabunganController extends BaseController
         }
     }
 
+    /**
+     * Grid pengajuan pencairan untuk admin.
+     * Payload mengikuti pola grid: page, perpage, dan data.
+     */
+    public function getGridPengajuanPencairan(Request $request)
+    {
+        try {
+            $page = max((int) $request->input('page', 1), 1);
+            $perPage = min(max((int) $request->input('perpage', 10), 1), 100);
+            $offset = ($page - 1) * $perPage;
+            $data = $request->input('data', []);
+
+            $pengajuan = TabunganPengambilanModels::with([
+                'jenisTabungan:p_jenis_tabungan_id,nama',
+                'masterAnggota:p_anggota_id,nomor_anggota,nama,nik,email,mobile',
+            ]);
+
+            if (isset($data['p_anggota_id'])) {
+                $pengajuan->where('p_anggota_id', $data['p_anggota_id']);
+            }
+
+            if (isset($data['p_jenis_tabungan_id'])) {
+                $pengajuan->where('p_jenis_tabungan_id', $data['p_jenis_tabungan_id']);
+            }
+
+            if (isset($data['status_pengambilan'])) {
+                $pengajuan->where('status_pengambilan', $data['status_pengambilan']);
+            }
+
+            if (isset($data['tanggal_pengajuan_dari'])) {
+                $pengajuan->whereDate('tgl_pengajuan', '>=', $data['tanggal_pengajuan_dari']);
+            }
+
+            if (isset($data['tanggal_pengajuan_sampai'])) {
+                $pengajuan->whereDate('tgl_pengajuan', '<=', $data['tanggal_pengajuan_sampai']);
+            }
+
+            if (isset($data['search']) && $data['search'] !== '') {
+                $search = $data['search'];
+
+                $pengajuan->where(function ($query) use ($search) {
+                    $query->where('rekening_no', 'like', "%{$search}%")
+                        ->orWhere('rekening_bank', 'like', "%{$search}%")
+                        ->orWhereHas('masterAnggota', function ($query) use ($search) {
+                            $query->where('nama', 'like', "%{$search}%")
+                                ->orWhere('nomor_anggota', 'like', "%{$search}%")
+                                ->orWhere('nik', 'like', "%{$search}%");
+                        });
+                });
+            }
+
+            $pengajuan = $pengajuan
+                ->offset($offset)
+                ->limit($perPage)
+                ->orderByDesc('tgl_pengajuan')
+                ->get();
+
+            if ($pengajuan->isEmpty()) {
+                return $this->sendError('Data kosong', ['error' => 'Data tidak ditemukan'], 404);
+            }
+
+            $pengajuan->makeHidden([
+                'p_anggota_id',
+                'p_jenis_tabungan_id',
+                'deleted_at',
+                'created_by',
+                'updated_by',
+                'deleted_by',
+            ]);
+
+            return $this->sendResponse($pengajuan, 'Data pengajuan pencairan berhasil digenerate.');
+        } catch (\Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function batalkanPencairan(Request $request, $id)
     {
         $user = $request->user();

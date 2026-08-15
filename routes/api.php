@@ -1,24 +1,24 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\FileController;
-use App\Http\Controllers\Api\MasterUnitController;
+use App\Http\Controllers\Api\KontenController;
 use App\Http\Controllers\Api\MasterAnggotaController;
+use App\Http\Controllers\Api\MasterChatReferenceTableController;
 use App\Http\Controllers\Api\MasterJenisPinjamanController;
+use App\Http\Controllers\Api\MasterJenisTabunganController;
 use App\Http\Controllers\Api\MasterKeperluanPinjamanController;
 use App\Http\Controllers\Api\MasterStatusPengajuanPinjamanController;
-use App\Http\Controllers\Api\MasterJenisTabunganController;
+use App\Http\Controllers\Api\MasterUnitController;
 use App\Http\Controllers\Api\PinjamanController;
-use App\Http\Controllers\Api\TabunganController;
-use App\Http\Controllers\Api\TagihanController;
+use App\Http\Controllers\Api\ProfileAnggotaController;
 use App\Http\Controllers\Api\ShuController;
 use App\Http\Controllers\Api\SimulasiPinjamanController;
-use App\Http\Controllers\Api\KontenController;
-use App\Http\Controllers\Api\ProfileAnggotaController;
-use App\Http\Controllers\Api\MasterChatReferenceTableController;
-use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\TabunganController;
+use App\Http\Controllers\Api\TagihanController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
 
@@ -34,7 +34,16 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    Route::get('/anggota/{p_anggota_id}', [MasterAnggotaController::class, 'getAnggotaById'])->where('id', '[0-9]+');
+    Route::post('/anggota/registrasi-baru', [MasterAnggotaController::class, 'getRegistrasiBaru'])
+        ->middleware('abilities:state:admin');
+    Route::put('/anggota/{p_anggota_id}/setujui', [MasterAnggotaController::class, 'setujuiRegistrasi'])
+        ->middleware('abilities:state:admin')
+        ->where('p_anggota_id', '[0-9]+');
+    Route::post('/anggota/{p_anggota_id}/daftar-user', [MasterAnggotaController::class, 'daftarUser'])
+        ->middleware('abilities:state:admin')
+        ->where('p_anggota_id', '[0-9]+');
+    Route::get('/anggota/{p_anggota_id}', [MasterAnggotaController::class, 'getAnggotaById'])
+        ->where('p_anggota_id', '[0-9]+');
     Route::post('/file/get-link', [FileController::class, 'getLink']);
     Route::post('/delete-account', [AuthController::class, 'requestDeleteAccount']);
 
@@ -61,6 +70,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/pencairan')->group(function () {
             Route::post('/pengajuan', [TabunganController::class, 'formPengajuanPencairan']);
             Route::get('/pengajuan/list', [TabunganController::class, 'listPengajuanPencairan']);
+            Route::post('/pengajuan/grid', [TabunganController::class, 'getGridPengajuanPencairan'])
+                ->middleware('abilities:state:admin');
             Route::delete('/pembatalan/{id}', [TabunganController::class, 'batalkanPencairan'])->where('id', '[A-Za-z0-9]+');
             Route::post('/approval', [TabunganController::class, 'approvalPencairan']);
         });
@@ -119,5 +130,5 @@ Route::post('/anggota/register', [MasterAnggotaController::class, 'register']);
 Route::get('/master/unit', [MasterUnitController::class, 'getAll']);
 
 Route::get('/secure-file/{path}', [FileController::class, 'getSecureFile'])
-        ->where('path', '.*')
-        ->name('secure-file');
+    ->where('path', '.*')
+    ->name('secure-file');
