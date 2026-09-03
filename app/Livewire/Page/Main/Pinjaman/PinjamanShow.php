@@ -135,7 +135,13 @@ class PinjamanShow extends Component
         }
 
         $attribute = [];
-        foreach($this->loadData['p_pinjaman_keperluan_ids'] as $d){
+        $keperluanIds = $this->loadData['p_pinjaman_keperluan_ids'];
+
+        if ($keperluanIds === '') {
+            $keperluanIds = [];
+        }
+
+        foreach($keperluanIds as $d){
             $keperluanValue = PinjamanKeperluanModels::find($d);
             // dd($keperluanValue);
             $attribute[] = $keperluanValue->keperluan;
@@ -153,7 +159,7 @@ class PinjamanShow extends Component
         foreach($data as $d){
 
             $fileUrl = null;
-            if (Storage::disk('kkba_simpin')->exists($d->atribut_attachment)) {
+            if (is_string($d->atribut_attachment) && $d->atribut_attachment !== '' && Storage::disk('kkba_simpin')->exists($d->atribut_attachment)) {
                 $fileUrl = URL::temporarySignedRoute(
                     'secure-file', // Route name
                     now()->addMinutes(1), // Expiration time
