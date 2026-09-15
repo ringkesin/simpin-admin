@@ -2,25 +2,26 @@
 
 namespace App\Models\Main;
 
-use App\Models\User;
 use App\Models\Master\AnggotaModels;
 use App\Models\Master\JenisTabunganModels;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TabunganJurnalModels extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use HasUlids;
+    use SoftDeletes;
 
     protected $table = 't_tabungan_jurnal';
+
     protected $primaryKey = 't_tabungan_jurnal_id';
 
-     /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var string[]
@@ -55,7 +56,7 @@ class TabunganJurnalModels extends Model
         return number_format($this->nilai_sd, 2, ',', '.');
     }
 
-    public function updatedBy() : HasOne
+    public function updatedBy(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
@@ -67,7 +68,7 @@ class TabunganJurnalModels extends Model
 
     public function masterAnggota(): HasOne
     {
-        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id');
+        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id')->withTrashed();
     }
 
     public function jenisTabungan(): HasOne

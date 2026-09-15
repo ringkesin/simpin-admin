@@ -18,13 +18,13 @@
                     </x-button>
                 </div>
                 <div>
-
+                    @if (empty($loadData['deleted_at']))
                     <x-elements.button :href="route('master.anggota.edit', $id)" :variant="'secondary'" :style="'outlined'" :type="'link'">
                         <x-lucide-square-pen class="size-5"/>
                         <span class="xs:block">Update</span>
                     </x-elements.button>
 
-                    @if(empty($loadData['user_id']) && !empty($loadData['tgl_lahir']))
+                    @if(empty($loadData['user_id']) && !empty($loadData['is_registered']) && !empty($loadData['nomor_anggota']) && !empty($loadData['tgl_lahir']))
                     <x-elements.button :variant="'primary'" :style="'outlined'" :type="'button'" wire:click="registerUser" wire:loading.attr="disabled" >
                         <div class='flex gap-x-1' >
                             <x-lucide-user-plus class="size-5" wire:loading.remove wire:target="registerUser"/>
@@ -32,6 +32,14 @@
                                 <span class="sr-only">Processing.....</span>
                             </span>
                             <span class="xs:block">Create User</span>
+                        </div>
+                    </x-elements.button>
+
+                    <x-elements.button :href="'#'" :variant="'danger'" :style="'outlined'" :type="'button'" wire:click="deleteMember" wire:confirm="Apakah Anda yakin ingin menghapus anggota ini?" wire:loading.attr="disabled">
+                        <div class='flex gap-x-1'>
+                            <x-lucide-trash-2 class="size-5" wire:loading.remove wire:target="deleteMember"/>
+                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="deleteMember"></span>
+                            <span class="xs:block">Hapus</span>
                         </div>
                     </x-elements.button>
                     @elseif(!empty($loadData['user_id']))
@@ -42,6 +50,47 @@
                                 <span class="sr-only">Processing.....</span>
                             </span>
                             <span class="xs:block">Reset User</span>
+                        </div>
+                    </x-elements.button>
+
+                    <x-elements.button :href="'#'" :variant="'danger'" :style="'outlined'" :type="'button'" wire:click="deleteMember" wire:confirm="Apakah Anda yakin ingin menghapus anggota dan menonaktifkan user ini?" wire:loading.attr="disabled">
+                        <div class='flex gap-x-1'>
+                            <x-lucide-trash-2 class="size-5" wire:loading.remove wire:target="deleteMember"/>
+                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="deleteMember"></span>
+                            <span class="xs:block">Hapus</span>
+                        </div>
+                    </x-elements.button>
+                    @elseif(empty($loadData['is_registered']) && empty($loadData['nomor_anggota']))
+                    <x-elements.button :href="'#'" :variant="'danger'" :style="'outlined'" :type="'button'" wire:click="rejectRegistration" wire:confirm="Apakah Anda yakin ingin menolak registrasi anggota ini?" wire:loading.attr="disabled">
+                        <div class='flex gap-x-1'>
+                            <x-lucide-user-x class="size-5" wire:loading.remove wire:target="rejectRegistration"/>
+                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="rejectRegistration"></span>
+                            <span class="xs:block">Reject</span>
+                        </div>
+                    </x-elements.button>
+                    @elseif(empty($loadData['is_registered']) && !empty($loadData['nomor_anggota']))
+                    <x-elements.button :href="'#'" :variant="'danger'" :style="'outlined'" :type="'button'" wire:click="deleteMember" wire:confirm="Apakah Anda yakin ingin menghapus data anggota ini?" wire:loading.attr="disabled">
+                        <div class='flex gap-x-1'>
+                            <x-lucide-trash-2 class="size-5" wire:loading.remove wire:target="deleteMember"/>
+                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="deleteMember"></span>
+                            <span class="xs:block">Hapus</span>
+                        </div>
+                    </x-elements.button>
+                    @elseif(!empty($loadData['is_registered']) && !empty($loadData['nomor_anggota']))
+                    <x-elements.button :href="'#'" :variant="'danger'" :style="'outlined'" :type="'button'" wire:click="deleteMember" wire:confirm="Apakah Anda yakin ingin menghapus anggota ini?" wire:loading.attr="disabled">
+                        <div class='flex gap-x-1'>
+                            <x-lucide-trash-2 class="size-5" wire:loading.remove wire:target="deleteMember"/>
+                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="deleteMember"></span>
+                            <span class="xs:block">Hapus</span>
+                        </div>
+                    </x-elements.button>
+                    @endif
+                    @else
+                    <x-elements.button :href="'#'" :variant="'success'" :style="'outlined'" :type="'button'" wire:click="restoreMember" wire:confirm="Apakah Anda yakin ingin mengaktifkan kembali anggota ini?" wire:loading.attr="disabled">
+                        <div class='flex gap-x-1'>
+                            <x-lucide-refresh-cw class="size-5" wire:loading.remove wire:target="restoreMember"/>
+                            <span class="inline-block me-1 animate-spin border-[2px] border-current border-t-transparent rounded-full size-5" role="status" aria-label="loading" wire:loading wire:target="restoreMember"></span>
+                            <span class="xs:block">Aktifkan Kembali</span>
                         </div>
                     </x-elements.button>
                     @endif
@@ -72,7 +121,7 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            {{$loadData['nomor_anggota']}}
+                            {{$loadData['nomor_anggota'] ?: '-'}}
                         </div>
                     </div>
                     <!-- Group Input Nama -->
@@ -192,7 +241,31 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            @if ($loadData['is_registered'])
+                            @if (!empty($loadData['deleted_at']) && empty($loadData['nomor_anggota']))
+                                <span class="inline-flex rounded-xl bg-red-500 p-1.5 text-xs font-semibold text-white">Rejected</span>
+                            @elseif (!empty($loadData['deleted_at']))
+                                <span class="inline-flex rounded-xl bg-red-500 p-1.5 text-xs font-semibold text-white">Dihapus</span>
+                            @elseif ($loadData['is_registered'])
+                                <x-lucide-circle-check-big class="w-5 text-green-500"/>
+                            @else
+                                <x-lucide-badge-x class="w-5 text-rose-500"/>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="grid items-center grid-cols-12 gap-4 mb-4">
+                        <div class="col-span-12 md:col-span-4">
+                            <x-form.label for="user_status">
+                                Terdaftar di User
+                            </x-form.label>
+                        </div>
+                        <div class="col-span-12 md:col-span-8">
+                            @if (!empty($loadData['deleted_at']) && empty($loadData['nomor_anggota']))
+                                <span class="inline-flex rounded-xl bg-red-500 p-1.5 text-xs font-semibold text-white">Rejected</span>
+                            @elseif (!empty($loadData['deleted_at']) && !empty($loadData['user_id']))
+                                <span class="inline-flex rounded-xl bg-red-500 p-1.5 text-xs font-semibold text-white">Dihapus</span>
+                            @elseif (!empty($loadData['deleted_at']))
+                                <span class="inline-flex rounded-xl bg-blue-500 p-1.5 text-xs font-semibold text-white">Belum</span>
+                            @elseif (!empty($loadData['user_id']))
                                 <x-lucide-circle-check-big class="w-5 text-green-500"/>
                             @else
                                 <x-lucide-badge-x class="w-5 text-rose-500"/>

@@ -27,11 +27,11 @@
                     <div class="grid items-center grid-cols-12 gap-4 mb-4">
                         <div class="col-span-12 md:col-span-4">
                             <x-form.label for="nomor_anggota">
-                                Nomor Anggota <span class="text-red-500">*</span>
+                                Nomor Anggota
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.input class="w-full" type="text" name="nomor_anggota" wire:model.lazy="nomor_anggota"/>
+                            <x-form.input class="w-full" type="text" name="nomor_anggota" wire:model.lazy="nomor_anggota" readonly placeholder="Dibuat otomatis setelah menjadi member"/>
                         </div>
                     </div>
                     <!-- Group Input Nama -->
@@ -151,7 +151,10 @@
                             </x-form.label>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <x-form.checkbox class="w-8 py-3" :id="'is_registered'" :name="'is_registered'" value="{{$is_registered}}" wire:model.lazy="is_registered"/>
+                            <x-form.checkbox class="w-8 py-3" :id="'is_registered'" :name="'is_registered'" value="{{$is_registered}}" wire:model.lazy="is_registered" :disabled="!empty($loadData['is_registered'])"/>
+                            @if (empty($loadData['is_registered']))
+                                <p class="mt-1 text-xs text-slate-500">Nomor anggota akan dibuat otomatis saat data disimpan sebagai member.</p>
+                            @endif
                         </div>
                     </div>
                 </div>

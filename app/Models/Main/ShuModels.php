@@ -2,25 +2,24 @@
 
 namespace App\Models\Main;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use App\Models\Master\AnggotaModels;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Livewire\WithPagination;
 
 class ShuModels extends Model
 {
     use HasFactory;
-    use WithPagination;
     use HasUlids;
+    use WithPagination;
 
     protected $table = 't_shu';
 
     protected $primaryKey = 't_shu_id';
 
-     /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var string[]
@@ -35,10 +34,10 @@ class ShuModels extends Model
         'created_by',
         'updated_by',
         'deleted_by',
-        'deleted_at'
+        'deleted_at',
     ];
 
-    public function updatedBy() : HasOne
+    public function updatedBy(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
@@ -50,6 +49,6 @@ class ShuModels extends Model
 
     public function masterAnggota(): HasOne
     {
-        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id');
+        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id')->withTrashed();
     }
 }

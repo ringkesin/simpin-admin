@@ -2,14 +2,13 @@
 
 namespace App\Models\Main;
 
+use App\Models\Master\AnggotaModels;
+use App\Models\Master\MetodePembayaranModels;
+use App\Models\Master\StatusPembayaranModels;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use App\Models\Master\AnggotaModels;
-use App\Models\Master\StatusPembayaranModels;
-use App\Models\Master\MetodePembayaranModels;
 
 class TagihanModels extends Model
 {
@@ -20,7 +19,7 @@ class TagihanModels extends Model
 
     protected $primaryKey = 't_tagihan_id';
 
-     /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var string[]
@@ -41,10 +40,10 @@ class TagihanModels extends Model
         'created_by',
         'updated_by',
         'deleted_by',
-        'deleted_at'
+        'deleted_at',
     ];
 
-    public function updatedBy() : HasOne
+    public function updatedBy(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
@@ -56,7 +55,7 @@ class TagihanModels extends Model
 
     public function masterAnggota(): HasOne
     {
-        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id');
+        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id')->withTrashed();
     }
 
     public function pinjamanAnggota(): HasOne
@@ -73,5 +72,4 @@ class TagihanModels extends Model
     {
         return $this->hasOne(StatusPembayaranModels::class, 'p_status_pembayaran_id', 'p_status_pembayaran_id');
     }
-
 }

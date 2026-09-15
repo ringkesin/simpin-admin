@@ -7,6 +7,7 @@ use App\Models\Master\AnggotaModels;
 use App\Models\Rbac\RoleModel;
 use App\Models\Rbac\RoleUserModel;
 use App\Models\User;
+use App\Services\AnggotaRegistrationService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -82,22 +83,58 @@ class MasterAnggotaController extends BaseController
     public function setujuiRegistrasi(Request $request, $p_anggota_id)
     {
         try {
-            $anggota = AnggotaModels::where('p_anggota_id', $p_anggota_id)
-                ->whereNull('deleted_at')
-                ->first();
+            $anggota = app(AnggotaRegistrationService::class)->approve(
+                (int) $p_anggota_id,
+                $request->user()->id,
+            );
 
-            if (! $anggota) {
-                return $this->sendError('Not Found', ['error' => 'Data anggota tidak ditemukan'], 404);
-            }
+            return $this->sendResponse(['anggota' => $anggota], 'Registrasi anggota berhasil disetujui.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->sendError('Not Found', ['error' => 'Data anggota tidak ditemukan'], 404);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError('Registrasi tidak dapat disetujui', ['error' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
 
-            if (! $anggota->is_registered) {
-                $anggota->update([
-                    'is_registered' => true,
-                    'updated_by' => $request->user()->id,
-                ]);
-            }
+    /**
+     * Menolak pendaftaran calon anggota yang masih menunggu persetujuan.
+     */
+    public function tolakRegistrasi(Request $request, $p_anggota_id)
+    {
+        try {
+            $anggota = app(AnggotaRegistrationService::class)->reject(
+                (int) $p_anggota_id,
+                $request->user()->id,
+            );
 
-            return $this->sendResponse(['anggota' => $anggota->fresh()], 'Registrasi anggota berhasil disetujui.');
+            return $this->sendResponse(['anggota' => $anggota], 'Registrasi anggota berhasil ditolak.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->sendError('Not Found', ['error' => 'Data anggota tidak ditemukan'], 404);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError('Registrasi tidak dapat ditolak', ['error' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Mengaktifkan kembali anggota yang sebelumnya ditolak atau dihapus.
+     */
+    public function aktifkanKembali(Request $request, $p_anggota_id)
+    {
+        try {
+            $anggota = app(AnggotaRegistrationService::class)->restore(
+                (int) $p_anggota_id,
+                $request->user()->id,
+            );
+
+            return $this->sendResponse(['anggota' => $anggota], 'Anggota berhasil diaktifkan kembali.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->sendError('Not Found', ['error' => 'Data anggota tidak ditemukan'], 404);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError('Anggota tidak dapat diaktifkan kembali', ['error' => $e->errors()], 422);
         } catch (\Exception $e) {
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
@@ -127,6 +164,12 @@ class MasterAnggotaController extends BaseController
                 DB::rollBack();
 
                 return $this->sendError('Registrasi belum disetujui', ['error' => 'Setujui registrasi anggota terlebih dahulu'], 422);
+            }
+
+            if (empty($anggota->nomor_anggota)) {
+                DB::rollBack();
+
+                return $this->sendError('Nomor anggota belum tersedia', ['error' => 'Nomor anggota harus diterbitkan sebelum membuat user'], 422);
             }
 
             if ($anggota->user_id) {
@@ -257,15 +300,12 @@ class MasterAnggotaController extends BaseController
 
             DB::beginTransaction();
 
-            $lastAnggota = AnggotaModels::latest('nomor_anggota')->first();
-            $newNomorAnggota = $lastAnggota ? $lastAnggota->nomor_anggota + 1 : 100001;
-
             $ktpPath = $request->file('attachment_ktp')->store('uploads/ktp', 'kkba_simpin');
             $employeeCardIdPath = $request->file('attachment_kartu_pegawai')->store('uploads/kartu_pegawai', 'kkba_simpin');
 
             $anggota = AnggotaModels::create([
                 'nama' => $request->nama,
-                'nomor_anggota' => $newNomorAnggota,
+                'nomor_anggota' => null,
                 'valid_from' => date('Y-m-d'),
                 'tanggal_masuk' => date('Y-m-d'),
                 'email' => $request->alamat_email,
@@ -310,7 +350,7 @@ class MasterAnggotaController extends BaseController
             $tokenAbilities = $user->currentAccessToken()->abilities;
 
             if (in_array('state:admin', $tokenAbilities)) {
-                $anggota = AnggotaModels::with(['atribut', 'unit'])->where('p_anggota_id', $p_anggota_id)->first();
+                $anggota = AnggotaModels::withTrashed()->with(['atribut', 'unit'])->where('p_anggota_id', $p_anggota_id)->first();
             } elseif (in_array('state:anggota', $tokenAbilities)) {
                 $anggota = AnggotaModels::with(['atribut', 'unit'])
                     ->where('p_anggota_id', $p_anggota_id)

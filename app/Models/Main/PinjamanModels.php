@@ -2,24 +2,24 @@
 
 namespace App\Models\Main;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\Master\AnggotaModels;
 use App\Models\Master\JenisPinjamanModels;
 use App\Models\Master\StatusPengajuanModels;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PinjamanModels extends Model
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 't_pinjaman';
 
     protected $primaryKey = 't_pinjaman_id';
 
-     /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var string[]
@@ -52,7 +52,7 @@ class PinjamanModels extends Model
         'created_by',
         'updated_by',
         'deleted_by',
-        'deleted_at'
+        'deleted_at',
     ];
 
     protected $casts = [
@@ -66,7 +66,7 @@ class PinjamanModels extends Model
         'biaya_admin' => 'float',
     ];
 
-    public function updatedBy() : HasOne
+    public function updatedBy(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
@@ -78,7 +78,7 @@ class PinjamanModels extends Model
 
     public function masterAnggota(): HasOne
     {
-        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id');
+        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id')->withTrashed();
     }
 
     public function masterJenisPinjaman(): HasOne

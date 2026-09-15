@@ -3,17 +3,16 @@
 namespace App\Models\Master;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Master\AnggotaAtributModels;
-use App\Models\Master\UnitModels;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AnggotaModels extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'p_anggota';
 
@@ -42,7 +41,8 @@ class AnggotaModels extends Model
         'valid_to',
         'created_by',
         'updated_by',
-        'p_unit_id'
+        'deleted_by',
+        'p_unit_id',
     ];
 
     protected function casts(): array
@@ -50,6 +50,8 @@ class AnggotaModels extends Model
         return [
             'valid_from' => 'date',
             'valid_to' => 'date',
+            'is_registered' => 'boolean',
+            'deleted_at' => 'datetime',
         ];
     }
 
@@ -57,7 +59,7 @@ class AnggotaModels extends Model
     //     'p_anggota_id'
     // ];
 
-    public function updatedBy() : HasOne
+    public function updatedBy(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }

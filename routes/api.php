@@ -39,6 +39,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/anggota/{p_anggota_id}/setujui', [MasterAnggotaController::class, 'setujuiRegistrasi'])
         ->middleware('abilities:state:admin')
         ->where('p_anggota_id', '[0-9]+');
+    Route::put('/anggota/{p_anggota_id}/tolak', [MasterAnggotaController::class, 'tolakRegistrasi'])
+        ->middleware('abilities:state:admin')
+        ->where('p_anggota_id', '[0-9]+');
+    Route::put('/anggota/{p_anggota_id}/aktifkan-kembali', [MasterAnggotaController::class, 'aktifkanKembali'])
+        ->middleware('abilities:state:admin')
+        ->where('p_anggota_id', '[0-9]+');
     Route::post('/anggota/{p_anggota_id}/daftar-user', [MasterAnggotaController::class, 'daftarUser'])
         ->middleware('abilities:state:admin')
         ->where('p_anggota_id', '[0-9]+');

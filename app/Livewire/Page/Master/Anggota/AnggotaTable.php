@@ -2,23 +2,25 @@
 
 namespace App\Livewire\Page\Master\Anggota;
 
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\Views\Column;
-use App\Traits\CaseInsensitiveTableSearch;
 use App\Models\Master\AnggotaModels;
+use App\Traits\CaseInsensitiveTableSearch;
+use Illuminate\Database\Eloquent\Builder;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class AnggotaTable extends DataTableComponent
 {
     use CaseInsensitiveTableSearch;
+
     protected $model = AnggotaModels::class;
 
     public function configure(): void
     {
         $this->setPrimaryKey('p_anggota_id')
-        ->setTableRowUrl(function($row) {
-            return route('master.anggota.show', ['id' => $row->p_anggota_id]);
-        });
+            ->setAdditionalSelects(['p_anggota.deleted_at'])
+            ->setTableRowUrl(function ($row) {
+                return route('master.anggota.show', ['id' => $row->p_anggota_id]);
+            });
         $this->setComponentWrapperAttributes([
             'default' => true,
             'class' => 'rounded-none',
@@ -31,7 +33,7 @@ class AnggotaTable extends DataTableComponent
 
         $this->setTableAttributes([
             'default' => true,
-            'class' => 'table-auto border-y-1 w-full'
+            'class' => 'table-auto border-y-1 w-full',
         ]);
 
         $this->setTheadAttributes([
@@ -61,44 +63,62 @@ class AnggotaTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("ID", "p_anggota_id")
+            Column::make('ID', 'p_anggota_id')
                 ->sortable()
                 ->searchable(),
-            Column::make("Nomor Anggota", "nomor_anggota")
+            Column::make('Nomor Anggota', 'nomor_anggota')
+                ->sortable()
+                ->searchable()
+                ->format(fn ($value) => empty($value) ? '-' : $value),
+            Column::make('Nama', 'nama')
                 ->sortable()
                 ->searchable(),
-            Column::make("Nama", "nama")
-                ->sortable()
-                ->searchable(),
-            Column::make("Valid Dari", "valid_from")
+            Column::make('Valid Dari', 'valid_from')
                 ->sortable(),
-            Column::make("Valid Sampai", "valid_to")
+            Column::make('Valid Sampai', 'valid_to')
                 ->sortable()
-                ->format(function ($value, $column, $row) {
+                ->format(function ($value, $row) {
                     return empty($value) ? '-' : $value;
                 })->html(),
-            Column::make("Anggota ?", "is_registered")
+            Column::make('Anggota ?', 'is_registered')
                 ->sortable()
                 ->searchable()
-                ->format(function ($value, $column, $row) {
-                    return empty($value) ? '<span class="text-xs font-semibold text-white p-1.5 bg-blue-500 rounded-xl">Belum</span>' :  '<span class="text-xs font-semibold text-white p-1.5 bg-green-500 rounded-xl">Sudah</span>';
+                ->format(function ($value, $row) {
+                    if ($row->deleted_at) {
+                        $label = empty($row->nomor_anggota) ? 'Rejected' : 'Dihapus';
+
+                        return '<span class="text-xs font-semibold text-white p-1.5 bg-red-500 rounded-xl">'.$label.'</span>';
+                    }
+
+                    return empty($value) ? '<span class="text-xs font-semibold text-white p-1.5 bg-blue-500 rounded-xl">Belum</span>' : '<span class="text-xs font-semibold text-white p-1.5 bg-green-500 rounded-xl">Sudah</span>';
                 })->html(),
-            Column::make("Terdaftar di User", "user_id")
+            Column::make('Terdaftar di User', 'user_id')
                 ->sortable()
                 ->searchable()
-                ->format(function ($value, $column, $row) {
-                    return empty($value) ? '<span class="text-xs font-semibold text-white p-1.5 bg-blue-500 rounded-xl">Belum</span>' :  '<span class="text-xs font-semibold text-white p-1.5 bg-green-500 rounded-xl">Sudah</span>';
+                ->format(function ($value, $row) {
+                    if ($row->deleted_at) {
+                        if (empty($row->nomor_anggota)) {
+                            return '<span class="text-xs font-semibold text-white p-1.5 bg-red-500 rounded-xl">Rejected</span>';
+                        }
+
+                        return empty($value)
+                            ? '<span class="text-xs font-semibold text-white p-1.5 bg-blue-500 rounded-xl">Belum</span>'
+                            : '<span class="text-xs font-semibold text-white p-1.5 bg-red-500 rounded-xl">Dihapus</span>';
+                    }
+
+                    return empty($value) ? '<span class="text-xs font-semibold text-white p-1.5 bg-blue-500 rounded-xl">Belum</span>' : '<span class="text-xs font-semibold text-white p-1.5 bg-green-500 rounded-xl">Sudah</span>';
                 })->html(),
         ];
     }
 
     public function builder(): Builder
     {
-        $query = AnggotaModels::query();
+        $query = AnggotaModels::withTrashed();
 
         if (! $this->hasSorts()) {
             $query->orderBy('nomor_anggota', 'asc');
         }
+
         return $query;
     }
 

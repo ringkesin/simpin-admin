@@ -2,50 +2,70 @@
 
 namespace App\Livewire\Page\Master\Anggota;
 
-use Livewire\Component;
-use Illuminate\Database\QueryException;
 use App\Models\Master\AnggotaModels;
+use App\Services\AnggotaRegistrationService;
 use App\Traits\MyAlert;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use Livewire\Component;
 
 class AnggotaEdit extends Component
 {
     use MyAlert;
 
     public $breadcrumb;
+
     public $titlePage;
+
     public $menuCode;
 
     public $loadData;
+
     public $id;
+
     public $nomor_anggota;
+
     public $nama;
+
     public $email;
+
     public $mobile;
+
     public $nik;
+
     public $ktp;
+
     public $alamat;
+
     public $tgl_lahir;
+
     public $tanggal_masuk;
+
     public $valid_from;
+
     public $valid_to;
+
     public $is_registered;
 
-    public function mount($id) {
+    public function mount($id)
+    {
         $this->titlePage = 'Update Master Anggota';
         $this->menuCode = 'master-anggota';
         $this->breadcrumb = [
             ['link' => null, 'label' => 'Master'],
             ['link' => route('master.anggota.list'), 'label' => 'Anggota'],
             ['link' => route('master.anggota.show', ['id' => $id]), 'label' => 'Show'],
-            ['link' => route('master.anggota.edit', ['id' => $id]), 'label' => 'Edit']
+            ['link' => route('master.anggota.edit', ['id' => $id]), 'label' => 'Edit'],
         ];
 
         $this->id = $id;
         $this->getData($id);
     }
 
-    public function getData($id) {
-        $data = AnggotaModels::find($id);
+    public function getData($id)
+    {
+        $data = AnggotaModels::findOrFail($id);
         $this->loadData = $data;
         $this->nomor_anggota = $this->loadData['nomor_anggota'];
         $this->nama = $this->loadData['nama'];
@@ -56,26 +76,25 @@ class AnggotaEdit extends Component
         $this->alamat = $this->loadData['alamat'];
         $this->tgl_lahir = $this->loadData['tgl_lahir'];
         $this->tanggal_masuk = $this->loadData['tanggal_masuk'];
-        $this->valid_from = $this->loadData['valid_from'] ? date('Y-m-d', strtotime($this->loadData['valid_from'])) : NULL;
-        $this->valid_to = $this->loadData['valid_to'] ? date('Y-m-d', strtotime($this->loadData['valid_to'])) : NULL;
+        $this->valid_from = $this->loadData['valid_from'] ? date('Y-m-d', strtotime($this->loadData['valid_from'])) : null;
+        $this->valid_to = $this->loadData['valid_to'] ? date('Y-m-d', strtotime($this->loadData['valid_to'])) : null;
         $this->is_registered = $this->loadData['is_registered'];
     }
 
-    public function saveUpdate() {
+    public function saveUpdate()
+    {
         $validated = $this->validate([
-            'nomor_anggota' => 'required|unique:p_anggota,nomor_anggota,'.$this->id.',p_anggota_id',
             'nama' => 'required|string',
             'email' => 'nullable|email:rfc,dns|unique:p_anggota,email,'.$this->id.',p_anggota_id',
-            'nik' =>  'required|string|unique:p_anggota,nik,'.$this->id.',p_anggota_id',
+            'nik' => 'required|string|unique:p_anggota,nik,'.$this->id.',p_anggota_id',
             'mobile' => 'nullable|string|max:15|unique:p_anggota,mobile,'.$this->id.',p_anggota_id',
             'tgl_lahir' => 'required|date',
             'tanggal_masuk' => 'required|date',
             'ktp' => 'nullable|string|max:20|unique:p_anggota,ktp,'.$this->id.',p_anggota_id',
             'valid_from' => 'required|date',
-            'valid_to' => 'date|nullable'
+            'valid_to' => 'date|nullable',
+            'is_registered' => 'boolean',
         ], [
-            'nomor_anggota.required' => 'Nomor Anggota required',
-            'nomor_anggota.unique' => 'Nomor Anggota sudah pernah terdaftar.',
             'nama.required' => 'Nama required.',
             'nama.string' => 'Nama harus berupa string.',
             'email.email' => 'Format Email tidak valid.',
@@ -95,15 +114,14 @@ class AnggotaEdit extends Component
             'ktp.max' => 'Nomor KTP maksimal 20 karakter.',
             'ktp.unique' => 'Nomor KTP sudah pernah terdaftar.',
         ]);
-        if($this->valid_to == "") {
+        if ($this->valid_to == '') {
             $this->valid_to = null;
         }
 
         $redirect = route('master.anggota.list');
 
         try {
-            $post = AnggotaModels::where('p_anggota_id', $this->id)->update([
-                'nomor_anggota' => $this->nomor_anggota,
+            $attributes = [
                 'nama' => $this->nama,
                 'email' => $this->email,
                 'mobile' => $this->mobile,
@@ -114,36 +132,62 @@ class AnggotaEdit extends Component
                 'tanggal_masuk' => $this->tanggal_masuk,
                 'valid_from' => $this->valid_from,
                 'valid_to' => $this->valid_to,
-                'is_registered' => $this->is_registered
-            ]);
+            ];
 
-            if($post) {
+            $anggota = AnggotaModels::findOrFail($this->id);
+
+            if ($anggota->is_registered && ! $this->is_registered) {
+                throw ValidationException::withMessages([
+                    'is_registered' => 'Status member yang sudah disetujui tidak dapat dibatalkan.',
+                ]);
+            }
+
+            if ($this->is_registered) {
+                $post = app(AnggotaRegistrationService::class)->approve(
+                    (int) $this->id,
+                    auth()->id(),
+                    $attributes,
+                );
+            } else {
+                $post = DB::transaction(function () use ($attributes) {
+                    $anggota = AnggotaModels::whereKey($this->id)->lockForUpdate()->firstOrFail();
+                    $anggota->fill($attributes);
+                    $anggota->updated_by = auth()->id();
+                    $anggota->save();
+
+                    return $anggota;
+                });
+            }
+
+            if ($post) {
                 $redirect = route('master.anggota.show', ['id' => $this->id]);
                 $this->sweetalert([
                     'icon' => 'success',
                     'confirmButtonText' => 'Okay',
                     'showCancelButton' => false,
                     'text' => 'Data Berhasil Disimpan !',
-                    'redirectUrl' => $redirect
+                    'redirectUrl' => $redirect,
                 ]);
             } else {
                 $this->sweetalert([
                     'icon' => 'warning',
-                    'confirmButtonText'  => 'Okay',
+                    'confirmButtonText' => 'Okay',
                     'showCancelButton' => false,
                     'text' => 'Data gagal di update, coba kembali.',
                 ]);
             }
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (QueryException $e) {
             $textError = '';
-            if($e->errorInfo[1] == 1062) {
+            if ($e->errorInfo[1] == 1062) {
                 $textError = 'Data gagal di update karena duplikat data, coba kembali.';
             } else {
                 $textError = 'Data gagal di update, coba kembali.';
             }
             $this->sweetalert([
                 'icon' => 'error',
-                'confirmButtonText'  => 'Okay',
+                'confirmButtonText' => 'Okay',
                 'showCancelButton' => false,
                 'text' => $textError,
             ]);
@@ -153,10 +197,10 @@ class AnggotaEdit extends Component
     public function render()
     {
         return view('livewire.page.master.anggota.anggota-edit')
-        ->layoutData([
-            'title' => $this->titlePage, //Page Title
-            'breadcrumbs' => $this->breadcrumb,
-            'menu_code' => $this->menuCode
-        ]);
+            ->layoutData([
+                'title' => $this->titlePage, // Page Title
+                'breadcrumbs' => $this->breadcrumb,
+                'menu_code' => $this->menuCode,
+            ]);
     }
 }

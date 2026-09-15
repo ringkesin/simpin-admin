@@ -59,7 +59,7 @@ class TabunganPenyertaanModels extends Model
 
     public function masterAnggota(): HasOne
     {
-        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id');
+        return $this->hasOne(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id')->withTrashed();
     }
 
     public function jenisTabungan(): HasOne
