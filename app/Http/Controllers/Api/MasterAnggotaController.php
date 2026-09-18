@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -69,6 +70,19 @@ class MasterAnggotaController extends BaseController
             if ($anggota->isEmpty()) {
                 return $this->sendError('Data kosong', ['error' => 'Data tidak ditemukan'], 404);
             }
+
+            $anggota->each(function (AnggotaModels $item) {
+                $item->atribut->each(function (AnggotaAtributModels $atribut) {
+                    if (empty($atribut->atribut_attachment)) {
+                        return;
+                    }
+
+                    $atribut->atribut_attachment = Storage::disk('kkba_simpin')->temporaryUrl(
+                        $atribut->atribut_attachment,
+                        now()->addMinutes(5),
+                    );
+                });
+            });
 
             return $this->sendResponse($anggota, 'Data registrasi baru berhasil digenerate.');
         } catch (\Exception $e) {
@@ -378,6 +392,17 @@ class MasterAnggotaController extends BaseController
                 'deleted_by',
             ]);
             if (! empty($anggota->atribut)) {
+                $anggota->atribut->each(function (AnggotaAtributModels $atribut) {
+                    if (empty($atribut->atribut_attachment)) {
+                        return;
+                    }
+
+                    $atribut->atribut_attachment = Storage::disk('kkba_simpin')->temporaryUrl(
+                        $atribut->atribut_attachment,
+                        now()->addMinutes(5),
+                    );
+                });
+
                 $anggota->atribut->makeHidden([
                     'p_anggota_atribut_id',
                     'p_anggota_id',
