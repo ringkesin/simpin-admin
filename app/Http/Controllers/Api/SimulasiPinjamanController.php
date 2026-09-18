@@ -64,36 +64,43 @@ class SimulasiPinjamanController extends BaseController
                                             ->where('status', 'aktif')
                                             ->first();
 
+            if (!$simulasi) {
+                return $this->sendError(
+                    'Data simulasi tidak ditemukan.',
+                    ['error' => 'Kombinasi jenis pinjaman, tenor, dan tahun tidak tersedia.'],
+                    404
+                );
+            }
+
             $jumlah_pinjaman = $request->jumlah_pinjaman;
             $biaya_admin_rp = (float)($jumlah_pinjaman * ($simulasi->biaya_admin / 100));
 
-            if(!empty($simulasi)) {
-                $margin = $simulasi->margin;
-                if($request->jenis_pinjaman_id == 1) {
-                    $tahun = $simulasi->tenor / 12;
-                    $angsuran = ($jumlah_pinjaman + ($jumlah_pinjaman * ((($simulasi->biaya_admin + $margin) * $tahun) / 100))) / $simulasi->tenor;
-                } else{
-                    $angsuran = ($jumlah_pinjaman + ($jumlah_pinjaman * ($margin/100))) / $simulasi->tenor;
-                }
-
-                $totalPengembalian = $angsuran * $simulasi->tenor;
-
-                if($request->jenis_pinjaman_id == 3) {
-                    $margin = $margin / ($simulasi->tenor / 12);
-                }
-
-                $result = [
-                    'tahun' => $simulasi->tahun_margin,
-                    'tenor' => $simulasi->tenor,
-                    'margin' => (float)$margin,
-                    'biaya_admin' => (float)$simulasi->biaya_admin,
-                    'biaya_admin_rp' => (float)$biaya_admin_rp,
-                    'angsuran' => (float) number_format($angsuran, 2, '.', ''),
-                    'total_pengembalian' => $totalPengembalian
-                ];
-            } else {
-                return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => 'Data Not Found'], 404);
+            $margin = $simulasi->margin;
+            if($request->jenis_pinjaman_id == 1) {
+                $tahun = $simulasi->tenor / 12;
+                $margin_rupiah = $jumlah_pinjaman * (($margin * $tahun) / 100);
+                $angsuran = ($jumlah_pinjaman + ($jumlah_pinjaman * ((($simulasi->biaya_admin + $margin) * $tahun) / 100))) / $simulasi->tenor;
+            } else{
+                $margin_rupiah = $jumlah_pinjaman * ($margin / 100);
+                $angsuran = ($jumlah_pinjaman + ($jumlah_pinjaman * ($margin/100))) / $simulasi->tenor;
             }
+
+            $totalPengembalian = $angsuran * $simulasi->tenor;
+
+            if($request->jenis_pinjaman_id == 3) {
+                $margin = $margin / ($simulasi->tenor / 12);
+            }
+
+            $result = [
+                'tahun' => $simulasi->tahun_margin,
+                'tenor' => $simulasi->tenor,
+                'margin' => (float)$margin,
+                'margin_rupiah' => (float)$margin_rupiah,
+                'biaya_admin' => (float)$simulasi->biaya_admin,
+                'biaya_admin_rp' => (float)$biaya_admin_rp,
+                'angsuran' => (float) number_format($angsuran, 2, '.', ''),
+                'total_pengembalian' => $totalPengembalian
+            ];
 
             return $this->sendResponse($result, 'Data berhasil digenerate.');
 
