@@ -70,6 +70,8 @@
   }
 </style>
 
+@inject('memberQrCode', 'App\Services\MemberQrCodeService')
+
 <div class="box">
     <div class="title">
         <table class="title-table">
@@ -124,16 +126,22 @@
         </td>
       </tr>
       <tr>
-        <td style="padding-top: 100px;">
+        <td style="padding-top: 15px; vertical-align: top;">
+          <div style="height: 90px;"></div>
           <div class="signature-line">Manager</div>
         </td>
-        <td style="padding-top: 100px;">
+        <td style="padding-top: 15px; vertical-align: top;">
+          <div style="height: 90px;"></div>
           <div class="signature-line">Bag. Simpin</div>
         </td>
-        <td style="padding-top: 35px;">
-          <div style="width: 150px; margin: 0 auto 30px; color: #808080; font-size: 10px;">Diajukan secara elektronik melalui aplikasi KKBA Mobile</div>
-          <div style="font-weight: bold;">{{ $nama_anggota ? $nama_anggota : '' }}</div>
-          <div class="signature-line"></div>
+        <td style="padding-top: 15px; vertical-align: top;">
+          @php($qrNomorAnggota = $memberQrCode->dataUri($nomor_anggota ?? null))
+          <div style="height: 90px;">
+            @if ($qrNomorAnggota)
+              <img src="{{ $qrNomorAnggota }}" alt="QR Nomor Anggota {{ $nomor_anggota }}" width="80" height="80" style="display: block; margin: 0 auto;">
+            @endif
+          </div>
+          <div class="signature-line" style="font-weight: bold;">{{ $nama_anggota ? $nama_anggota : '' }}</div>
           <div style="font-size: 11px;">Anggota</div>
         </td>
       </tr>
