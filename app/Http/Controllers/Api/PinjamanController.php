@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\BaseController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 use App\Models\Main\PinjamanModels;
-use App\Models\Master\PinjamanKeperluanModels;
 use App\Models\Master\JenisPinjamanModels;
+use App\Models\Master\PinjamanKeperluanModels;
+use App\Services\LoanApprovalCalculator;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class PinjamanController extends BaseController
 {
@@ -36,7 +36,7 @@ class PinjamanController extends BaseController
                 // 'doc_kk' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
                 // 'doc_kartu_anggota' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
                 'doc_slip_gaji' => 'required|file|mimes:jpg,png,pdf|max:2048',
-            ],[
+            ], [
                 'p_anggota_id.required' => 'Anggota harus diisi',
                 'p_jenis_pinjaman_id.required' => 'Jenis Pinjaman harus diisi',
                 'p_pinjaman_keperluan_ids.required' => 'Keperluan Pinjaman harus diisi',
@@ -70,7 +70,7 @@ class PinjamanController extends BaseController
                 return response()->json(['message' => 'Tidak diizinkan input data dengan anggota id = '.$request->p_anggota_id], 403);
             }
 
-            //cek kk, buku nikah
+            // cek kk, buku nikah
 
             // $doc_ktp_path = $request->file('doc_ktp') ? $request->file('doc_ktp')->store('uploads/ktp', 'local') : NULL;
             // $doc_doc_ktp_suami_istri_path = $request->file('doc_doc_ktp_suami_istri_path') ? $request->file('doc_ktp_suami_istri')->store('uploads/ktp_suami_istri', 'local') : NULL;
@@ -99,9 +99,9 @@ class PinjamanController extends BaseController
                 // 'doc_kk' => $doc_kk_path,
                 // 'doc_kartu_anggota' => $doc_kartu_anggota_path,
                 'doc_slip_gaji' => $doc_slip_gaji_path,
-                'p_status_pengajuan_id' => 2, //pending
+                'p_status_pengajuan_id' => 2, // pending
                 'created_by' => $user->id,
-                'updated_by' => $user->id
+                'updated_by' => $user->id,
             ]);
 
             DB::commit();
@@ -109,7 +109,8 @@ class PinjamanController extends BaseController
             return $this->sendResponse(['pinjaman' => $pinjaman], 'Pengajuan Pinjaman Berhasil Disubmit');
         } catch (Exception $e) {
             DB::rollBack();
-            \Log::error('Error : ' . $e->getMessage());
+            \Log::error('Error : '.$e->getMessage());
+
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
@@ -127,15 +128,15 @@ class PinjamanController extends BaseController
             $month = $request->input('month'); // e.g., 4 (April)
             $year = $request->input('year'); // e.g., 2025
 
-            if($isAdmin){
-                $query = PinjamanModels::with(['masterJenisPinjaman','masterStatusPengajuan','masterAnggota']);
+            if ($isAdmin) {
+                $query = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan', 'masterAnggota']);
             }
-            if($isAnggota) {
+            if ($isAnggota) {
                 $p_anggota_id = $user->anggota?->p_anggota_id;
-                if (!$p_anggota_id) {
+                if (! $p_anggota_id) {
                     return $this->sendError('Data anggota tidak ditemukan.', [], 404);
                 }
-                $query = PinjamanModels::with(['masterJenisPinjaman','masterStatusPengajuan','masterAnggota'])->where('p_anggota_id', $p_anggota_id);
+                $query = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan', 'masterAnggota'])->where('p_anggota_id', $p_anggota_id);
             }
 
             if ($statusId) {
@@ -187,7 +188,8 @@ class PinjamanController extends BaseController
 
             return $this->sendResponse($pinjaman, 'Daftar Pinjaman Berhasil Diambil');
         } catch (\Exception $e) {
-            \Log::error('Error retrieving pinjaman: ' . $e->getMessage());
+            \Log::error('Error retrieving pinjaman: '.$e->getMessage());
+
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
@@ -197,17 +199,16 @@ class PinjamanController extends BaseController
         try {
             $data = false;
 
-            //------------Filter by Owner-------------------------------------//
+            // ------------Filter by Owner-------------------------------------//
             $user = $request->user();
             $isAdmin = $user->tokenCan('state:admin');
             $isAnggota = $user->tokenCan('state:anggota');
 
             if ($isAdmin) {
                 $data = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan', 'masterAnggota'])->find($id);
-            }
-            elseif ($isAnggota) {
+            } elseif ($isAnggota) {
                 $p_anggota_id = $user->anggota?->p_anggota_id;
-                if (!$p_anggota_id) {
+                if (! $p_anggota_id) {
                     return $this->sendError('Data anggota tidak ditemukan.', [], 404);
                 }
                 $data = PinjamanModels::with(['masterJenisPinjaman', 'masterStatusPengajuan', 'masterAnggota'])
@@ -217,9 +218,9 @@ class PinjamanController extends BaseController
             } else {
                 return $this->sendError('Anda tidak memiliki akses.', [], 403);
             }
-            //------------End Filter by Owner-------------------------------------//
+            // ------------End Filter by Owner-------------------------------------//
 
-            if (!$data) {
+            if (! $data) {
                 return $this->sendError('Pinjaman tidak ditemukan atau tidak memiliki akses.', [], 404);
             }
 
@@ -240,7 +241,72 @@ class PinjamanController extends BaseController
 
             return $this->sendResponse($data, 'Data pinjaman berhasil digenerate');
         } catch (\Exception $e) {
-            \Log::error('Error retrieving pinjaman: ' . $e->getMessage());
+            \Log::error('Error retrieving pinjaman: '.$e->getMessage());
+
+            return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getRincianApproval(Request $request, LoanApprovalCalculator $calculator)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                't_pinjaman_id' => ['required', 'integer'],
+                'ri_jumlah_pinjaman' => ['required', 'numeric', 'min:0'],
+                'tenor' => ['required', 'integer', 'min:1'],
+                'margin' => ['required', 'numeric', 'min:0'],
+                'biaya_admin' => ['required', 'numeric', 'min:0'],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data perhitungan approval belum lengkap atau tidak valid.',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $input = $validator->validated();
+            $user = $request->user();
+            $query = PinjamanModels::query()->where('t_pinjaman_id', $input['t_pinjaman_id']);
+
+            if ($user->tokenCan('state:admin')) {
+                // Admin dapat melihat rincian semua pengajuan pinjaman.
+            } elseif ($user->tokenCan('state:anggota')) {
+                $pAnggotaId = $user->anggota?->p_anggota_id;
+
+                if (! $pAnggotaId) {
+                    return $this->sendError('Data anggota tidak ditemukan.', [], 404);
+                }
+
+                $query->where('p_anggota_id', $pAnggotaId);
+            } else {
+                return $this->sendError('Anda tidak memiliki akses.', [], 403);
+            }
+
+            $pinjaman = $query->first();
+
+            if (! $pinjaman) {
+                return $this->sendError('Pinjaman tidak ditemukan atau tidak memiliki akses.', [], 404);
+            }
+
+            $rincian = $calculator->calculate(
+                (float) $input['ri_jumlah_pinjaman'],
+                (float) $input['margin'],
+                (float) $input['biaya_admin'],
+                (int) $input['tenor'],
+                (int) $pinjaman->p_jenis_pinjaman_id,
+            );
+
+            return $this->sendResponse([
+                't_pinjaman_id' => $pinjaman->t_pinjaman_id,
+                'nomor_pinjaman' => $pinjaman->nomor_pinjaman,
+                'p_jenis_pinjaman_id' => $pinjaman->p_jenis_pinjaman_id,
+                'rincian_approval' => $rincian,
+            ], 'Preview rincian rupiah approval pinjaman berhasil dihitung.');
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving rincian approval pinjaman: '.$e->getMessage());
+
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
@@ -260,9 +326,8 @@ class PinjamanController extends BaseController
             return response()->json(['message' => 'Tidak diizinkan menghapus pinjaman ini.'], 403);
         }
 
-        if ($isAnggota){
-            if($pinjaman->p_status_pengajuan_id <> 2) //pending
-            {
+        if ($isAnggota) {
+            if ($pinjaman->p_status_pengajuan_id != 2) { // pending
                 return response()->json(['message' => "Tidak diizinkan menghapus pinjaman ini, karena statusnya tidak lagi 'Pending'."], 403);
             }
         }
@@ -272,7 +337,7 @@ class PinjamanController extends BaseController
         return $this->sendResponse([], 'Data pinjaman berhasil dihapus');
     }
 
-    function generateNomorTransaksi($jenisPinjamanId)
+    public function generateNomorTransaksi($jenisPinjamanId)
     {
         $kode = 'PJ';
         $bulan = date('n');
@@ -282,7 +347,7 @@ class PinjamanController extends BaseController
         $romawi = [
             1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV',
             5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII',
-            9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'
+            9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII',
         ];
 
         // Ambil nomor terakhir dari bulan dan tahun ini
@@ -293,7 +358,7 @@ class PinjamanController extends BaseController
 
         if ($last) {
             // Ambil nomor urut dari string, misalnya "002/PJ/V/2025" → 2
-            $lastNomor = (int)substr($last->nomor_pinjaman, 0, 3);
+            $lastNomor = (int) substr($last->nomor_pinjaman, 0, 3);
             $nextNomor = str_pad($lastNomor + 1, 3, '0', STR_PAD_LEFT);
             $inisialJenisPinjaman = $last->masterJenisPinjaman->kode_jenis_pinjaman;
         } else {
@@ -303,19 +368,22 @@ class PinjamanController extends BaseController
         }
 
         // Gabungkan format akhir
-        $nomorBaru = $nextNomor . '/' . $kode . '/'. $inisialJenisPinjaman . '/' . $romawi[$bulan] . '/' . $tahun;
+        $nomorBaru = $nextNomor.'/'.$kode.'/'.$inisialJenisPinjaman.'/'.$romawi[$bulan].'/'.$tahun;
+
         return $nomorBaru;
     }
 
-    public function calculateInstallments($ri_pinjaman, $margin, $biaya_admin, $tenor, $jenis_pinjaman_id = 1) {
-        $ri_pinjaman = (float)($ri_pinjaman ?? 0);
-        $margin = (float)($margin ?? 0);
-        $biaya_admin = (float)($biaya_admin ?? 0);
-        $tenor = (int)($tenor ?: 1);
+    public function calculateInstallments($ri_pinjaman, $margin, $biaya_admin, $tenor, $jenis_pinjaman_id = 1)
+    {
+        $ri_pinjaman = (float) ($ri_pinjaman ?? 0);
+        $margin = (float) ($margin ?? 0);
+        $biaya_admin = (float) ($biaya_admin ?? 0);
+        $tenor = (int) ($tenor ?: 1);
 
         if ($jenis_pinjaman_id != 1) {
             $calTenor = $ri_pinjaman / $tenor;
             $calMargin = ($ri_pinjaman * ($margin / 100)) / $tenor;
+
             return $calTenor + $calMargin;
         }
 
@@ -326,7 +394,8 @@ class PinjamanController extends BaseController
         return $calTenor + $calMargin + $calAdmin;
     }
 
-    public function approvalPinjaman(Request $request) {
+    public function approvalPinjaman(Request $request)
+    {
         DB::beginTransaction();
 
         try {
@@ -336,15 +405,15 @@ class PinjamanController extends BaseController
                 'p_status_pengajuan_id' => 'required',
                 'biaya_admin' => 'required|numeric',
                 'margin' => 'required|numeric',
-                'tenor' => 'required|numeric'
+                'tenor' => 'required|numeric',
 
-            ],[
+            ], [
                 't_pinjaman_id' => 'Pinjaman ID required',
                 'ri_jumlah_pinjaman' => 'Jumlah Pinjaman yang Disetujui required',
                 'p_status_pengajuan_id.required' => 'Status Pengajuan required.',
                 'biaya_admin.required' => 'Biaya Admin required',
                 'margin.required' => 'Margin required',
-                'tenor.required' => 'Tenor required'
+                'tenor.required' => 'Tenor required',
             ]);
 
             $user = $request->user();
@@ -356,23 +425,23 @@ class PinjamanController extends BaseController
                 'margin' => $request->margin,
                 'tenor' => $request->tenor,
                 'remarks' => $request->remarks,
-                'tgl_pencairan' => $request->tgl_pencairan ? $request->tgl_pencairan : NULL,
-                'tgl_pelunasan' => $request->tgl_pelunasan ? $request->tgl_pelunasan : NULL,
-                'updated_by' => $user->id
+                'tgl_pencairan' => $request->tgl_pencairan ? $request->tgl_pencairan : null,
+                'tgl_pelunasan' => $request->tgl_pelunasan ? $request->tgl_pelunasan : null,
+                'updated_by' => $user->id,
             ]);
 
             DB::commit();
 
-            if($post) {
+            if ($post) {
                 return $this->sendResponse([], 'Approval Pinjaman Berhasil Disubmit');
             } else {
                 return response()->json(['message' => 'Approval Pinjaman Gagal Disubmit.'], 403);
             }
         } catch (Exception $e) {
             DB::rollBack();
-            \Log::error('Error : ' . $e->getMessage());
+            \Log::error('Error : '.$e->getMessage());
+
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }
-
 }
