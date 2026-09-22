@@ -117,7 +117,7 @@
 
                                 <svg class="block text-slate-600 hs-accordion-active:hidden ms-auto size-4 group-hover:text-slate-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
-                            <div id="master-accordion-collapse-1" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 {{ (in_array($menu_code, ['master-anggota','master-simulasi'])) ? '' : 'hidden'}}" role="region" aria-labelledby="master-accordion">
+                            <div id="master-accordion-collapse-1" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 {{ (in_array($menu_code, ['master-anggota','master-simulasi','master-rekening-kkba'])) ? '' : 'hidden'}}" role="region" aria-labelledby="master-accordion">
                                 <ul class="pt-1 space-y-1 ps-7">
                                     <li>
                                         <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 text-sm {{$menu_code == 'master-anggota' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} rounded-lg" href="{{route('master.anggota.list')}}">
@@ -127,6 +127,11 @@
                                     <li>
                                         <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 text-sm {{$menu_code == 'master-simulasi' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} rounded-lg" href="{{route('master.simulasi.list')}}">
                                         Simulasi Pinjaman
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a wire:navigate class="flex items-center gap-x-3 py-2 px-2.5 text-sm {{$menu_code == 'master-rekening-kkba' ? 'bg-green-500 text-white' : 'text-slate-700 hover:bg-slate-100'}} rounded-lg" href="{{route('master.rekening-kkba.list')}}">
+                                        Rekening KKBA
                                         </a>
                                     </li>
                                 </ul>

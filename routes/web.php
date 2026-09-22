@@ -48,6 +48,10 @@ use App\Livewire\Page\Master\Simulasi\SimulasiList;
 use App\Livewire\Page\Master\Simulasi\SimulasiShow;
 use App\Livewire\Page\Master\Simulasi\SimulasiCreate;
 use App\Livewire\Page\Master\Simulasi\SimulasiEdit;
+use App\Livewire\Page\Master\RekeningKkba\RekeningKkbaCreate;
+use App\Livewire\Page\Master\RekeningKkba\RekeningKkbaEdit;
+use App\Livewire\Page\Master\RekeningKkba\RekeningKkbaList;
+use App\Livewire\Page\Master\RekeningKkba\RekeningKkbaShow;
 
 use App\Livewire\Page\Account\DeleteRequest\DeleteRequestList;
 use App\Livewire\Page\Account\DeleteRequest\DeleteRequestExecute;
@@ -98,6 +102,13 @@ Route::middleware([
             Route::get('create', SimulasiCreate::class)->name('master.simulasi.create');
             Route::get('show/{id}', SimulasiShow::class)->name('master.simulasi.show');
             Route::get('edit/{id}', SimulasiEdit::class)->name('master.simulasi.edit');
+        });
+
+        Route::prefix('rekening-kkba')->group(function () {
+            Route::get('list', RekeningKkbaList::class)->name('master.rekening-kkba.list');
+            Route::get('create', RekeningKkbaCreate::class)->name('master.rekening-kkba.create');
+            Route::get('show/{id}', RekeningKkbaShow::class)->name('master.rekening-kkba.show');
+            Route::get('edit/{id}', RekeningKkbaEdit::class)->name('master.rekening-kkba.edit');
         });
     });
     Route::prefix('main')->group(function () {
