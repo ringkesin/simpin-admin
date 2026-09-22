@@ -184,20 +184,37 @@ class PinjamanShow extends Component
     // #[Computed]
     public function totalDisetujui()
     {
-        $pinjaman = $this->ri_jumlah_pinjaman ?? 0;
-        $margin = $this->margin ?? 0;
+        $pinjaman = (float)($this->ri_jumlah_pinjaman ?? 0);
+        $margin = (float)($this->margin ?? 0);
+        $tenor = (int)($this->tenor ?: 1);
+        $jenis_pinjaman = $this->loadData['p_jenis_pinjaman_id'] ?? 1;
 
-        return $pinjaman + ($pinjaman * ($margin / 100));
+        if ($jenis_pinjaman != 1) {
+            $margin_amount = $pinjaman * ($margin / 100);
+            return $pinjaman + $margin_amount;
+        }
+
+        $margin_amount = $pinjaman * ($margin / 100) * ($tenor / 12);
+
+        return $pinjaman + $margin_amount;
     }
 
     public function calculateInstallments() {
-        $ri_pinjaman = $this->ri_jumlah_pinjaman ?? 0;
-        $margin = $this->margin ?? 0;
-        $biaya_admin = $this->biaya_admin ?? 0;
+        $ri_pinjaman = (float)($this->ri_jumlah_pinjaman ?? 0);
+        $margin = (float)($this->margin ?? 0);
+        $biaya_admin = (float)($this->biaya_admin ?? 0);
+        $tenor = (int)($this->tenor ?: 1);
+        $jenis_pinjaman = $this->loadData['p_jenis_pinjaman_id'] ?? 1;
 
-        $calTenor = $ri_pinjaman / $this->tenor;
-        $calMargin = $ri_pinjaman * ($margin / 100) / $this->tenor;
-        $calAdmin = $ri_pinjaman * ($biaya_admin / 100) / $this->tenor;
+        if ($jenis_pinjaman != 1) {
+            $calTenor = $ri_pinjaman / $tenor;
+            $calMargin = ($ri_pinjaman * ($margin / 100)) / $tenor;
+            return $calTenor + $calMargin;
+        }
+
+        $calTenor = $ri_pinjaman / $tenor;
+        $calMargin = ($ri_pinjaman * ($margin / 100) * ($tenor / 12)) / $tenor;
+        $calAdmin = ($ri_pinjaman * ($biaya_admin / 100) * ($tenor / 12)) / $tenor;
 
         return $calTenor + $calMargin + $calAdmin;
     }

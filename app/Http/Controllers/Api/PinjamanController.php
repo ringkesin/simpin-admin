@@ -180,7 +180,7 @@ class PinjamanController extends BaseController
                 $biaya_admin = $item->biaya_admin ?? 0;
                 $tenor = $item->tenor ?? 0;
 
-                $item->estimasi_cicilan_bulanan = round($this->calculateInstallments($pinjamans, $margin, $biaya_admin, $tenor));
+                $item->estimasi_cicilan_bulanan = round($this->calculateInstallments($pinjamans, $margin, $biaya_admin, $tenor, $item->p_jenis_pinjaman_id));
 
                 return $item;
             });
@@ -236,7 +236,7 @@ class PinjamanController extends BaseController
             $tenor = $data->tenor ?? 0;
 
             // $data->estimasi_cicilan_bulanan = round($pinjaman + ($pinjaman * ($margin / 100)));
-            $data->estimasi_cicilan_bulanan = round($this->calculateInstallments($pinjaman, $margin, $biaya_admin, $tenor));
+            $data->estimasi_cicilan_bulanan = round($this->calculateInstallments($pinjaman, $margin, $biaya_admin, $tenor, $data->p_jenis_pinjaman_id));
 
             return $this->sendResponse($data, 'Data pinjaman berhasil digenerate');
         } catch (\Exception $e) {
@@ -307,14 +307,21 @@ class PinjamanController extends BaseController
         return $nomorBaru;
     }
 
-    public function calculateInstallments($ri_pinjaman, $margin, $biaya_admin, $tenor) {
-        $ri_pinjaman = $ri_pinjaman ?? 0;
-        $margin = $margin ?? 0;
-        $biaya_admin = $biaya_admin ?? 0;
+    public function calculateInstallments($ri_pinjaman, $margin, $biaya_admin, $tenor, $jenis_pinjaman_id = 1) {
+        $ri_pinjaman = (float)($ri_pinjaman ?? 0);
+        $margin = (float)($margin ?? 0);
+        $biaya_admin = (float)($biaya_admin ?? 0);
+        $tenor = (int)($tenor ?: 1);
+
+        if ($jenis_pinjaman_id != 1) {
+            $calTenor = $ri_pinjaman / $tenor;
+            $calMargin = ($ri_pinjaman * ($margin / 100)) / $tenor;
+            return $calTenor + $calMargin;
+        }
 
         $calTenor = $ri_pinjaman / $tenor;
-        $calMargin = $ri_pinjaman * ($margin / 100) / $tenor;
-        $calAdmin = $ri_pinjaman * ($biaya_admin / 100) / $tenor;
+        $calMargin = ($ri_pinjaman * ($margin / 100) * ($tenor / 12)) / $tenor;
+        $calAdmin = ($ri_pinjaman * ($biaya_admin / 100) * ($tenor / 12)) / $tenor;
 
         return $calTenor + $calMargin + $calAdmin;
     }

@@ -139,13 +139,13 @@
                             </div>
                         </div>
                     </x-elements.detail>
-                    <x-elements.detail label="Margin (%)" required="true">
+                    <x-elements.detail label="Margin (% per tahun)" required="true">
                         <div class="flex gap-4">
                             <div class="flex-initial w-20">
                                 <x-form.input class="w-full" type="text" name="margin" wire:model.lazy="margin"/>
                             </div>
                             <div class="flex-initial w-54">
-                                = Rp. {{ $this->toRupiah($ri_jumlah_pinjaman * ($margin / 100)) }}
+                                = Rp. {{ $this->toRupiah( (isset($loadData['p_jenis_pinjaman_id']) && $loadData['p_jenis_pinjaman_id'] != 1) ? ((float)($ri_jumlah_pinjaman ?: 0) * ((float)($margin ?: 0) / 100)) : ((float)($ri_jumlah_pinjaman ?: 0) * ((float)($margin ?: 0) / 100) * ((int)($tenor ?: 1) / 12)) ) }}
                             </div>
                         </div>
                     </x-elements.detail>
@@ -155,7 +155,7 @@
                                 <x-form.input class="w-full" type="text" name="biaya_admin" wire:model.lazy="biaya_admin"/>
                             </div>
                             <div class="flex-initial w-54">
-                                = Rp. {{ $this->toRupiah($ri_jumlah_pinjaman * ($biaya_admin / 100)) }}
+                                = Rp. {{ $this->toRupiah((float)($ri_jumlah_pinjaman ?: 0) * ((float)($biaya_admin ?: 0) / 100)) }}
                             </div>
                         </div>
                     </x-elements.detail>
