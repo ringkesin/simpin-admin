@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             AppsSeeder::class,
             AppsParamSeeder::class,
+            FeatureFlagSeeder::class,
             MasterAnggotaSeeder::class,
             MasterJenisPinjamanSeeder::class,
             MasterStatusPengajuanSeeder::class,

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\FileController;
 use App\Http\Controllers\Api\KontenController;
 use App\Http\Controllers\Api\MasterAnggotaController;
 use App\Http\Controllers\Api\MasterChatReferenceTableController;
+use App\Http\Controllers\Api\MasterFeatureFlagController;
 use App\Http\Controllers\Api\MasterJenisPinjamanController;
 use App\Http\Controllers\Api\MasterJenisTabunganController;
 use App\Http\Controllers\Api\MasterKeperluanPinjamanController;
@@ -60,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/status-pengajuan-pinjaman', [MasterStatusPengajuanPinjamanController::class, 'getAll']);
         Route::get('/jenis-tabungan', [MasterJenisTabunganController::class, 'getAll']);
         Route::get('/chat-reference-table', [MasterChatReferenceTableController::class, 'getAll']);
+        Route::get('/feature-flags', [MasterFeatureFlagController::class, 'getAll']);
         Route::apiResource('/rekening-kkba', MasterRekeningKkbaController::class)
             ->parameters(['rekening-kkba' => 'rekeningKkba']);
     });
