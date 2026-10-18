@@ -18,6 +18,7 @@ class FeatureFlag extends Model
         'is_enabled',
         'description',
         'coming_soon_message',
+        'allowed_anggota_ids',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -27,6 +28,7 @@ class FeatureFlag extends Model
     {
         return [
             'is_enabled' => 'boolean',
+            'allowed_anggota_ids' => 'array',
         ];
     }
 }

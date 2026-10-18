@@ -16,6 +16,7 @@ class FeatureFlagSeeder extends Seeder
                 'is_enabled' => false,
                 'description' => 'Menentukan apakah fitur KKBA Mart sudah tersedia di aplikasi mobile.',
                 'coming_soon_message' => 'Tunggu kehadiran kami, fitur akan segera launch.',
+                'allowed_anggota_ids' => [],
             ]
         );
 

@@ -28,6 +28,7 @@ class MasterFeatureFlagTest extends TestCase
             $table->boolean('is_enabled')->default(false);
             $table->text('description')->nullable();
             $table->text('coming_soon_message')->nullable();
+            $table->json('allowed_anggota_ids')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable();
@@ -49,6 +50,7 @@ class MasterFeatureFlagTest extends TestCase
             'code' => 'another_feature',
             'name' => 'Another Feature',
             'is_enabled' => true,
+            'allowed_anggota_ids' => [101, 202],
         ]);
 
         $this->getJson('/api/master/feature-flags')
@@ -57,7 +59,9 @@ class MasterFeatureFlagTest extends TestCase
             ->assertJsonPath('data.feature_flags.0.code', 'kkba_mart')
             ->assertJsonPath('data.feature_flags.0.is_enabled', false)
             ->assertJsonPath('data.feature_flags.0.coming_soon_message', 'Tunggu kehadiran kami, fitur akan segera launch.')
-            ->assertJsonPath('data.feature_flags.1.is_enabled', true);
+            ->assertJsonPath('data.feature_flags.0.allowed_anggota_ids', [])
+            ->assertJsonPath('data.feature_flags.1.is_enabled', true)
+            ->assertJsonPath('data.feature_flags.1.allowed_anggota_ids', [101, 202]);
     }
 
     public function test_seeder_is_idempotent_and_does_not_disable_a_launched_feature(): void
@@ -82,5 +86,18 @@ class MasterFeatureFlagTest extends TestCase
         $this->getJson('/api/master/feature-flags')
             ->assertOk()
             ->assertJsonCount(0, 'data.feature_flags');
+    }
+
+    public function test_null_allowed_anggota_ids_is_returned_as_an_empty_array(): void
+    {
+        FeatureFlag::create([
+            'code' => 'legacy_feature',
+            'name' => 'Legacy Feature',
+            'is_enabled' => false,
+        ]);
+
+        $this->getJson('/api/master/feature-flags')
+            ->assertOk()
+            ->assertJsonPath('data.feature_flags.0.allowed_anggota_ids', []);
     }
 }
