@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\BaseController;
-use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Main\DeleteAccountRequestModels;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Services\Push\PushDeviceService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends BaseController
 {
+    public function __construct(private readonly PushDeviceService $pushDevices) {}
+
     // **API Login**
     public function apiLogin(Request $request)
     {
@@ -30,13 +31,13 @@ class AuthController extends BaseController
             })
             ->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return $this->sendError('Unauthorized', ['error' => 'The provided credentials are incorrect.'], 401);
         }
 
         $today = Carbon::today();
 
-        //users validity
+        // users validity
         if ($user->valid_from && $user->valid_from->greaterThan($today)) {
             return $this->sendError('Unauthorized', ['error' => 'Akun anda belum aktif'], 403);
         }
@@ -46,8 +47,8 @@ class AuthController extends BaseController
 
         $error = 0;
         $roleCode = null;
-        foreach($user->roleUser as $r){
-            if($r->role->apps->code == 'mobile'){
+        foreach ($user->roleUser as $r) {
+            if ($r->role->apps->code == 'mobile') {
                 $roleCode = $r->role->code;
                 if ($r->valid_from && $r->valid_from->greaterThan($today)) {
                     $error++;
@@ -64,7 +65,7 @@ class AuthController extends BaseController
             }
         }
 
-        if( ! empty($user->anggota)){
+        if (! empty($user->anggota)) {
             if ($user->anggota->valid_from && $user->anggota->valid_from->greaterThan($today)) {
                 $error++;
             }
@@ -73,12 +74,12 @@ class AuthController extends BaseController
             }
         }
 
-        if($error == 0){
+        if ($error == 0) {
             $state = 'anggota';
-            if($roleCode == 'mobile_admin'){
+            if ($roleCode == 'mobile_admin') {
                 $state = 'admin';
             }
-            $token = $user->createToken('api-token',['state:'.$state])->plainTextToken;
+            $token = $user->createToken('api-token', ['state:'.$state])->plainTextToken;
 
             $user->makeHidden([
                 'email_verified_at',
@@ -97,7 +98,7 @@ class AuthController extends BaseController
                 'anggota',
             ]);
 
-            if( ! empty($user->anggota)){
+            if (! empty($user->anggota)) {
                 $user->anggota->makeHidden([
                     'valid_from',
                     'valid_to',
@@ -111,16 +112,16 @@ class AuthController extends BaseController
                     'created_by',
                     'updated_by',
                     'deleted_by',
-                    'is_registered'
+                    'is_registered',
                 ]);
             }
 
             $overwriteUser = $user->toArray();
             $overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($user->profile_photo_path, now()->addMinutes(5));
-            //$overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($user->profile_photo_path, now()->addMinutes(60));
+            // $overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($user->profile_photo_path, now()->addMinutes(60));
 
             return $this->sendResponse(
-                ['token' => $token, 'role' => $roleCode, 'anggota'=> $user->anggota, 'user' => $overwriteUser, ],
+                ['token' => $token, 'role' => $roleCode, 'anggota' => $user->anggota, 'user' => $overwriteUser],
                 'Login successful.'
             );
         }
@@ -131,7 +132,25 @@ class AuthController extends BaseController
     // **API Logout**
     public function apiLogout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        $validated = $request->validate([
+            'client_installation_id' => ['nullable', 'uuid'],
+        ]);
+
+        $anggota = $request->user()->anggota;
+
+        if (! empty($validated['client_installation_id']) && $anggota?->exists) {
+            $this->pushDevices->deactivate(
+                (int) $anggota->p_anggota_id,
+                $validated['client_installation_id']
+            );
+        }
+
+        $currentAccessToken = $request->user()->currentAccessToken();
+
+        if ($currentAccessToken && method_exists($currentAccessToken, 'delete')) {
+            $currentAccessToken->delete();
+        }
+
         return $this->sendResponse([], 'Successfully logged out.');
     }
 
@@ -145,7 +164,7 @@ class AuthController extends BaseController
 
         $user = $request->user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return $this->sendError('Current password is incorrect', [], 400);
         }
 
@@ -163,20 +182,19 @@ class AuthController extends BaseController
                 'nomor_anggota' => 'required',
                 'email' => 'required',
                 'no_robots' => 'required',
-                'remarks' => 'required'
-            ],[
+                'remarks' => 'required',
+            ], [
                 'nomor_anggota.required' => 'No Anggota harus diisi',
                 'email.required' => 'Email harus diisi',
                 'no_robots.required' => 'Validasi text harus diisi',
-                'remarks.required' => 'Keterangan harus diisi'
+                'remarks.required' => 'Keterangan harus diisi',
             ]);
 
             if ($validator->fails()) {
                 return $this->sendError('Form belum lengkap, mohon dicek kembali.', ['error' => $validator->errors()], 400);
             }
 
-            if($request->no_robots != 'delete_account')
-            {
+            if ($request->no_robots != 'delete_account') {
                 return $this->sendError('Validasi Text salah', [], 400);
             }
 
@@ -186,22 +204,19 @@ class AuthController extends BaseController
             $isAnggota = $user->tokenCan('state:anggota');
             $anggota = $user->anggota;
 
-            if(!$isAnggota) {
+            if (! $isAnggota) {
                 return $this->sendError('Maaf anda tidak terdaftar sebagai anggota', [], 400);
             }
 
-            if($anggota->nomor_anggota != $request->nomor_anggota)
-            {
+            if ($anggota->nomor_anggota != $request->nomor_anggota) {
                 return $this->sendError('Nomor anggota tidak sesuai', [], 400);
             }
 
-            if($anggota->email != $request->email)
-            {
+            if ($anggota->email != $request->email) {
                 return $this->sendError('Email tidak sesuai', [], 400);
             }
 
-            if(!$anggota->is_registered || $anggota->valid_until < now())
-            {
+            if (! $anggota->is_registered || $anggota->valid_until < now()) {
                 return $this->sendError('Anda belum terdaftar sebagai anggota aktif', [], 400);
             }
 
@@ -210,7 +225,7 @@ class AuthController extends BaseController
                 'remarks' => $request->remarks,
                 'status' => 'open',
                 'created_by' => $user->id,
-                'updated_by' => $user->id
+                'updated_by' => $user->id,
             ];
 
             $processInsert = DeleteAccountRequestModels::create($payloadInsert);
@@ -220,7 +235,8 @@ class AuthController extends BaseController
             return $this->sendResponse($processInsert, 'Request tutup akun dikirim ke admin');
         } catch (Exception $e) {
             DB::rollBack();
-            \Log::error('Error : ' . $e->getMessage());
+            \Log::error('Error : '.$e->getMessage());
+
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
     }

@@ -2,13 +2,16 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Laravel\Passport\Passport;
 use App\Models\Passport\AuthCode;
 use App\Models\Passport\Client;
 use App\Models\Passport\PersonalAccessClient;
 use App\Models\Passport\RefreshToken;
 use App\Models\Passport\Token;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +28,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RateLimiter::for('internal-notifications', function (Request $request) {
+            $service = $request->header('X-KKBA-Service', 'unknown');
+
+            return Limit::perMinute((int) config('push.internal.rate_limit_per_minute'))
+                ->by($service.'|'.$request->ip());
+        });
+
         // Passport::hashClientSecrets();
         // Passport::enablePasswordGrant();
         // Passport::enableImplicitGrant();

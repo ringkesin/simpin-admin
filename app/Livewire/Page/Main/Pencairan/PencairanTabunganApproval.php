@@ -2,17 +2,16 @@
 
 namespace App\Livewire\Page\Main\Pencairan;
 
-use Livewire\Component;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf;
-
-use App\Traits\MyAlert;
-use App\Traits\MyHelpers;
-
+use App\Models\Main\TabunganJurnalModels;
 use App\Models\Main\TabunganPengambilanModels;
 use App\Models\Main\TabunganSaldoModels;
-use App\Models\Main\TabunganJurnalModels;
+use App\Services\Push\ApprovalNotificationService;
+use App\Traits\MyAlert;
+use App\Traits\MyHelpers;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class PencairanTabunganApproval extends Component
 {
@@ -20,21 +19,29 @@ class PencairanTabunganApproval extends Component
     use MyHelpers;
 
     public $id;
+
     public $breadcrumb;
+
     public $titlePage;
+
     public $menuCode;
 
     public $data;
 
     public $jumlah_disetujui;
+
     public $tgl_pencairan;
+
     public $catatan_approver;
+
     public $status_pencairan;
 
     public $dataSaldo;
+
     public $saldoSisa = 0;
 
-    public function mount() {
+    public function mount()
+    {
         $this->data = TabunganPengambilanModels::findOrFail($this->id);
 
         $this->titlePage = 'Approval Pencairan';
@@ -42,31 +49,32 @@ class PencairanTabunganApproval extends Component
         $this->breadcrumb = [
             ['link' => null, 'label' => 'Pencairan Tabungan'],
             ['link' => route('main.pencairan.list'), 'label' => 'List'],
-            ['link' => route('main.pencairan.approval', ['id' => $this->id]), 'label' => 'Approval']
+            ['link' => route('main.pencairan.approval', ['id' => $this->id]), 'label' => 'Approval'],
         ];
 
         $this->status_pencairan = $this->data->status_pengambilan;
         $this->jumlah_disetujui = $this->data->jumlah_disetujui ?? 0;
-        $this->tgl_pencairan =  (empty($this->data->tgl_pencairan)) ? null : date('Y-m-d', strtotime($this->data->tgl_pencairan));
+        $this->tgl_pencairan = (empty($this->data->tgl_pencairan)) ? null : date('Y-m-d', strtotime($this->data->tgl_pencairan));
         $this->catatan_approver = $this->data->catatan_approver ?? null;
 
         $this->dataSaldo = TabunganSaldoModels::where('p_jenis_tabungan_id', $this->data->p_jenis_tabungan_id)
             ->where('p_anggota_id', $this->data->p_anggota_id)
             ->orderBy('tahun', 'desc')
             ->first();
-        if($this->dataSaldo) {
+        if ($this->dataSaldo) {
             $this->saldoSisa = $this->dataSaldo->total_sd;
         }
 
         // dd($this->data->masterAnggota->toArray());
     }
 
-    public function saveInsert() {
+    public function saveInsert()
+    {
         $this->validate([
             'status_pencairan' => 'required',
             'tgl_pencairan' => 'nullable|date|date_format:Y-m-d',
             'jumlah_disetujui' => 'required|numeric',
-            'catatan_approver' =>  'required|max:2024',
+            'catatan_approver' => 'required|max:2024',
         ], [
             'status_pencairan.required' => 'Status Pencairan harus diisi.',
             'tgl_pencairan.required' => 'Tgl. Pencairan harus diisi.',
@@ -77,27 +85,35 @@ class PencairanTabunganApproval extends Component
         try {
             DB::beginTransaction();
 
-            TabunganPengambilanModels::where('t_tabungan_pengambilan_id', $this->id)->update([
+            $pencairan = TabunganPengambilanModels::query()
+                ->whereKey($this->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $wasApproved = $pencairan->status_pengambilan === 'DISETUJUI';
+
+            $pencairan->update([
                 'status_pengambilan' => $this->status_pencairan,
-                'tgl_pencairan' => ( ! empty($this->tgl_pencairan)) ? $this->tgl_pencairan.' '.date('H:i:s') : null,
+                'tgl_pencairan' => (! empty($this->tgl_pencairan)) ? $this->tgl_pencairan.' '.date('H:i:s') : null,
                 'jumlah_disetujui' => $this->jumlah_disetujui,
-                'catatan_approver' => $this->catatan_approver
+                'catatan_approver' => $this->catatan_approver,
             ]);
 
-            if($this->status_pencairan == 'DISETUJUI') {
+            if ($this->status_pencairan === 'DISETUJUI' && ! $wasApproved) {
                 TabunganJurnalModels::create([
                     'p_anggota_id' => $this->data->p_anggota_id,
                     'p_jenis_tabungan_id' => $this->data->p_jenis_tabungan_id,
                     'tgl_transaksi' => date('Y-m-d H:i:s'),
                     'nilai' => '-'.$this->jumlah_disetujui,
                     'nilai_sd' => 0,
-                    'catatan' => 'Pencairan Tabungan : '.$this->catatan_approver
+                    'catatan' => 'Pencairan Tabungan : '.$this->catatan_approver,
                 ]);
 
                 DB::select('SELECT _tabungan_recalculate(:p_anggota_id, :tahun)', [
                     'p_anggota_id' => $this->data->p_anggota_id,
                     'tahun' => date('Y'),
                 ]);
+
+                app(ApprovalNotificationService::class)->pencairanApproved($pencairan);
             }
 
             DB::commit();
@@ -108,15 +124,15 @@ class PencairanTabunganApproval extends Component
                 'confirmButtonText' => 'Okay',
                 'showCancelButton' => false,
                 'text' => 'Data Berhasil Disimpan !',
-                'redirectUrl' => $redirect
+                'redirectUrl' => $redirect,
             ]);
         } catch (QueryException $e) {
             DB::rollBack();
             $this->sweetalert([
                 'icon' => 'error',
-                'confirmButtonText'  => 'Okay',
+                'confirmButtonText' => 'Okay',
                 'showCancelButton' => false,
-                'text' => $e->getMessage()
+                'text' => $e->getMessage(),
             ]);
         }
     }
@@ -124,7 +140,7 @@ class PencairanTabunganApproval extends Component
     public function exportPDF()
     {
         // $data = $this->only(array_keys(get_object_vars($this)));
-        $data =  [];
+        $data = [];
         $data = [
             'nama_anggota' => $this->data->masterAnggota->nama,
             'nomor_anggota' => $this->data->masterAnggota->nomor_anggota,
@@ -135,14 +151,14 @@ class PencairanTabunganApproval extends Component
             'terbilang' => $this->data->jumlah_diambil ? $this->toTerbilang($this->data->jumlah_diambil) : null,
             'no_rek' => $this->data->rekening_no,
             'nama_bank' => $this->data->rekening_bank,
-            'tgl_pengajuan' => date('d F Y', strtotime($this->data->tgl_pengajuan))
+            'tgl_pengajuan' => date('d F Y', strtotime($this->data->tgl_pengajuan)),
         ];
 
         $pdf = Pdf::loadView('livewire.page.main.export.tabungan-formulir-export', $data)
-                  ->setPaper('a4', 'portrait');
+            ->setPaper('a4', 'portrait');
 
         return response()->streamDownload(
-            fn () => print($pdf->stream()),
+            fn () => print ($pdf->stream()),
             'Formulir_Pencairan_KKBA_'.$this->data->masterAnggota->nomor_anggota.'.pdf'
         );
     }
@@ -151,25 +167,24 @@ class PencairanTabunganApproval extends Component
     {
         return view('livewire.page.main.pencairan.pencairan-approval')
             ->layoutData([
-                'title' => $this->titlePage, //Page Title
+                'title' => $this->titlePage, // Page Title
                 'breadcrumbs' => $this->breadcrumb,
-                'menu_code' => $this->menuCode
+                'menu_code' => $this->menuCode,
             ]);
     }
 
-    function exception($e, $stopPropagation)
+    public function exception($e, $stopPropagation)
     {
         if ($e instanceof \Illuminate\Validation\ValidationException) {
             $message = 'Mohon lengkapi form yang masih merah.';
-        }
-        else{
+        } else {
             $message = $e->getMessage();
             DB::rollBack();
         }
 
         $this->sweetalert([
             'icon' => 'error',
-            'confirmButtonText'  => 'Okay',
+            'confirmButtonText' => 'Okay',
             'showCancelButton' => false,
             'text' => $message,
         ]);

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\FileController;
+use App\Http\Controllers\Api\InternalNotificationController;
 use App\Http\Controllers\Api\KontenController;
 use App\Http\Controllers\Api\MasterAnggotaController;
 use App\Http\Controllers\Api\MasterChatReferenceTableController;
@@ -13,8 +14,10 @@ use App\Http\Controllers\Api\MasterKeperluanPinjamanController;
 use App\Http\Controllers\Api\MasterRekeningKkbaController;
 use App\Http\Controllers\Api\MasterStatusPengajuanPinjamanController;
 use App\Http\Controllers\Api\MasterUnitController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PinjamanController;
 use App\Http\Controllers\Api\ProfileAnggotaController;
+use App\Http\Controllers\Api\PushDeviceController;
 use App\Http\Controllers\Api\ShuController;
 use App\Http\Controllers\Api\SimulasiPinjamanController;
 use App\Http\Controllers\Api\TabunganController;
@@ -23,6 +26,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
+
+Route::post('/internal/notifications', [InternalNotificationController::class, 'store'])
+    ->middleware(['throttle:internal-notifications', 'internal.notification.hmac']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'apiLogout']);
@@ -54,6 +60,18 @@ Route::middleware('auth:sanctum')->group(function () {
         ->where('p_anggota_id', '[0-9]+');
     Route::post('/file/get-link', [FileController::class, 'getLink']);
     Route::post('/delete-account', [AuthController::class, 'requestDeleteAccount']);
+
+    Route::middleware('abilities:state:anggota')->group(function () {
+        Route::post('/push/devices', [PushDeviceController::class, 'store']);
+        Route::delete('/push/devices/{client_installation_id}', [PushDeviceController::class, 'destroy'])
+            ->whereUuid('client_installation_id');
+
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::post('/notifications/{notification_id}/read', [NotificationController::class, 'markAsRead'])
+            ->whereUlid('notification_id');
+    });
 
     Route::prefix('/master')->group(function () {
         Route::get('/jenis-pinjaman', [MasterJenisPinjamanController::class, 'getAll']);

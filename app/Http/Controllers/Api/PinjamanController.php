@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Models\Main\PinjamanModels;
 use App\Models\Master\JenisPinjamanModels;
 use App\Models\Master\PinjamanKeperluanModels;
+use App\Models\Master\StatusPengajuanModels;
 use App\Services\LoanApprovalCalculator;
+use App\Services\Push\ApprovalNotificationService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -418,7 +420,13 @@ class PinjamanController extends BaseController
 
             $user = $request->user();
 
-            $post = PinjamanModels::where('t_pinjaman_id', $request->t_pinjaman_id)->update([
+            $pinjaman = PinjamanModels::query()
+                ->whereKey($request->t_pinjaman_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $wasApproved = $this->isApprovedStatus($pinjaman->p_status_pengajuan_id);
+
+            $post = $pinjaman->update([
                 'ri_jumlah_pinjaman' => $request->ri_jumlah_pinjaman,
                 'p_status_pengajuan_id' => $request->p_status_pengajuan_id,
                 'biaya_admin' => $request->biaya_admin,
@@ -429,6 +437,10 @@ class PinjamanController extends BaseController
                 'tgl_pelunasan' => $request->tgl_pelunasan ? $request->tgl_pelunasan : null,
                 'updated_by' => $user->id,
             ]);
+
+            if (! $wasApproved && $this->isApprovedStatus($pinjaman->p_status_pengajuan_id)) {
+                app(ApprovalNotificationService::class)->pinjamanApproved($pinjaman);
+            }
 
             DB::commit();
 
@@ -443,5 +455,13 @@ class PinjamanController extends BaseController
 
             return $this->sendError('Oopsie, Terjadi kesalahan.', ['error' => $e->getMessage()], 500);
         }
+    }
+
+    private function isApprovedStatus(int|string|null $statusId): bool
+    {
+        return StatusPengajuanModels::query()
+            ->whereKey($statusId)
+            ->whereIn('nama', ['Approve', 'Approved'])
+            ->exists();
     }
 }

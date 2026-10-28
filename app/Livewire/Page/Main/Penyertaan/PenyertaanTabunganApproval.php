@@ -3,6 +3,7 @@
 namespace App\Livewire\Page\Main\Penyertaan;
 
 use App\Models\Main\TabunganPenyertaanModels;
+use App\Services\Push\ApprovalNotificationService;
 use App\Traits\MyAlert;
 use App\Traits\MyHelpers;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -103,12 +104,22 @@ class PenyertaanTabunganApproval extends Component
         try {
             DB::beginTransaction();
 
-            TabunganPenyertaanModels::where('t_tabungan_penyertaan_id', $this->id)->update([
+            $penyertaan = TabunganPenyertaanModels::query()
+                ->whereKey($this->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $wasApproved = $penyertaan->status_penyertaan === 'DISETUJUI';
+
+            $penyertaan->update([
                 'status_penyertaan' => $this->status_penyertaan,
                 'penyertaan_date' => (! empty($this->penyertaan_date)) ? $this->penyertaan_date.' '.date('H:i:s') : null,
                 'jumlah' => $this->jumlah_disetujui,
                 'catatan_approver' => $this->catatan_approver,
             ]);
+
+            if ($this->status_penyertaan === 'DISETUJUI' && ! $wasApproved) {
+                app(ApprovalNotificationService::class)->penyertaanApproved($penyertaan);
+            }
 
             DB::commit();
 

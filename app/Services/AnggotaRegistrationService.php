@@ -4,11 +4,14 @@ namespace App\Services;
 
 use App\Models\Master\AnggotaModels;
 use App\Models\User;
+use App\Services\Push\ApprovalNotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class AnggotaRegistrationService
 {
+    public function __construct(private readonly ApprovalNotificationService $notifications) {}
+
     /**
      * Menyetujui calon anggota dan menerbitkan nomor anggota pada saat yang sama.
      */
@@ -19,6 +22,8 @@ class AnggotaRegistrationService
                 ->whereKey($anggotaId)
                 ->lockForUpdate()
                 ->firstOrFail();
+
+            $wasRegistered = (bool) $anggota->is_registered;
 
             if ($anggota->user_id && ! $anggota->is_registered) {
                 throw ValidationException::withMessages([
@@ -44,6 +49,10 @@ class AnggotaRegistrationService
             $anggota->is_registered = true;
             $anggota->updated_by = $actorId;
             $anggota->save();
+
+            if (! $wasRegistered) {
+                $this->notifications->anggotaApproved($anggota);
+            }
 
             return $anggota->fresh();
         }, 3);

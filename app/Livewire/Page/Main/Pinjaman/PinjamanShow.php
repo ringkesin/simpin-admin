@@ -2,23 +2,22 @@
 
 namespace App\Livewire\Page\Main\Pinjaman;
 
-use Livewire\Component;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
-
-use App\Traits\MyAlert;
-use App\Traits\MyHelpers;
 use App\Models\Main\PinjamanModels;
-use App\Models\Master\StatusPengajuanModels;
 use App\Models\Master\AnggotaAtributModels;
 use App\Models\Master\PinjamanKeperluanModels;
 use App\Models\Master\SimulasiPinjamanModels;
-
+use App\Models\Master\StatusPengajuanModels;
+use App\Services\Push\ApprovalNotificationService;
+use App\Traits\MyAlert;
+use App\Traits\MyHelpers;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Livewire\Attributes\Computed;
+use Livewire\Component;
 
 class PinjamanShow extends Component
 {
@@ -26,37 +25,51 @@ class PinjamanShow extends Component
     use MyHelpers;
 
     public $breadcrumb;
+
     public $titlePage;
+
     public $menuCode;
 
     public $loadData = [];
+
     public $loadDataAttr = [];
 
     public $listStatus;
+
     public $id;
+
     public $ri_jumlah_pinjaman;
+
     public $p_status_pengajuan_id;
+
     public $biaya_admin;
+
     public $tgl_pencairan;
+
     public $tgl_pelunasan;
+
     public $remarks;
+
     public $margin = 0;
+
     public $tenor;
 
-    public function mount($id) {
+    public function mount($id)
+    {
         $this->titlePage = 'Detail Pinjaman Anggota';
         $this->menuCode = 'pinjaman';
         $this->breadcrumb = [
             ['link' => route('main.pinjaman.list'), 'label' => 'Pinjaman'],
-            ['link' => route('main.pinjaman.show', ['id' => $id]), 'label' => 'Show']
+            ['link' => route('main.pinjaman.show', ['id' => $id]), 'label' => 'Show'],
         ];
 
         $this->id = $id;
         $this->getData($id);
     }
 
-    public function getData($id) {
-        $data = PinjamanModels::with(['masterAnggota','masterJenisPinjaman'])->find($id);
+    public function getData($id)
+    {
+        $data = PinjamanModels::with(['masterAnggota', 'masterJenisPinjaman'])->find($id);
         $this->loadData = $data;
         $this->ri_jumlah_pinjaman = $this->loadData['ri_jumlah_pinjaman'];
         $this->p_status_pengajuan_id = $this->loadData['p_status_pengajuan_id'];
@@ -121,16 +134,16 @@ class PinjamanShow extends Component
         }
         $this->loadData['doc_id_card_pegawai'] = $fileUrlIDCardPegawai;
 
-        if($this->loadData['margin'] == 0) {
+        if ($this->loadData['margin'] == 0) {
             $tanggal = $this->loadData['created_at'];
             $tahun = date('Y', strtotime($tanggal)); // Output: 2025
             $marginSimulasi = SimulasiPinjamanModels::where('status', 'aktif')
-                                                    ->where('tahun_margin', $tahun)
-                                                    ->where('p_jenis_pinjaman_id', $this->loadData['p_jenis_pinjaman_id'])
-                                                    ->where('tenor', $this->loadData['tenor'])
-                                                    ->first();
-            if($marginSimulasi) {
-                $this->margin = (float)$marginSimulasi->margin;
+                ->where('tahun_margin', $tahun)
+                ->where('p_jenis_pinjaman_id', $this->loadData['p_jenis_pinjaman_id'])
+                ->where('tenor', $this->loadData['tenor'])
+                ->first();
+            if ($marginSimulasi) {
+                $this->margin = (float) $marginSimulasi->margin;
             }
         }
 
@@ -141,7 +154,7 @@ class PinjamanShow extends Component
             $keperluanIds = [];
         }
 
-        foreach($keperluanIds as $d){
+        foreach ($keperluanIds as $d) {
             $keperluanValue = PinjamanKeperluanModels::find($d);
             // dd($keperluanValue);
             $attribute[] = $keperluanValue->keperluan;
@@ -152,11 +165,12 @@ class PinjamanShow extends Component
         $this->getDataAttr($data['p_anggota_id']);
     }
 
-    public function getDataAttr($id) {
+    public function getDataAttr($id)
+    {
         $data = AnggotaAtributModels::where('p_anggota_id', '=', $id)->get();
         // $this->loadDataAttr = $data;
         $attribute = [];
-        foreach($data as $d){
+        foreach ($data as $d) {
 
             $fileUrl = null;
             if (is_string($d->atribut_attachment) && $d->atribut_attachment !== '' && Storage::disk('kkba_simpin')->exists($d->atribut_attachment)) {
@@ -170,27 +184,30 @@ class PinjamanShow extends Component
             $attribute[] = [
                 'atribut_kode' => $d->atribut_kode_beautify,
                 'atribut_value' => $d->atribut_value,
-                'atribut_attachment' => $fileUrl
+                'atribut_attachment' => $fileUrl,
             ];
         }
         $this->loadDataAttr = $attribute;
     }
 
-    public function listStatusPinjaman() {
+    public function listStatusPinjaman()
+    {
         $data = StatusPengajuanModels::all();
+
         return $data;
     }
 
     // #[Computed]
     public function totalDisetujui()
     {
-        $pinjaman = (float)($this->ri_jumlah_pinjaman ?? 0);
-        $margin = (float)($this->margin ?? 0);
-        $tenor = (int)($this->tenor ?: 1);
+        $pinjaman = (float) ($this->ri_jumlah_pinjaman ?? 0);
+        $margin = (float) ($this->margin ?? 0);
+        $tenor = (int) ($this->tenor ?: 1);
         $jenis_pinjaman = $this->loadData['p_jenis_pinjaman_id'] ?? 1;
 
         if ($jenis_pinjaman != 1) {
             $margin_amount = $pinjaman * ($margin / 100);
+
             return $pinjaman + $margin_amount;
         }
 
@@ -199,16 +216,18 @@ class PinjamanShow extends Component
         return $pinjaman + $margin_amount;
     }
 
-    public function calculateInstallments() {
-        $ri_pinjaman = (float)($this->ri_jumlah_pinjaman ?? 0);
-        $margin = (float)($this->margin ?? 0);
-        $biaya_admin = (float)($this->biaya_admin ?? 0);
-        $tenor = (int)($this->tenor ?: 1);
+    public function calculateInstallments()
+    {
+        $ri_pinjaman = (float) ($this->ri_jumlah_pinjaman ?? 0);
+        $margin = (float) ($this->margin ?? 0);
+        $biaya_admin = (float) ($this->biaya_admin ?? 0);
+        $tenor = (int) ($this->tenor ?: 1);
         $jenis_pinjaman = $this->loadData['p_jenis_pinjaman_id'] ?? 1;
 
         if ($jenis_pinjaman != 1) {
             $calTenor = $ri_pinjaman / $tenor;
             $calMargin = ($ri_pinjaman * ($margin / 100)) / $tenor;
+
             return $calTenor + $calMargin;
         }
 
@@ -219,66 +238,89 @@ class PinjamanShow extends Component
         return $calTenor + $calMargin + $calAdmin;
     }
 
-    public function saveApproval() {
+    public function saveApproval()
+    {
         $validated = $this->validate([
             'ri_jumlah_pinjaman' => 'required',
             'p_status_pengajuan_id' => 'required',
             'biaya_admin' => 'required|numeric',
             'margin' => 'required|numeric',
-            'tenor' => 'required|numeric'
+            'tenor' => 'required|numeric',
         ], [
             'ri_jumlah_pinjaman' => 'Jumlah Pinjaman yang Disetujui required',
             'p_status_pengajuan_id.required' => 'Status Pengajuan required.',
             'biaya_admin.required' => 'Biaya Admin required',
             'margin.required' => 'Margin required',
-            'tenor.required' => 'Tenor required'
+            'tenor.required' => 'Tenor required',
         ]);
 
         try {
-            $post = PinjamanModels::where('t_pinjaman_id', $this->id)->update([
-                'ri_jumlah_pinjaman' => $this->ri_jumlah_pinjaman,
-                'p_status_pengajuan_id' => $this->p_status_pengajuan_id,
-                'biaya_admin' => $this->biaya_admin,
-                'margin' => $this->margin,
-                'tenor' => $this->tenor,
-                'remarks' => $this->remarks,
-                'tgl_pencairan' => $this->tgl_pencairan ? $this->tgl_pencairan : NULL,
-                'tgl_pelunasan' => $this->tgl_pelunasan ? $this->tgl_pelunasan : NULL,
-                'updated_by' => Auth::id()
-            ]);
+            $post = DB::transaction(function (): bool {
+                $pinjaman = PinjamanModels::query()
+                    ->whereKey($this->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+                $wasApproved = $this->isApprovedStatus($pinjaman->p_status_pengajuan_id);
 
-            if($post) {
+                $updated = $pinjaman->update([
+                    'ri_jumlah_pinjaman' => $this->ri_jumlah_pinjaman,
+                    'p_status_pengajuan_id' => $this->p_status_pengajuan_id,
+                    'biaya_admin' => $this->biaya_admin,
+                    'margin' => $this->margin,
+                    'tenor' => $this->tenor,
+                    'remarks' => $this->remarks,
+                    'tgl_pencairan' => $this->tgl_pencairan ?: null,
+                    'tgl_pelunasan' => $this->tgl_pelunasan ?: null,
+                    'updated_by' => Auth::id(),
+                ]);
+
+                if (! $wasApproved && $this->isApprovedStatus($pinjaman->p_status_pengajuan_id)) {
+                    app(ApprovalNotificationService::class)->pinjamanApproved($pinjaman);
+                }
+
+                return $updated;
+            });
+
+            if ($post) {
                 $redirect = route('main.pinjaman.show', ['id' => $this->id]);
                 $this->sweetalert([
                     'icon' => 'success',
                     'confirmButtonText' => 'Okay',
                     'showCancelButton' => false,
                     'text' => 'Data Berhasil Disimpan !',
-                    'redirectUrl' => $redirect
+                    'redirectUrl' => $redirect,
                 ]);
                 // $this->redirectRoute('main.pinjaman.show', ['id' => $this->id], navigate: true);
             } else {
                 $this->sweetalert([
                     'icon' => 'warning',
-                    'confirmButtonText'  => 'Okay',
+                    'confirmButtonText' => 'Okay',
                     'showCancelButton' => false,
                     'text' => 'Data gagal di update, coba kembali.',
                 ]);
             }
         } catch (QueryException $e) {
             $textError = '';
-            if($e->errorInfo[1] == 1062) {
+            if ($e->errorInfo[1] == 1062) {
                 $textError = 'Data gagal di update karena duplikat data, coba kembali.';
             } else {
                 $textError = 'Data gagal di update, coba kembali.';
             }
             $this->sweetalert([
                 'icon' => 'error',
-                'confirmButtonText'  => 'Okay',
+                'confirmButtonText' => 'Okay',
                 'showCancelButton' => false,
                 'text' => $textError,
             ]);
         }
+    }
+
+    private function isApprovedStatus(int|string|null $statusId): bool
+    {
+        return StatusPengajuanModels::query()
+            ->whereKey($statusId)
+            ->whereIn('nama', ['Approve', 'Approved'])
+            ->exists();
     }
 
     public function exportPDF()
@@ -289,10 +331,10 @@ class PinjamanShow extends Component
         // dd($data);
 
         $pdf = Pdf::loadView('livewire.page.main.pinjaman.pinjaman-formulir-export', $data)
-                  ->setPaper('a4', 'portrait');
+            ->setPaper('a4', 'portrait');
 
         return response()->streamDownload(
-            fn () => print($pdf->stream()),
+            fn () => print ($pdf->stream()),
             'Formulir_Pinjaman_KKBA.pdf'
         );
     }
@@ -300,10 +342,10 @@ class PinjamanShow extends Component
     public function render()
     {
         return view('livewire.page.main.pinjaman.pinjaman-show')
-        ->layoutData([
-            'title' => $this->titlePage, //Page Title
-            'breadcrumbs' => $this->breadcrumb,
-            'menu_code' => $this->menuCode
-        ]);
+            ->layoutData([
+                'title' => $this->titlePage, // Page Title
+                'breadcrumbs' => $this->breadcrumb,
+                'menu_code' => $this->menuCode,
+            ]);
     }
 }

@@ -11,6 +11,7 @@ use App\Models\Main\TabunganPerubahanPenyertaanModels;
 use App\Models\Main\TabunganSaldoModels;
 use App\Models\Master\AnggotaModels;
 use App\Models\Master\JenisTabunganModels;
+use App\Services\Push\ApprovalNotificationService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -529,16 +530,20 @@ class TabunganController extends BaseController
                 return $this->sendError('Anda tidak ada akses.', [], 403);
             }
 
-            $data = TabunganPengambilanModels::findOrFail($request->id);
+            $data = TabunganPengambilanModels::query()
+                ->whereKey($request->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $wasApproved = $data->status_pengambilan === 'DISETUJUI';
 
-            TabunganPengambilanModels::where('t_tabungan_pengambilan_id', $request->id)->update([
+            $data->update([
                 'status_pengambilan' => $request->status_pencairan,
                 'tgl_pencairan' => (! empty($request->tgl_pencairan)) ? $request->tgl_pencairan.' '.date('H:i:s') : null,
                 'jumlah_disetujui' => $request->jumlah_disetujui,
                 'catatan_approver' => $request->catatan_approver,
             ]);
 
-            if ($request->status_pencairan == 'DISETUJUI') {
+            if ($request->status_pencairan === 'DISETUJUI' && ! $wasApproved) {
                 TabunganJurnalModels::create([
                     'p_anggota_id' => $data->p_anggota_id,
                     'p_jenis_tabungan_id' => $data->p_jenis_tabungan_id,
@@ -552,6 +557,8 @@ class TabunganController extends BaseController
                     'p_anggota_id' => $data->p_anggota_id,
                     'tahun' => date('Y'),
                 ]);
+
+                app(ApprovalNotificationService::class)->pencairanApproved($data);
             }
 
             DB::commit();
@@ -717,14 +724,22 @@ class TabunganController extends BaseController
                 return $this->sendError('Anda tidak ada akses.', [], 403);
             }
 
-            $data = TabunganPenyertaanModels::findOrFail($request->id);
+            $data = TabunganPenyertaanModels::query()
+                ->whereKey($request->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $wasApproved = $data->status_penyertaan === 'DISETUJUI';
 
-            TabunganPenyertaanModels::where('t_tabungan_penyertaan_id', $request->id)->update([
+            $data->update([
                 'status_penyertaan' => $request->status_penyertaan,
                 'penyertaan_date' => (! empty($request->tanggal_penyertaan)) ? $request->tanggal_penyertaan.' '.date('H:i:s') : null,
                 'jumlah' => $request->jumlah,
                 'catatan_approver' => $request->catatan_approver,
             ]);
+
+            if ($request->status_penyertaan === 'DISETUJUI' && ! $wasApproved) {
+                app(ApprovalNotificationService::class)->penyertaanApproved($data);
+            }
 
             // if($request->status_pencairan == 'DISETUJUI') {
             //     TabunganJurnalModels::create([
@@ -892,15 +907,23 @@ class TabunganController extends BaseController
                 return $this->sendError('Anda tidak ada akses.', [], 403);
             }
 
-            $data = TabunganPerubahanPenyertaanModels::findOrFail($request->id);
+            $data = TabunganPerubahanPenyertaanModels::query()
+                ->whereKey($request->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $wasApproved = $data->status_perubahan_penyertaan === 'DISETUJUI';
 
-            TabunganPerubahanPenyertaanModels::where('t_tabungan_perubahan_penyertaan_id', $request->id)->update([
+            $data->update([
                 'status_perubahan_penyertaan' => $request->status_perubahan_penyertaan,
                 'valid_from' => (! empty($request->valid_from)) ? $request->valid_from.' '.date('H:i:s') : null,
                 'nilai_sebelum' => $request->nilai_sebelum,
                 'nilai_baru' => $request->nilai_baru,
                 'catatan_approver' => $request->catatan_approver,
             ]);
+
+            if ($request->status_perubahan_penyertaan === 'DISETUJUI' && ! $wasApproved) {
+                app(ApprovalNotificationService::class)->perubahanPenyertaanApproved($data);
+            }
 
             DB::commit();
 
