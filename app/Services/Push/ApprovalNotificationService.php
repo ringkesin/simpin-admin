@@ -8,12 +8,11 @@ use App\Models\Main\TabunganPenyertaanModels;
 use App\Models\Main\TabunganPerubahanPenyertaanModels;
 use App\Models\Master\AnggotaModels;
 use App\Models\MemberNotification;
-use Illuminate\Support\Facades\DB;
-
-use function Illuminate\Support\defer;
 
 class ApprovalNotificationService
 {
+    public function __construct(private readonly NotificationPublisher $publisher) {}
+
     public function anggotaApproved(AnggotaModels $anggota): MemberNotification
     {
         return $this->create(
@@ -105,32 +104,13 @@ class ApprovalNotificationService
         string $body,
         array $data,
     ): MemberNotification {
-        $notification = MemberNotification::query()->firstOrCreate(
-            [
-                'source' => 'simpin',
-                'event_id' => $eventId,
-            ],
-            [
-                'p_anggota_id' => $anggotaId,
-                'type' => $type,
-                'title' => $title,
-                'body' => $body,
-                'data' => $data,
-                'occurred_at' => now(),
-            ],
+        return $this->publisher->publishToAnggota(
+            anggotaId: $anggotaId,
+            eventId: $eventId,
+            type: $type,
+            title: $title,
+            body: $body,
+            data: $data,
         );
-
-        if ($notification->wasRecentlyCreated && config('push.delivery_enabled')) {
-            $notificationId = $notification->id;
-
-            DB::afterCommit(function () use ($notificationId): void {
-                defer(
-                    fn () => app(PushDeliveryService::class)->deliver($notificationId),
-                    'push-notification:'.$notificationId,
-                );
-            });
-        }
-
-        return $notification;
     }
 }

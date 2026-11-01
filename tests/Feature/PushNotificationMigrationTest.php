@@ -21,19 +21,23 @@ class PushNotificationMigrationTest extends TestCase
         $this->assertTrue(Schema::hasColumns('t_push_devices', [
             'id',
             'p_anggota_id',
+            'user_id',
             'provider_identifier',
             'provider_identifier_hash',
         ]));
         $this->assertTrue(Schema::hasColumns('t_notifications', [
             'id',
             'p_anggota_id',
+            'user_id',
             'event_id',
             'occurred_at',
             'push_attempted_at',
         ]));
 
+        $userRecipientMigration = require database_path('migrations/2026_11_01_000000_add_user_recipients_to_push_tables.php');
         $notificationMigration = require database_path('migrations/2026_10_24_000001_create_t_notifications_table.php');
         $pushDeviceMigration = require database_path('migrations/2026_10_24_000000_create_t_push_devices_table.php');
+        $userRecipientMigration->down();
         $notificationMigration->down();
         $pushDeviceMigration->down();
 

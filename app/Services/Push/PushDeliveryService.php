@@ -33,7 +33,22 @@ class PushDeliveryService
         ]);
 
         $devices = PushDevice::query()
-            ->where('p_anggota_id', $notification->p_anggota_id)
+            ->where(function ($query) use ($notification): void {
+                if ($notification->user_id !== null) {
+                    $query->where('user_id', $notification->user_id);
+
+                    if ($notification->p_anggota_id !== null) {
+                        $query->orWhere(function ($query) use ($notification): void {
+                            $query->whereNull('user_id')
+                                ->where('p_anggota_id', $notification->p_anggota_id);
+                        });
+                    }
+
+                    return;
+                }
+
+                $query->where('p_anggota_id', $notification->p_anggota_id);
+            })
             ->where('is_active', true)
             ->get();
 

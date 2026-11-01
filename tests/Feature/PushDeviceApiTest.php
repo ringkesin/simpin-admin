@@ -83,6 +83,7 @@ class PushDeviceApiTest extends TestCase
         $this->assertDatabaseCount('t_push_devices', 1);
         $this->assertDatabaseHas('t_push_devices', [
             'p_anggota_id' => 1002,
+            'user_id' => 2,
             'client_installation_id' => $installationId,
             'provider_identifier_hash' => hash('sha256', 'second-fcm-token'),
             'is_active' => true,
@@ -115,6 +116,7 @@ class PushDeviceApiTest extends TestCase
         $this->assertDatabaseCount('t_push_devices', 1);
         $this->assertDatabaseHas('t_push_devices', [
             'p_anggota_id' => 1002,
+            'user_id' => 2,
             'client_installation_id' => $newInstallationId,
             'provider_identifier_hash' => hash('sha256', $sharedToken),
         ]);
@@ -132,6 +134,25 @@ class PushDeviceApiTest extends TestCase
             'app_version' => '1.0.0',
         ])->assertUnprocessable()
             ->assertJsonValidationErrors(['platform', 'provider_identifier']);
+    }
+
+    public function test_admin_without_anggota_can_register_a_device(): void
+    {
+        $this->actingAsAdmin(1);
+
+        $this->postJson('/api/push/devices', [
+            'client_installation_id' => '0192f416-5f3c-7d45-a8c2-5ecf465728a1',
+            'provider' => 'expo',
+            'platform' => 'android',
+            'provider_identifier' => 'ExponentPushToken[admin-token]',
+            'app_version' => '1.2.0',
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('t_push_devices', [
+            'user_id' => 1,
+            'p_anggota_id' => null,
+            'is_active' => true,
+        ]);
     }
 
     public function test_member_can_only_disable_their_own_installation(): void

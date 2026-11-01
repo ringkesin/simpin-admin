@@ -141,6 +141,43 @@ class PushDeliveryServiceTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_delivery_can_target_an_admin_by_user_id_without_anggota(): void
+    {
+        $this->actingAsAdmin(99);
+
+        $notification = MemberNotification::create([
+            'user_id' => 99,
+            'source' => 'simpin',
+            'event_id' => 'chat-admin-'.Str::ulid(),
+            'type' => 'chat_message',
+            'title' => 'Pesan Chat dari Anggota',
+            'body' => 'Ada pesan baru.',
+            'data' => ['target' => 'chat'],
+            'occurred_at' => now(),
+        ]);
+        PushDevice::create([
+            'user_id' => 99,
+            'client_installation_id' => (string) Str::uuid(),
+            'provider' => 'expo',
+            'platform' => 'android',
+            'provider_identifier' => 'ExponentPushToken[admin-delivery]',
+            'provider_identifier_hash' => hash('sha256', 'ExponentPushToken[admin-delivery]'),
+            'is_active' => true,
+            'last_seen_at' => now(),
+        ]);
+
+        Http::fake([
+            config('push.expo.endpoint') => Http::response([
+                'data' => [['status' => 'ok', 'id' => 'ticket-admin']],
+            ]),
+        ]);
+
+        app(PushDeliveryService::class)->deliver($notification->id);
+
+        $this->assertSame(1, $notification->fresh()->push_accepted_count);
+        $this->assertSame(0, $notification->fresh()->push_failed_count);
+    }
+
     /**
      * @param  array<string, mixed>  $data
      */

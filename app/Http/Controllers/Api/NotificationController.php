@@ -3,26 +3,32 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\MemberNotification;
+use App\Services\Push\NotificationNavigationResolver;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NotificationController extends BaseController
 {
+    public function __construct(private readonly NotificationNavigationResolver $navigation) {}
+
     public function index(Request $request): JsonResponse
     {
-        $anggotaId = $this->anggotaId($request);
-
-        if ($anggotaId === null) {
-            return $this->sendError('Data anggota tidak ditemukan.', [], 404);
-        }
-
         $validated = $request->validate([
             'page' => ['sometimes', 'integer', 'min:1'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'status' => ['sometimes', 'string', 'in:all,read,unread'],
         ]);
 
-        $notifications = MemberNotification::query()
-            ->where('p_anggota_id', $anggotaId)
+        $query = $this->recipientQuery($request);
+
+        if (($validated['status'] ?? 'all') === 'read') {
+            $query->whereNotNull('read_at');
+        } elseif (($validated['status'] ?? 'all') === 'unread') {
+            $query->whereNull('read_at');
+        }
+
+        $notifications = $query
             ->latest('created_at')
             ->latest('id')
             ->paginate($validated['per_page'] ?? 20)
@@ -36,14 +42,7 @@ class NotificationController extends BaseController
 
     public function unreadCount(Request $request): JsonResponse
     {
-        $anggotaId = $this->anggotaId($request);
-
-        if ($anggotaId === null) {
-            return $this->sendError('Data anggota tidak ditemukan.', [], 404);
-        }
-
-        $count = MemberNotification::query()
-            ->where('p_anggota_id', $anggotaId)
+        $count = $this->recipientQuery($request)
             ->whereNull('read_at')
             ->count();
 
@@ -55,14 +54,7 @@ class NotificationController extends BaseController
 
     public function markAsRead(Request $request, string $notificationId): JsonResponse
     {
-        $anggotaId = $this->anggotaId($request);
-
-        if ($anggotaId === null) {
-            return $this->sendError('Data anggota tidak ditemukan.', [], 404);
-        }
-
-        $notification = MemberNotification::query()
-            ->where('p_anggota_id', $anggotaId)
+        $notification = $this->recipientQuery($request)
             ->find($notificationId);
 
         if (! $notification) {
@@ -81,14 +73,7 @@ class NotificationController extends BaseController
 
     public function markAllAsRead(Request $request): JsonResponse
     {
-        $anggotaId = $this->anggotaId($request);
-
-        if ($anggotaId === null) {
-            return $this->sendError('Data anggota tidak ditemukan.', [], 404);
-        }
-
-        $updatedCount = MemberNotification::query()
-            ->where('p_anggota_id', $anggotaId)
+        $updatedCount = $this->recipientQuery($request)
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
@@ -112,6 +97,7 @@ class NotificationController extends BaseController
             'title' => $notification->title,
             'body' => $notification->body,
             'data' => $notification->data,
+            'navigation' => $this->navigation->resolve($notification),
             'occurred_at' => $notification->occurred_at?->timezone($timezone)->toIso8601String(),
             'read_at' => $notification->read_at?->timezone($timezone)->toIso8601String(),
             'created_at' => $notification->created_at?->timezone($timezone)->toIso8601String(),
@@ -123,5 +109,25 @@ class NotificationController extends BaseController
         $anggota = $request->user()?->anggota;
 
         return $anggota?->exists ? (int) $anggota->p_anggota_id : null;
+    }
+
+    private function recipientQuery(Request $request): Builder
+    {
+        $userId = (int) $request->user()->id;
+        $anggotaId = $request->user()->tokenCan('state:anggota')
+            ? $this->anggotaId($request)
+            : null;
+
+        return MemberNotification::query()
+            ->where(function (Builder $query) use ($userId, $anggotaId): void {
+                $query->where('user_id', $userId);
+
+                if ($anggotaId !== null) {
+                    $query->orWhere(function (Builder $query) use ($anggotaId): void {
+                        $query->whereNull('user_id')
+                            ->where('p_anggota_id', $anggotaId);
+                    });
+                }
+            });
     }
 }

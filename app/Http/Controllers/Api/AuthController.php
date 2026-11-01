@@ -138,10 +138,11 @@ class AuthController extends BaseController
 
         $anggota = $request->user()->anggota;
 
-        if (! empty($validated['client_installation_id']) && $anggota?->exists) {
+        if (! empty($validated['client_installation_id'])) {
             $this->pushDevices->deactivate(
-                (int) $anggota->p_anggota_id,
-                $validated['client_installation_id']
+                (int) $request->user()->id,
+                $validated['client_installation_id'],
+                $anggota?->exists ? (int) $anggota->p_anggota_id : null,
             );
         }
 

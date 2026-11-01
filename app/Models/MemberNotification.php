@@ -15,6 +15,7 @@ class MemberNotification extends Model
 
     protected $fillable = [
         'p_anggota_id',
+        'user_id',
         'source',
         'event_id',
         'type',
@@ -43,5 +44,10 @@ class MemberNotification extends Model
     public function anggota(): BelongsTo
     {
         return $this->belongsTo(AnggotaModels::class, 'p_anggota_id', 'p_anggota_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

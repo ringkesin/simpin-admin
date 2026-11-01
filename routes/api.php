@@ -61,11 +61,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/file/get-link', [FileController::class, 'getLink']);
     Route::post('/delete-account', [AuthController::class, 'requestDeleteAccount']);
 
-    Route::middleware('abilities:state:anggota')->group(function () {
+    Route::middleware('ability:state:anggota,state:admin')->group(function () {
         Route::post('/push/devices', [PushDeviceController::class, 'store']);
         Route::delete('/push/devices/{client_installation_id}', [PushDeviceController::class, 'destroy'])
             ->whereUuid('client_installation_id');
+    });
 
+    Route::middleware('ability:state:anggota,state:admin')->group(function () {
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);

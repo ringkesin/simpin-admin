@@ -64,6 +64,65 @@ class NotificationInboxApiTest extends TestCase
         $this->assertNull($other->fresh()->read_at);
     }
 
+    public function test_admin_inbox_is_scoped_by_user_id_and_supports_read_operations(): void
+    {
+        $this->actingAsAdmin(1);
+        $mine = $this->userNotification(1, 'admin-event', 'Pesan untuk admin');
+
+        $this->actingAsAdmin(2);
+        $other = $this->userNotification(2, 'other-admin-event', 'Pesan admin lain');
+
+        $this->actingAsAdmin(1);
+        $this->getJson('/api/notifications')
+            ->assertOk()
+            ->assertJsonPath('data.notifications.total', 1)
+            ->assertJsonPath('data.notifications.data.0.id', $mine->id)
+            ->assertJsonMissing(['id' => $other->id]);
+
+        $this->postJson('/api/notifications/'.$mine->id.'/read')->assertOk();
+        $this->postJson('/api/notifications/'.$other->id.'/read')->assertNotFound();
+        $this->assertNotNull($mine->fresh()->read_at);
+        $this->assertNull($other->fresh()->read_at);
+    }
+
+    public function test_list_exposes_actionable_navigation_and_can_filter_read_status(): void
+    {
+        $this->actingAsAnggota(1001, 1);
+        $notification = MemberNotification::create([
+            'p_anggota_id' => 1001,
+            'user_id' => 1,
+            'source' => 'simpin',
+            'event_id' => 'pinjaman-approved',
+            'type' => 'pinjaman_approved',
+            'title' => 'Pinjaman Disetujui',
+            'body' => 'Pengajuan pinjaman Anda telah disetujui.',
+            'data' => [
+                'target' => 'pinjaman_detail',
+                't_pinjaman_id' => '987',
+                'status' => 'approved',
+            ],
+            'occurred_at' => now(),
+        ]);
+
+        $this->getJson('/api/notifications?status=unread')
+            ->assertOk()
+            ->assertJsonPath('data.notifications.total', 1)
+            ->assertJsonPath('data.notifications.data.0.navigation.action', 'open_screen')
+            ->assertJsonPath('data.notifications.data.0.navigation.is_actionable', true)
+            ->assertJsonPath('data.notifications.data.0.navigation.scope', 'pinjaman')
+            ->assertJsonPath('data.notifications.data.0.navigation.target', 'pinjaman_detail')
+            ->assertJsonPath('data.notifications.data.0.navigation.params.t_pinjaman_id', '987');
+
+        $notification->update(['read_at' => now()]);
+
+        $this->getJson('/api/notifications?status=unread')
+            ->assertOk()
+            ->assertJsonPath('data.notifications.total', 0);
+        $this->getJson('/api/notifications?status=read')
+            ->assertOk()
+            ->assertJsonPath('data.notifications.total', 1);
+    }
+
     private function notification(int $anggotaId, string $eventId, string $title): MemberNotification
     {
         return MemberNotification::create([
@@ -74,6 +133,23 @@ class NotificationInboxApiTest extends TestCase
             'title' => $title,
             'body' => 'Isi notifikasi.',
             'data' => ['target' => 'order_detail'],
+            'occurred_at' => now(),
+        ]);
+    }
+
+    private function userNotification(int $userId, string $eventId, string $title): MemberNotification
+    {
+        return MemberNotification::create([
+            'user_id' => $userId,
+            'source' => 'simpin',
+            'event_id' => $eventId,
+            'type' => 'chat_message',
+            'title' => $title,
+            'body' => 'Ada chat baru.',
+            'data' => [
+                'target' => 'chat',
+                't_chat_id' => '01KTESTCHAT000000000000001',
+            ],
             'occurred_at' => now(),
         ]);
     }

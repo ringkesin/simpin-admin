@@ -12,11 +12,11 @@ class PushDeviceService
      * @param  array{client_installation_id:string,provider:string,platform:string,provider_identifier:string,app_version:string}  $attributes
      * @return array{device:PushDevice,created:bool}
      */
-    public function register(int $anggotaId, array $attributes): array
+    public function register(int $userId, ?int $anggotaId, array $attributes): array
     {
         for ($attempt = 1; $attempt <= 2; $attempt++) {
             try {
-                return $this->registerWithinTransaction($anggotaId, $attributes);
+                return $this->registerWithinTransaction($userId, $anggotaId, $attributes);
             } catch (QueryException $exception) {
                 $sqlState = (string) ($exception->errorInfo[0] ?? $exception->getCode());
 
@@ -33,9 +33,9 @@ class PushDeviceService
      * @param  array{client_installation_id:string,provider:string,platform:string,provider_identifier:string,app_version:string}  $attributes
      * @return array{device:PushDevice,created:bool}
      */
-    private function registerWithinTransaction(int $anggotaId, array $attributes): array
+    private function registerWithinTransaction(int $userId, ?int $anggotaId, array $attributes): array
     {
-        return DB::transaction(function () use ($anggotaId, $attributes): array {
+        return DB::transaction(function () use ($userId, $anggotaId, $attributes): array {
             $identifierHash = hash('sha256', $attributes['provider_identifier']);
 
             $matchingDevices = PushDevice::query()
@@ -63,6 +63,7 @@ class PushDeviceService
 
             $device->fill([
                 'p_anggota_id' => $anggotaId,
+                'user_id' => $userId,
                 'client_installation_id' => $attributes['client_installation_id'],
                 'provider' => $attributes['provider'],
                 'platform' => $attributes['platform'],
@@ -79,10 +80,19 @@ class PushDeviceService
         }, 3);
     }
 
-    public function deactivate(int $anggotaId, string $installationId): int
+    public function deactivate(int $userId, string $installationId, ?int $anggotaId = null): int
     {
         return PushDevice::query()
-            ->where('p_anggota_id', $anggotaId)
+            ->where(function ($query) use ($userId, $anggotaId): void {
+                $query->where('user_id', $userId);
+
+                if ($anggotaId !== null) {
+                    $query->orWhere(function ($query) use ($anggotaId): void {
+                        $query->whereNull('user_id')
+                            ->where('p_anggota_id', $anggotaId);
+                    });
+                }
+            })
             ->where('client_installation_id', $installationId)
             ->where('is_active', true)
             ->update([

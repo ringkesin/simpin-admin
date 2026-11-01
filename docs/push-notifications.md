@@ -1,6 +1,6 @@
 # Push Notification SimPin
 
-SimPin menyimpan inbox notifikasi anggota dan mengirim push ke perangkat Android/iOS melalui Expo serta PWA melalui FCM HTTP v1.
+SimPin menyimpan inbox notifikasi anggota/admin dan mengirim push ke perangkat Android/iOS melalui Expo serta PWA melalui FCM HTTP v1.
 
 ## Konfigurasi
 
@@ -23,7 +23,7 @@ INTERNAL_NOTIFICATION_ALLOWED_SKEW_SECONDS=300
 
 ## API KKBA Mobile
 
-Semua endpoint berikut membutuhkan bearer token Sanctum dengan ability `state:anggota`.
+Semua endpoint berikut membutuhkan bearer token Sanctum dengan ability `state:anggota` atau `state:admin`.
 
 ### Registrasi perangkat
 
@@ -72,7 +72,26 @@ POST /api/notifications/{notification_id}/read
 POST /api/notifications/read-all
 ```
 
-`per_page` memiliki nilai awal 20 dan maksimum 100. Semua operasi dibatasi ke anggota yang sedang login.
+`per_page` memiliki nilai awal 20 dan maksimum 100. Parameter `status` dapat diisi `all`, `read`, atau `unread`. Semua operasi dibatasi ke user yang sedang login; admin tidak dapat membaca notifikasi admin lain dan anggota tidak dapat membaca notifikasi anggota lain.
+
+Setiap item inbox memiliki objek `navigation` untuk navigasi aplikasi:
+
+```json
+{
+  "action": "open_screen",
+  "is_actionable": true,
+  "scope": "pinjaman",
+  "target": "pinjaman_detail",
+  "params": {
+    "t_pinjaman_id": "987",
+    "status": "approved"
+  },
+  "missing_params": [],
+  "fallback_target": "notifications"
+}
+```
+
+Target yang didukung adalah `home`, `profile`, `content`, `content_detail`, `pinjaman`, `pinjaman_detail`, `tagihan`, `tagihan_detail`, `pencairan_tabungan`, `pencairan_tabungan_detail`, `penyertaan`, `penyertaan_detail`, `perubahan_penyertaan`, `perubahan_penyertaan_detail`, `chat`, dan `order_detail`. Aplikasi membuka halaman berdasarkan `target` dan meneruskan seluruh `params`. Jika `is_actionable=false`, aplikasi tetap berada di halaman inbox melalui `fallback_target`.
 
 ## Internal API KKBA Mart
 
@@ -143,3 +162,7 @@ SimPin otomatis membuat inbox dan menjadwalkan push setelah transaksi approval b
 - `perubahan_penyertaan_approved`
 
 Event menggunakan `source=simpin` dan event ID deterministik berdasarkan jenis serta ID transaksi. Menyimpan approval yang sama berulang kali tidak membuat inbox atau push duplikat. Field `data.target` dan ID transaksi disediakan agar aplikasi mobile dapat membuka halaman detail yang sesuai saat notifikasi ditekan.
+
+## Publikasi konten
+
+Ketika admin membuat konten melalui halaman `main.konten.create`, SimPin membuat event `content_published` untuk setiap anggota terdaftar yang masih aktif dan memiliki akun user. Event menggunakan target `content_detail` dengan parameter `t_content_id`, `p_content_type_id`, dan `content_type`. Mengedit konten melalui `main.konten.edit` tidak mengirim notifikasi baru.

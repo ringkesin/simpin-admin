@@ -16,7 +16,7 @@ class PushDeviceController extends BaseController
     {
         $anggotaId = $this->anggotaId($request);
 
-        if ($anggotaId === null) {
+        if ($request->user()->tokenCan('state:anggota') && $anggotaId === null) {
             return $this->sendError('Data anggota tidak ditemukan.', [], 404);
         }
 
@@ -44,7 +44,7 @@ class PushDeviceController extends BaseController
         });
 
         $attributes = $validator->validate();
-        $result = $this->devices->register($anggotaId, $attributes);
+        $result = $this->devices->register((int) $request->user()->id, $anggotaId, $attributes);
         $device = $result['device'];
 
         return response()->json([
@@ -68,11 +68,15 @@ class PushDeviceController extends BaseController
     {
         $anggotaId = $this->anggotaId($request);
 
-        if ($anggotaId === null) {
+        if ($request->user()->tokenCan('state:anggota') && $anggotaId === null) {
             return $this->sendError('Data anggota tidak ditemukan.', [], 404);
         }
 
-        if ($this->devices->deactivate($anggotaId, $clientInstallationId) === 0) {
+        if ($this->devices->deactivate(
+            (int) $request->user()->id,
+            $clientInstallationId,
+            $anggotaId,
+        ) === 0) {
             return $this->sendError('Perangkat tidak ditemukan.', [], 404);
         }
 
