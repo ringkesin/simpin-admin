@@ -123,6 +123,86 @@ class NotificationInboxApiTest extends TestCase
             ->assertJsonPath('data.notifications.total', 1);
     }
 
+    public function test_member_can_delete_one_notification_without_deleting_the_event_record(): void
+    {
+        $this->actingAsAnggota(1001, 1);
+        $mine = $this->notification(1001, 'delete-mine', 'Hapus saya');
+
+        $this->actingAsAnggota(1002, 2);
+        $other = $this->notification(1002, 'delete-other', 'Milik anggota lain');
+
+        $this->actingAsAnggota(1001, 1);
+        $this->deleteJson('/api/notifications/'.$other->id)->assertNotFound();
+        $this->deleteJson('/api/notifications/'.$mine->id)
+            ->assertOk()
+            ->assertJsonPath('data.deleted_count', 1);
+
+        $this->getJson('/api/notifications')
+            ->assertOk()
+            ->assertJsonPath('data.notifications.total', 0);
+        $this->getJson('/api/notifications/unread-count')
+            ->assertOk()
+            ->assertJsonPath('data.unread_count', 0);
+        $this->postJson('/api/notifications/'.$mine->id.'/read')->assertNotFound();
+
+        $this->assertDatabaseHas('t_notifications', ['id' => $mine->id]);
+        $this->assertNotNull($mine->fresh()->inbox_deleted_at);
+        $this->assertNull($other->fresh()->inbox_deleted_at);
+    }
+
+    public function test_member_can_delete_a_batch_while_other_recipients_remain_untouched(): void
+    {
+        $this->actingAsAnggota(1001, 1);
+        $first = $this->notification(1001, 'batch-first', 'Pertama');
+        $second = $this->notification(1001, 'batch-second', 'Kedua');
+        $remaining = $this->notification(1001, 'batch-remaining', 'Tetap ada');
+
+        $this->actingAsAnggota(1002, 2);
+        $other = $this->notification(1002, 'batch-other', 'Milik anggota lain');
+
+        $this->actingAsAnggota(1001, 1);
+        $this->postJson('/api/notifications/delete-batch', [
+            'notification_ids' => [$first->id, $second->id, $other->id],
+        ])->assertOk()
+            ->assertJsonPath('data.deleted_count', 2);
+
+        $this->getJson('/api/notifications')
+            ->assertOk()
+            ->assertJsonPath('data.notifications.total', 1)
+            ->assertJsonPath('data.notifications.data.0.id', $remaining->id);
+        $this->assertNull($other->fresh()->inbox_deleted_at);
+    }
+
+    public function test_admin_can_delete_all_notifications_without_affecting_another_admin(): void
+    {
+        $this->actingAsAdmin(1);
+        $this->userNotification(1, 'admin-delete-first', 'Pertama');
+        $this->userNotification(1, 'admin-delete-second', 'Kedua');
+
+        $this->actingAsAdmin(2);
+        $other = $this->userNotification(2, 'admin-delete-other', 'Admin lain');
+
+        $this->actingAsAdmin(1);
+        $this->deleteJson('/api/notifications/all')
+            ->assertOk()
+            ->assertJsonPath('data.deleted_count', 2);
+
+        $this->getJson('/api/notifications')
+            ->assertOk()
+            ->assertJsonPath('data.notifications.total', 0);
+        $this->assertNull($other->fresh()->inbox_deleted_at);
+    }
+
+    public function test_batch_delete_validates_notification_ids(): void
+    {
+        $this->actingAsAnggota(1001, 1);
+
+        $this->postJson('/api/notifications/delete-batch', [
+            'notification_ids' => ['not-a-ulid'],
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors('notification_ids.0');
+    }
+
     private function notification(int $anggotaId, string $eventId, string $title): MemberNotification
     {
         return MemberNotification::create([

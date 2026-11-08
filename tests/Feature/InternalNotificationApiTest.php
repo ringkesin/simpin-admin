@@ -165,6 +165,25 @@ class InternalNotificationApiTest extends TestCase
         $this->assertDatabaseCount('t_notifications', 1);
     }
 
+    public function test_dismissed_inbox_event_remains_idempotent_when_mart_retries(): void
+    {
+        $payload = $this->payload();
+        $this->signedRequest($payload)->assertCreated();
+
+        $notification = MemberNotification::query()->firstOrFail();
+        $this->deleteJson('/api/notifications/'.$notification->id)->assertOk();
+
+        $this->signedRequest($payload)
+            ->assertOk()
+            ->assertJsonPath('data.notification_id', $notification->id)
+            ->assertJsonPath('data.duplicate', true);
+
+        $this->assertDatabaseCount('t_notifications', 1);
+        $this->getJson('/api/notifications')
+            ->assertOk()
+            ->assertJsonPath('data.notifications.total', 0);
+    }
+
     /**
      * @return array<string, mixed>
      */

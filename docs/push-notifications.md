@@ -70,9 +70,14 @@ GET  /api/notifications?page=1&per_page=20
 GET  /api/notifications/unread-count
 POST /api/notifications/{notification_id}/read
 POST /api/notifications/read-all
+DELETE /api/notifications/{notification_id}
+POST /api/notifications/delete-batch
+DELETE /api/notifications/all
 ```
 
 `per_page` memiliki nilai awal 20 dan maksimum 100. Parameter `status` dapat diisi `all`, `read`, atau `unread`. Semua operasi dibatasi ke user yang sedang login; admin tidak dapat membaca notifikasi admin lain dan anggota tidak dapat membaca notifikasi anggota lain.
+
+Penghapusan inbox bersifat logis melalui `inbox_deleted_at`. Event asli tetap tersimpan untuk audit, statistik delivery, dan idempotensi, tetapi tidak lagi muncul pada list maupun unread count. Batch delete menerima `notification_ids` berupa array berisi maksimum 100 ULID.
 
 Setiap item inbox memiliki objek `navigation` untuk navigasi aplikasi:
 

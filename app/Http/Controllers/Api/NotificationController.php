@@ -83,6 +83,50 @@ class NotificationController extends BaseController
         );
     }
 
+    public function destroy(Request $request, string $notificationId): JsonResponse
+    {
+        $deletedCount = $this->recipientQuery($request)
+            ->whereKey($notificationId)
+            ->update(['inbox_deleted_at' => now()]);
+
+        if ($deletedCount === 0) {
+            return $this->sendError('Notifikasi tidak ditemukan.', [], 404);
+        }
+
+        return $this->sendResponse(
+            ['deleted_count' => $deletedCount],
+            'Notifikasi berhasil dihapus.'
+        );
+    }
+
+    public function deleteBatch(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'notification_ids' => ['required', 'array', 'min:1', 'max:100'],
+            'notification_ids.*' => ['required', 'ulid', 'distinct'],
+        ]);
+
+        $deletedCount = $this->recipientQuery($request)
+            ->whereIn('id', $validated['notification_ids'])
+            ->update(['inbox_deleted_at' => now()]);
+
+        return $this->sendResponse(
+            ['deleted_count' => $deletedCount],
+            'Notifikasi terpilih berhasil dihapus.'
+        );
+    }
+
+    public function deleteAll(Request $request): JsonResponse
+    {
+        $deletedCount = $this->recipientQuery($request)
+            ->update(['inbox_deleted_at' => now()]);
+
+        return $this->sendResponse(
+            ['deleted_count' => $deletedCount],
+            'Semua notifikasi berhasil dihapus.'
+        );
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -119,6 +163,7 @@ class NotificationController extends BaseController
             : null;
 
         return MemberNotification::query()
+            ->whereNull('inbox_deleted_at')
             ->where(function (Builder $query) use ($userId, $anggotaId): void {
                 $query->where('user_id', $userId);
 

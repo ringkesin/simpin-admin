@@ -50,9 +50,11 @@ trait CreatesPushNotificationSchema
         $pushDeviceMigration = require database_path('migrations/2026_10_24_000000_create_t_push_devices_table.php');
         $notificationMigration = require database_path('migrations/2026_10_24_000001_create_t_notifications_table.php');
         $userRecipientMigration = require database_path('migrations/2026_11_01_000000_add_user_recipients_to_push_tables.php');
+        $inboxDeletionMigration = require database_path('migrations/2026_11_08_000000_add_inbox_deleted_at_to_notifications_table.php');
         $pushDeviceMigration->up();
         $notificationMigration->up();
         $userRecipientMigration->up();
+        $inboxDeletionMigration->up();
     }
 
     protected function actingAsAnggota(int $anggotaId = 1001, int $userId = 1): User

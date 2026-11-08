@@ -376,6 +376,109 @@ Response:
 }
 ```
 
+### 6.5 Menghapus satu notifikasi
+
+Endpoint ini digunakan untuk aksi swipe/slide ke kiri pada satu item inbox:
+
+```http
+DELETE /api/notifications/{notification_id}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "deleted_count": 1
+  },
+  "message": "Notifikasi berhasil dihapus."
+}
+```
+
+Jika notifikasi bukan milik user login atau sudah tidak tersedia pada inbox, API menghasilkan `404`.
+
+Contoh optimistic swipe:
+
+```ts
+async function deleteNotification(item: NotificationItem) {
+  removeNotificationOptimistically(item.id);
+
+  try {
+    await api.delete(`/api/notifications/${item.id}`);
+    decrementUnreadBadgeWhenNeeded(item);
+  } catch (error) {
+    restoreNotification(item);
+    showDeleteError(error);
+  }
+}
+```
+
+### 6.6 Menghapus beberapa notifikasi
+
+Gunakan selection mode pada inbox, lalu kirim maksimum 100 ID dalam satu request:
+
+```http
+POST /api/notifications/delete-batch
+```
+
+Request:
+
+```json
+{
+  "notification_ids": [
+    "01K8ABCDEF1234567890ABCDEF",
+    "01K8ABCDEF1234567890ABCDEG"
+  ]
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "deleted_count": 2
+  },
+  "message": "Notifikasi terpilih berhasil dihapus."
+}
+```
+
+Ketentuan:
+
+- `notification_ids` wajib berupa array;
+- minimal satu ID dan maksimal 100 ID;
+- setiap ID wajib berupa ULID dan tidak boleh duplikat;
+- backend hanya menghapus notifikasi milik user login;
+- ID milik user lain tidak dihitung dan tidak dihapus.
+
+### 6.7 Menghapus semua notifikasi
+
+```http
+DELETE /api/notifications/all
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "deleted_count": 25
+  },
+  "message": "Semua notifikasi berhasil dihapus."
+}
+```
+
+Tampilkan dialog konfirmasi sebelum memanggil endpoint ini. Setelah berhasil:
+
+- kosongkan cache/list inbox lokal;
+- set unread badge menjadi `0`;
+- lakukan refetch halaman pertama untuk memastikan state sinkron.
+
+Penghapusan pada ketiga endpoint bersifat logis di backend. Notifikasi hilang dari inbox dan unread count, tetapi event tetap disimpan untuk audit dan mencegah push duplikat ketika service lain melakukan retry.
+
 ## 7. Perlakuan ketika notifikasi diklik
 
 Ada dua sumber klik yang perlu ditangani:
@@ -641,6 +744,10 @@ Gunakan `occurred_at` sebagai waktu kejadian bisnis dan `created_at` sebagai wak
 - [ ] Mengimplementasikan filter read/unread bila dibutuhkan.
 - [ ] Menandai satu notifikasi sudah dibaca ketika ditekan.
 - [ ] Menambahkan tombol read-all.
+- [ ] Menambahkan swipe/slide kiri untuk menghapus satu notifikasi.
+- [ ] Menambahkan selection mode dan batch delete maksimum 100 notifikasi.
+- [ ] Menambahkan tombol hapus semua dengan dialog konfirmasi.
+- [ ] Mengembalikan item jika optimistic delete gagal.
 - [ ] Menangani tap system push saat foreground, background, dan cold start.
 - [ ] Menyimpan pending navigation bila user belum login.
 - [ ] Mengimplementasikan seluruh mapping `target`.
