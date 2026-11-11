@@ -18,19 +18,30 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PinjamanController;
 use App\Http\Controllers\Api\ProfileAnggotaController;
 use App\Http\Controllers\Api\PushDeviceController;
+use App\Http\Controllers\Api\PwaPasskeyController;
 use App\Http\Controllers\Api\ShuController;
 use App\Http\Controllers\Api\SimulasiPinjamanController;
 use App\Http\Controllers\Api\TabunganController;
 use App\Http\Controllers\Api\TagihanController;
+use App\Http\Middleware\NoStorePasskeyResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
+Route::get('/auth/passkeys/config', [PwaPasskeyController::class, 'capabilities'])->middleware(['throttle:30,1', NoStorePasskeyResponse::class]);
+Route::post('/auth/passkeys/login/options', [PwaPasskeyController::class, 'loginOptions'])->middleware(['throttle:20,1', NoStorePasskeyResponse::class]);
+Route::post('/auth/passkeys/login/verify', [PwaPasskeyController::class, 'loginVerify'])->middleware(['throttle:20,1', NoStorePasskeyResponse::class]);
 
 Route::post('/internal/notifications', [InternalNotificationController::class, 'store'])
     ->middleware(['throttle:internal-notifications', 'internal.notification.hmac']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('/auth/passkeys')->middleware(['abilities:state:anggota', 'throttle:10,1', NoStorePasskeyResponse::class])->group(function () {
+        Route::get('/', [PwaPasskeyController::class, 'index']);
+        Route::post('/register/options', [PwaPasskeyController::class, 'registerOptions']);
+        Route::post('/register/verify', [PwaPasskeyController::class, 'registerVerify']);
+        Route::delete('/{id}', [PwaPasskeyController::class, 'destroy'])->whereUlid('id');
+    });
     Route::post('/logout', [AuthController::class, 'apiLogout']);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 

@@ -35,6 +35,14 @@ class AuthController extends BaseController
             return $this->sendError('Unauthorized', ['error' => 'The provided credentials are incorrect.'], 401);
         }
 
+        return $this->issueMobileSession($user);
+    }
+
+    // Password and passkey login share the same role/validity policy and response contract.
+    public function issueMobileSession(User $user, ?string $requiredRole = null, string $tokenName = 'api-token', ?Carbon $expiresAt = null)
+    {
+        $user->loadMissing(['roleUser.role.apps', 'anggota']);
+
         $today = Carbon::today();
 
         // users validity
@@ -48,7 +56,7 @@ class AuthController extends BaseController
         $error = 0;
         $roleCode = null;
         foreach ($user->roleUser as $r) {
-            if ($r->role->apps->code == 'mobile') {
+            if ($r->role?->apps?->code == 'mobile') {
                 $roleCode = $r->role->code;
                 if ($r->valid_from && $r->valid_from->greaterThan($today)) {
                     $error++;
@@ -74,12 +82,13 @@ class AuthController extends BaseController
             }
         }
 
-        if ($error == 0) {
+        if ($error == 0 && in_array($roleCode, ['mobile_anggota', 'mobile_admin'], true)
+            && ($requiredRole === null || $roleCode === $requiredRole)) {
             $state = 'anggota';
             if ($roleCode == 'mobile_admin') {
                 $state = 'admin';
             }
-            $token = $user->createToken('api-token', ['state:'.$state])->plainTextToken;
+            $token = $user->createToken($tokenName, ['state:'.$state], $expiresAt)->plainTextToken;
 
             $user->makeHidden([
                 'email_verified_at',
@@ -117,7 +126,9 @@ class AuthController extends BaseController
             }
 
             $overwriteUser = $user->toArray();
-            $overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($user->profile_photo_path, now()->addMinutes(5));
+            $overwriteUser['profile_photo_url'] = $user->profile_photo_path
+                ? \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($user->profile_photo_path, now()->addMinutes(5))
+                : null;
             // $overwriteUser['profile_photo_url'] = \Illuminate\Support\Facades\Storage::disk('kkba_simpin')->temporaryUrl($user->profile_photo_path, now()->addMinutes(60));
 
             return $this->sendResponse(
