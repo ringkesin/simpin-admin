@@ -1,4 +1,4 @@
-<p align="center"><h1>Aplikasi SIMPIN</h1></p>
+<p align="center">Aplikasi SIMPIN</p>
 
 ## Requirement Aplikasi
 
