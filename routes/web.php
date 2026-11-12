@@ -67,7 +67,7 @@ use App\Livewire\Page\Main\PerubahanPenyertaan\PerubahanPenyertaanTabunganApprov
 // });
 // Route::redirect('/', 'login');
 
-Route::view('/', 'kkba-landing')->name('kkba.landing');
+Route::redirect('/', 'login');
 
 Route::get('/privacy-policy', function () {
     return response()->file(public_path('privacy-policy.html'));
