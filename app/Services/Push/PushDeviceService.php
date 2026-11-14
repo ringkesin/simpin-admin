@@ -5,6 +5,7 @@ namespace App\Services\Push;
 use App\Models\PushDevice;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PushDeviceService
 {
@@ -36,7 +37,10 @@ class PushDeviceService
     private function registerWithinTransaction(int $userId, ?int $anggotaId, array $attributes): array
     {
         return DB::transaction(function () use ($userId, $anggotaId, $attributes): array {
-            $identifierHash = hash('sha256', $attributes['provider_identifier']);
+            $isWebPush = $attributes['provider'] === 'webpush';
+            $identifierHash = hash('sha256', $isWebPush
+                ? 'webpush:'.json_decode($attributes['provider_identifier'], true, flags: JSON_THROW_ON_ERROR)['endpoint']
+                : $attributes['provider_identifier']);
 
             $matchingDevices = PushDevice::query()
                 ->where(function ($query) use ($attributes, $identifierHash) {
@@ -59,6 +63,13 @@ class PushDeviceService
 
             if ($tokenDevice && $installationDevice && ! $tokenDevice->is($installationDevice)) {
                 $installationDevice->delete();
+            }
+
+            if ($isWebPush && (! $device->binding_id || ! $device->is_active
+                || (int) $device->user_id !== $userId || (int) $device->p_anggota_id !== $anggotaId
+                || $device->client_installation_id !== $attributes['client_installation_id']
+                || $device->provider_identifier !== $attributes['provider_identifier'])) {
+                $device->binding_id = (string) Str::uuid();
             }
 
             $device->fill([

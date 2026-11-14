@@ -6,6 +6,15 @@ return [
     'connect_timeout' => (int) env('PUSH_CONNECT_TIMEOUT', 2),
     'max_provider_payload_bytes' => 4096,
 
+    'webpush' => [
+        'enabled' => (bool) env('WEB_PUSH_ENABLED', false),
+        'public_key' => env('WEB_PUSH_VAPID_PUBLIC_KEY'),
+        'private_key' => env('WEB_PUSH_VAPID_PRIVATE_KEY'),
+        'subject' => env('WEB_PUSH_VAPID_SUBJECT'),
+        'allowed_host_suffixes' => ['push.apple.com'],
+        'max_payload_bytes' => 3000,
+    ],
+
     'expo' => [
         'endpoint' => 'https://exp.host/--/api/v2/push/send',
         'access_token' => env('EXPO_PUSH_ACCESS_TOKEN'),

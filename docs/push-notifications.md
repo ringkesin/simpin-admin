@@ -156,6 +156,10 @@ Respons `201` berarti inbox baru dibuat. Respons `200` dengan `duplicate: true` 
 
 Pengiriman memakai Laravel `defer()` dan tidak membutuhkan `queue:work`. Kegagalan provider tidak menghapus inbox dan tidak mengubah respons sukses yang sudah diberikan kepada KKBA Mart.
 
+Provider `webpush` untuk anggota PWA iPhone memakai kontrak perangkat yang sama, dengan VAPID,
+subscription terenkripsi, binding UUID, dan retry singkat maksimal dua percobaan. Lihat [PWA_WEB_PUSH.md](PWA_WEB_PUSH.md)
+untuk konfigurasi, migration tambahan, payload, pengamanan endpoint, dan instruksi frontend. Expo/FCM tetap tersedia.
+
 ## Event approval internal SimPin
 
 SimPin otomatis membuat inbox dan menjadwalkan push setelah transaksi approval berhasil untuk event berikut:

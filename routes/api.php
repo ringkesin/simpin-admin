@@ -28,6 +28,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'apiLogin']);
+Route::get('/push/web/config', [PushDeviceController::class, 'webConfig'])
+    ->middleware(['throttle:30,1', NoStorePasskeyResponse::class]);
 Route::get('/auth/passkeys/config', [PwaPasskeyController::class, 'capabilities'])->middleware(['throttle:30,1', NoStorePasskeyResponse::class]);
 Route::post('/auth/passkeys/login/options', [PwaPasskeyController::class, 'loginOptions'])->middleware(['throttle:20,1', NoStorePasskeyResponse::class]);
 Route::post('/auth/passkeys/login/verify', [PwaPasskeyController::class, 'loginVerify'])->middleware(['throttle:20,1', NoStorePasskeyResponse::class]);
@@ -73,9 +75,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/delete-account', [AuthController::class, 'requestDeleteAccount']);
 
     Route::middleware('ability:state:anggota,state:admin')->group(function () {
-        Route::post('/push/devices', [PushDeviceController::class, 'store']);
+        Route::post('/push/devices', [PushDeviceController::class, 'store'])->middleware(NoStorePasskeyResponse::class);
         Route::delete('/push/devices/{client_installation_id}', [PushDeviceController::class, 'destroy'])
-            ->whereUuid('client_installation_id');
+            ->whereUuid('client_installation_id')->middleware(NoStorePasskeyResponse::class);
     });
 
     Route::middleware('ability:state:anggota,state:admin')->group(function () {

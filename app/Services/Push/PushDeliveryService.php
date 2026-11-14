@@ -4,6 +4,7 @@ namespace App\Services\Push;
 
 use App\Models\MemberNotification;
 use App\Models\PushDevice;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -12,6 +13,7 @@ class PushDeliveryService
     public function __construct(
         private readonly ExpoPushService $expo,
         private readonly FcmPushService $fcm,
+        private readonly WebPushService $webpush,
     ) {}
 
     public function deliver(string $notificationId): void
@@ -20,17 +22,15 @@ class PushDeliveryService
             return;
         }
 
-        $notification = MemberNotification::query()->find($notificationId);
-
-        if (! $notification || $notification->push_attempted_at !== null) {
-            return;
-        }
-
-        $notification->update([
+        $claimed = MemberNotification::query()->whereKey($notificationId)->whereNull('push_attempted_at')->update([
             'push_attempted_at' => now(),
             'push_accepted_count' => 0,
             'push_failed_count' => 0,
         ]);
+        if ($claimed === 0) {
+            return;
+        }
+        $notification = MemberNotification::query()->findOrFail($notificationId);
 
         $devices = PushDevice::query()
             ->where(function ($query) use ($notification): void {
@@ -58,6 +58,8 @@ class PushDeliveryService
 
         $data = $this->normalizeData($notification);
         $result = new PushDeliveryResult;
+        $webDevices = $devices->where('provider', 'webpush')->values();
+        $nativeDevices = $devices->whereIn('provider', ['expo', 'fcm'])->values();
         $payloadBytes = strlen((string) json_encode([
             'notification' => [
                 'title' => $notification->title,
@@ -67,40 +69,31 @@ class PushDeliveryService
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
         if ($payloadBytes > config('push.max_provider_payload_bytes')) {
-            foreach ($devices as $device) {
+            foreach ($nativeDevices as $device) {
                 $result->fail($device->id, 'Payload push melebihi batas 4096 byte.');
             }
         } else {
-            try {
-                $expoDevices = $devices->where('provider', 'expo')->values();
-                $fcmDevices = $devices->where('provider', 'fcm')->values();
-
-                if ($expoDevices->isNotEmpty()) {
-                    $result->merge($this->expo->send($expoDevices, $notification, $data));
-                }
-
-                if ($fcmDevices->isNotEmpty()) {
-                    $result->merge($this->fcm->send($fcmDevices, $notification, $data));
-                }
-            } catch (Throwable $exception) {
-                Log::error('Push delivery gagal.', [
-                    'notification_id' => $notificationId,
-                    'error' => $exception->getMessage(),
-                ]);
-
-                foreach ($devices as $device) {
-                    if (! in_array($device->id, $result->acceptedDeviceIds, true)
-                        && ! array_key_exists($device->id, $result->failedDeviceErrors)) {
-                        $result->fail($device->id, 'Push delivery gagal: '.$exception->getMessage());
-                    }
+            foreach (['expo' => $this->expo, 'fcm' => $this->fcm] as $provider => $sender) {
+                $subset = $nativeDevices->where('provider', $provider)->values();
+                if ($subset->isNotEmpty()) {
+                    $result->merge($this->sendSafely($sender, $subset, $notification, $data));
                 }
             }
         }
 
+        if (config('push.webpush.enabled') && $webDevices->isNotEmpty()) {
+            $result->merge($this->sendSafely($this->webpush, $webDevices, $notification, $data));
+        }
+
         if ($result->acceptedDeviceIds !== []) {
-            PushDevice::query()
-                ->whereIn('id', $result->acceptedDeviceIds)
-                ->update(['last_error' => null]);
+            foreach ($result->acceptedDeviceIds as $deviceId) {
+                $query = PushDevice::query()->whereKey($deviceId);
+                $snapshot = $devices->find($deviceId);
+                if ($snapshot?->provider === 'webpush') {
+                    $query->where('binding_id', $snapshot->binding_id);
+                }
+                $query->update(['last_error' => null]);
+            }
         }
 
         foreach ($result->failedDeviceErrors as $deviceId => $error) {
@@ -111,7 +104,12 @@ class PushDeliveryService
                 $updates['disabled_at'] = now();
             }
 
-            PushDevice::query()->whereKey($deviceId)->update($updates);
+            $query = PushDevice::query()->whereKey($deviceId);
+            $snapshot = $devices->find($deviceId);
+            if ($snapshot?->provider === 'webpush') {
+                $query->where('binding_id', $snapshot->binding_id);
+            }
+            $query->update($updates);
         }
 
         $notification->update([
@@ -125,6 +123,20 @@ class PushDeliveryService
                 'accepted_count' => $result->acceptedCount(),
                 'failed_count' => $result->failedCount(),
             ]);
+        }
+    }
+
+    private function sendSafely(object $sender, Collection $devices, MemberNotification $notification, array $data): PushDeliveryResult
+    {
+        try {
+            return $sender->send($devices, $notification, $data);
+        } catch (Throwable) {
+            $result = new PushDeliveryResult;
+            foreach ($devices as $device) {
+                $result->fail($device->id, 'Push provider gagal mengirim.');
+            }
+
+            return $result;
         }
     }
 

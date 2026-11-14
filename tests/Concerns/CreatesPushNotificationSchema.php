@@ -55,6 +55,7 @@ trait CreatesPushNotificationSchema
         $notificationMigration->up();
         $userRecipientMigration->up();
         $inboxDeletionMigration->up();
+        (require database_path('migrations/2026_11_15_000000_add_binding_id_to_push_devices_table.php'))->up();
     }
 
     protected function actingAsAnggota(int $anggotaId = 1001, int $userId = 1): User

@@ -21,6 +21,7 @@ class PushDevice extends Model
         'platform',
         'provider_identifier',
         'provider_identifier_hash',
+        'binding_id',
         'app_version',
         'is_active',
         'last_seen_at',

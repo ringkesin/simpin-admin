@@ -1,5 +1,9 @@
 # Panduan Implementasi Push Notification di KKBA Mobile
 
+Untuk Web Push anggota PWA iPhone, lihat [PWA_WEB_PUSH.md](PWA_WEB_PUSH.md). Backend menambahkan
+`GET /api/push/web/config` dan varian `provider=webpush` pada endpoint perangkat yang sama.
+Frontend perlu mengimplementasikan subscription, binding, dan service worker sesuai handoff tersebut.
+
 Dokumen ini menjelaskan perubahan yang perlu diterapkan pada aplikasi KKBA Mobile agar mendukung:
 
 - registrasi perangkat anggota dan admin;
